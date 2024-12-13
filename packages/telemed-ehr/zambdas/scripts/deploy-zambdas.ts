@@ -67,29 +67,29 @@ const ZAMBDAS: { [name: string]: DeployZambda } = {
   'GET-EMPLOYEES': {
     type: 'http_auth',
   },
-  'NOTIFICATIONS-UPDATER': {
-    type: 'cron',
-    schedule: {
-      expression: 'cron(*/5 * * * ? *)', // every 3 minutes
-    },
-    environments: ['development', 'testing', 'staging', 'training'],
-  },
+  // 'NOTIFICATIONS-UPDATER': {
+  //   type: 'cron',
+  //   schedule: {
+  //     expression: 'cron(*/5 * * * ? *)', // every 3 minutes
+  //   },
+  //   environments: ['development', 'testing', 'staging', 'training'],
+  // },
   'SYNC-USER': {
     type: 'http_auth',
   },
   'ICD-SEARCH': {
     type: 'http_auth',
   },
-  'COMMUNICATION-SUBSCRIPTION': {
-    type: 'subscription',
-    subscriptionDetails: [
-      {
-        criteria: `Communication?category=${COMMUNICATION_ISSUE_REPORT_CODE.system}|${COMMUNICATION_ISSUE_REPORT_CODE.code}&status=in-progress`,
-        reason: 'PM - ML internal communication',
-        event: 'create',
-      },
-    ],
-  },
+  // 'COMMUNICATION-SUBSCRIPTION': {
+  //   type: 'subscription',
+  //   subscriptionDetails: [
+  //     {
+  //       criteria: `Communication?category=${COMMUNICATION_ISSUE_REPORT_CODE.system}|${COMMUNICATION_ISSUE_REPORT_CODE.code}&status=in-progress`,
+  //       reason: 'PM - ML internal communication',
+  //       event: 'create',
+  //     },
+  //   ],
+  // },
 };
 
 const updateZambdas = async (config: any): Promise<void> => {
