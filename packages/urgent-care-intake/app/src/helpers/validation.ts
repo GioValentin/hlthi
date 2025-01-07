@@ -1,8 +1,8 @@
 import { DateTime } from 'luxon';
 import { isoStringFromMDYString } from './dateUtils';
 
-export const MINIMUM_AGE = 0;
-export const MAXIMUM_AGE = 26;
+export const MINIMUM_AGE = 18;
+export const MAXIMUM_AGE = 85;
 export const emailRegex = /^\S+@\S+\.\S+$/;
 export const zipRegex = /^\d{5}$/;
 export const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;

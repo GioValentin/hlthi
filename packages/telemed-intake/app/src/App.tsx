@@ -22,6 +22,7 @@ import ReviewPaperwork from './pages/ReviewPaperwork';
 import SelectPatient from './pages/SelectPatient';
 import VideoChatPage from './pages/VideoChatPage';
 import VisitDetails from './pages/VisitDetails';
+import SetupBilling from './pages/SetupBilling';
 import WaitingRoom from './pages/WaitingRoom';
 import Welcome from './pages/Welcome';
 import ConfirmDateOfBirth from './pages/ConfirmDateOfBirth';
@@ -64,6 +65,7 @@ const queryClient = new QueryClient({
 });
 
 export class IntakeFlowPageRoute {
+  static readonly SetupBilling = new IntakeFlowPageRoute('/setup-billing', <SetupBilling />);
   static readonly PatientPortal = new IntakeFlowPageRoute('/patient-portal', <PatientPortal />);
   static readonly ScheduleSelect = new IntakeFlowPageRoute('/schedule-select', <ScheduleSelect />);
   static readonly SelectPatient = new IntakeFlowPageRoute('/select-patient', <SelectPatient />);
@@ -134,6 +136,7 @@ function App(): JSX.Element {
               }
             >
               <Route path="/" element={<AuthPage />} />
+              <Route path={IntakeFlowPageRoute.SetupBilling.path} element={IntakeFlowPageRoute.SetupBilling.page} />
               <Route path={IntakeFlowPageRoute.PatientPortal.path} element={IntakeFlowPageRoute.PatientPortal.page} />
               <Route path={IntakeFlowPageRoute.NewUser.path} element={IntakeFlowPageRoute.NewUser.page} />
               <Route path={IntakeFlowPageRoute.ScheduleSelect.path} element={IntakeFlowPageRoute.ScheduleSelect.page} />

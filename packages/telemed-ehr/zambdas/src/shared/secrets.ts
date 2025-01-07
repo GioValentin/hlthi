@@ -17,6 +17,7 @@ export const getSecret = (secretKey: string, secrets: Secrets | null): string =>
 };
 
 export enum SecretsKeys {
+  STRIPE_SECRET= 'STRIPE_SECRET',
   AUTH0_ENDPOINT = 'AUTH0_ENDPOINT',
   URGENT_CARE_AUTH0_CLIENT = 'URGENT_CARE_AUTH0_CLIENT',
   URGENT_CARE_AUTH0_SECRET = 'URGENT_CARE_AUTH0_SECRET',

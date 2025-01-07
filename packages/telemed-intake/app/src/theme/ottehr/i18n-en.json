@@ -1,8 +1,8 @@
 {
   "general": {
-    "appName": "Ottehr Telemedicine",
-    "maximumAge": 26,
-    "minimumAge": 0,
+    "appName": "HLTHi Telemedicine",
+    "maximumAge": 88,
+    "minimumAge": 18,
     "button": {
       "back": "Back",
       "continue": "Continue",
@@ -121,6 +121,12 @@
   },
   "newUser": {
     "title": "Thanks for choosing Ottehr!",
+    "imgAlt": "Clock icon",
+    "message": "We're pleased to offer this new technology for accessing care. You will need to enter your information again just once. Next time you return, it will all be here for you!",
+    "html": ""
+  },
+  "setupBilling": {
+    "title": "Let's Setup Your Billing Details!",
     "imgAlt": "Clock icon",
     "message": "We're pleased to offer this new technology for accessing care. You will need to enter your information again just once. Next time you return, it will all be here for you!",
     "html": ""

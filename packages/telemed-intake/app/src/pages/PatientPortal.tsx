@@ -5,11 +5,10 @@ import { IntakeFlowPageRoute } from '../App';
 import { otherColors } from '../IntakeThemeProvider';
 import { CustomContainer, useIntakeCommonStore } from '../features/common';
 import HomepageOption from '../features/homepage/HomepageOption';
-import { useZapEHRAPIClient } from '../utils';
+import { useZapEHRAPIClient, } from '../utils';
 import { requestVisit, pastVisits, contactSupport } from '@theme/icons';
 import { useGetPatients, usePatientsStore } from 'src/features/patients';
 import { useGetAppointments } from 'src/features/appointments';
-
 const PatientPortal = (): JSX.Element => {
   localStorage.removeItem('welcomePath');
   const apiClient = useZapEHRAPIClient();

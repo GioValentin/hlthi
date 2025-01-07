@@ -1,0 +1,10 @@
+## Zambdas Needed
+1. Create New Stripe Customer Zambda
+2. Create Update Stripe Customer Zambda
+3. Create Create Stripe Checkout Session 
+    a. Create Checkout Session For Subscription
+    b. Create Checkout Session For Single-Purchase
+    c. Retrieve Existing Checkout Session
+
+# Interfaces
+1. Generate Checkout Link

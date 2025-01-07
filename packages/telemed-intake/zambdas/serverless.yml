@@ -423,7 +423,71 @@ functions:
       FHIR_API: ${file(./.env/${self:provider.stage}.json):FHIR_API}
       PROJECT_API: ${file(./.env/${self:provider.stage}.json):PROJECT_API}
       ENVIRONMENT: ${file(./.env/${self:provider.stage}.json):ENVIRONMENT}
-
+  get-billing-portal:
+    handler: src/get-billing-portal/index.index
+    events:
+      - http:
+          path: zambda/get-billing-portal/execute
+          method: POST
+    timeout: 25
+    environment:
+      AUTH0_ENDPOINT: ${file(./.env/${self:provider.stage}.json):AUTH0_ENDPOINT}
+      TELEMED_CLIENT_ID: ${file(./.env/${self:provider.stage}.json):TELEMED_CLIENT_ID}
+      TELEMED_CLIENT_SECRET: ${file(./.env/${self:provider.stage}.json):TELEMED_CLIENT_SECRET}
+      AUTH0_AUDIENCE: ${file(./.env/${self:provider.stage}.json):AUTH0_AUDIENCE}
+      FHIR_API: ${file(./.env/${self:provider.stage}.json):FHIR_API}
+      PROJECT_API: ${file(./.env/${self:provider.stage}.json):PROJECT_API}
+      ENVIRONMENT: ${file(./.env/${self:provider.stage}.json):ENVIRONMENT}
+      STRIPE_SECRET: ${file(./.env/${self:provider.stage}.json):STRIPE_SECRET}
+  create-stripe-customer:
+    handler: src/create-stripe-customer/index.index
+    events:
+      - http:
+          path: zambda/create-stripe-customer/execute
+          method: POST
+    timeout: 25
+    environment:
+      AUTH0_ENDPOINT: ${file(./.env/${self:provider.stage}.json):AUTH0_ENDPOINT}
+      TELEMED_CLIENT_ID: ${file(./.env/${self:provider.stage}.json):TELEMED_CLIENT_ID}
+      TELEMED_CLIENT_SECRET: ${file(./.env/${self:provider.stage}.json):TELEMED_CLIENT_SECRET}
+      AUTH0_AUDIENCE: ${file(./.env/${self:provider.stage}.json):AUTH0_AUDIENCE}
+      FHIR_API: ${file(./.env/${self:provider.stage}.json):FHIR_API}
+      PROJECT_API: ${file(./.env/${self:provider.stage}.json):PROJECT_API}
+      ENVIRONMENT: ${file(./.env/${self:provider.stage}.json):ENVIRONMENT}
+      STRIPE_SECRET: ${file(./.env/${self:provider.stage}.json):STRIPE_SECRET}
+  create-checkout-session:
+    handler: src/create-checkout-session/index.index
+    events:
+      - http:
+          path: zambda/create-checkout-session/execute
+          method: POST
+    timeout: 25
+    environment:
+      AUTH0_ENDPOINT: ${file(./.env/${self:provider.stage}.json):AUTH0_ENDPOINT}
+      TELEMED_CLIENT_ID: ${file(./.env/${self:provider.stage}.json):TELEMED_CLIENT_ID}
+      TELEMED_CLIENT_SECRET: ${file(./.env/${self:provider.stage}.json):TELEMED_CLIENT_SECRET}
+      AUTH0_AUDIENCE: ${file(./.env/${self:provider.stage}.json):AUTH0_AUDIENCE}
+      FHIR_API: ${file(./.env/${self:provider.stage}.json):FHIR_API}
+      PROJECT_API: ${file(./.env/${self:provider.stage}.json):PROJECT_API}
+      ENVIRONMENT: ${file(./.env/${self:provider.stage}.json):ENVIRONMENT}
+      STRIPE_SECRET: ${file(./.env/${self:provider.stage}.json):STRIPE_SECRET}
+  get-patient-subscription-status:
+    handler: src/get-patient-subscription-status/index.index
+    events:
+      - http:
+          path: zambda/get-patient-subscription-status/execute
+          method: GET
+    timeout: 25
+    environment:
+      AUTH0_ENDPOINT: ${file(./.env/${self:provider.stage}.json):AUTH0_ENDPOINT}
+      TELEMED_CLIENT_ID: ${file(./.env/${self:provider.stage}.json):TELEMED_CLIENT_ID}
+      TELEMED_CLIENT_SECRET: ${file(./.env/${self:provider.stage}.json):TELEMED_CLIENT_SECRET}
+      AUTH0_AUDIENCE: ${file(./.env/${self:provider.stage}.json):AUTH0_AUDIENCE}
+      FHIR_API: ${file(./.env/${self:provider.stage}.json):FHIR_API}
+      PROJECT_API: ${file(./.env/${self:provider.stage}.json):PROJECT_API}
+      ENVIRONMENT: ${file(./.env/${self:provider.stage}.json):ENVIRONMENT}
+      STRIPE_SECRET: ${file(./.env/${self:provider.stage}.json):STRIPE_SECRET}
+      
 plugins:
   - serverless-offline
   - serverless-esbuild

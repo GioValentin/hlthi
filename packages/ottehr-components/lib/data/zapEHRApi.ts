@@ -29,6 +29,15 @@ import {
   WaitingRoomInput,
   WaitingRoomResponse,
   isoStringFromMDYString,
+  GetBillingPortalRequestParams,
+  GetBillingPortalResponse,
+  CreateStripeCustomerRequestParams,
+  CreateStripeCustomerlResponse,
+  CreateStripeCheckoutSessionResponse,
+  CreateStripeCheckoutSessionRequestParams,
+  GetPatientSubscriptionStatusRequestParams,
+  GetPatientSubscriptionStatusResponse
+  
 } from 'ottehr-utils';
 import { ApiError, GetZapEHRAPIParams } from '../types/data';
 import { HealthcareService, Location, Practitioner } from 'fhir/r4';
@@ -54,6 +63,10 @@ enum ZambdaNames {
   'get presigned file url' = 'get presigned file url',
   'get providers' = 'get providers',
   'get locations' = 'get locations',
+  'get billing portal' = 'get billing portal',
+  'create stripe customer' = 'create stripe customer',
+  'get patient subscription status' = 'get patient subscription status',
+  'create stripe checkout session' = 'create stripe checkout session'
 }
 
 const zambdasPublicityMap: Record<keyof typeof ZambdaNames, boolean> = {
@@ -77,6 +90,10 @@ const zambdasPublicityMap: Record<keyof typeof ZambdaNames, boolean> = {
   'get providers': true,
   'get locations': true,
   'get groups': true,
+  'get billing portal': false,
+  'create stripe customer': false,
+  'get patient subscription status': false,
+  'create stripe checkout session': false
 };
 
 export type ZapEHRAPIClient = ReturnType<typeof getZapEHRAPI>;
@@ -106,6 +123,10 @@ export const getZapEHRAPI = (
   videoChatCancelInvite: typeof videoChatCancelInvite;
   videoChatListInvites: typeof videoChatListInvites;
   createZ3Object: typeof createZ3Object;
+  getBillingPortalLink: typeof getBillingPortalLink;
+  createStripeCustomer: typeof createStripeCustomer;
+  createStripeCheckoutSession: typeof createStripeCheckoutSession;
+  getPatientSubscriptionStatus: typeof getPatientSubscriptionStatus;
 } => {
   const {
     checkInZambdaID,
@@ -128,6 +149,10 @@ export const getZapEHRAPI = (
     getProvidersZambdaID,
     getLocationsZambdaID,
     getGroupsZambdaID,
+    getBillingPortalZambdaID,
+    createStripeCustomerZambdaID,
+    getPatientSubscriptionStatusZambdaID,
+    createStripeCheckoutSessionZambdaID
   } = params;
 
   const zambdasToIdsMap: Record<keyof typeof ZambdaNames, string | undefined> = {
@@ -151,6 +176,10 @@ export const getZapEHRAPI = (
     'video chat cancel invite': videoChatCancelInviteZambdaID,
     'video chat list invites': videoChatListInvitesZambdaID,
     'get presigned file url': getPresignedFileURLZambdaID,
+    'get billing portal':getBillingPortalZambdaID,
+    'create stripe customer':createStripeCustomerZambdaID,
+    'get patient subscription status': getPatientSubscriptionStatusZambdaID,
+    'create stripe checkout session': createStripeCheckoutSessionZambdaID
   };
   const isAppLocalProvided = params.isAppLocal != null;
   const isAppLocal = params.isAppLocal === 'true';
@@ -281,6 +310,22 @@ export const getZapEHRAPI = (
     return await makeZapRequest('get paperwork', parameters, NotFoundApointmentErrorHandler);
   };
 
+  const getBillingPortalLink = async (parameters: GetBillingPortalRequestParams): Promise<GetBillingPortalResponse> => {
+    return await makeZapRequest('get billing portal', parameters, NotFoundApointmentErrorHandler);
+  };
+
+  const createStripeCustomer = async (parameters: CreateStripeCustomerRequestParams): Promise<CreateStripeCustomerlResponse> => {
+    return await makeZapRequest('create stripe customer', parameters, NotFoundApointmentErrorHandler);
+  };
+
+  const createStripeCheckoutSession = async (parameters: CreateStripeCheckoutSessionRequestParams): Promise<CreateStripeCheckoutSessionResponse> => {
+    return await makeZapRequest('create stripe checkout session', parameters, NotFoundApointmentErrorHandler);
+  };
+
+  const getPatientSubscriptionStatus = async (parameters: GetPatientSubscriptionStatusRequestParams): Promise<GetPatientSubscriptionStatusResponse> => {
+    return await makeZapRequest('get patient subscription status', parameters, NotFoundApointmentErrorHandler);
+  };
+
   const getPaperworkPublic = async (
     parameters: GetPaperworkRequestParams,
   ): Promise<PaperworkResponseWithoutResponses> => {
@@ -373,6 +418,10 @@ export const getZapEHRAPI = (
     videoChatCreateInvite,
     videoChatCancelInvite,
     videoChatListInvites,
+    getBillingPortalLink,
+    getPatientSubscriptionStatus,
+    createStripeCheckoutSession,
+    createStripeCustomer
   };
 };
 

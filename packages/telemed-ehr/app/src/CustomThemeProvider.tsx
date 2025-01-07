@@ -8,16 +8,16 @@ const palette = {
     paper: '#FFFFFF',
   },
   primary: {
-    main: '#2169F5',
-    light: '#2169F5',
-    dark: '#0A2143',
+    main: '#1f4638',
+    light: '#f8faf9',
+    dark: '#39413e',
     contrast: '#FFFFFF',
   },
   secondary: {
-    main: '#FFCD75',
+    main: '#1c211f',
     light: '#0000009A',
     dark: '#377DCE',
-    contrast: '#FFFFFF',
+    contrast: '#E65100',
   },
   error: {
     main: '#D32F2F',
@@ -46,8 +46,8 @@ const palette = {
 };
 
 export const otherColors = {
-  appbarContrast: '#FFCD75',
-  headerBackground: '#15376a',
+  appbarContrast: '#1c211f',
+  headerBackground: '#FFFFF',
   blackTransparent: 'rgba(0, 0, 0, 0.5)',
   disabled: 'rgba(0,0,0,0.38)',
   tableRow: 'rgba(0,0,0,0.87)',

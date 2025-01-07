@@ -1,8 +1,9 @@
-import { FC, ReactElement, useCallback } from 'react';
+import { FC, ReactElement, useCallback,ReactNode } from 'react';
 import { AppBar, Box, Button, Card, Container, Grid, Typography, Tooltip, useTheme } from '@mui/material';
 import { useAuth0 } from '@auth0/auth0-react';
 import { portal } from '../assets/icons';
 import { Link } from 'react-router-dom';
+
 
 export interface ContainerProps {
   title: string;
@@ -22,6 +23,7 @@ export interface ContainerProps {
   backgroundImage: string;
   footer?: JSX.Element;
   logoutHandler?: () => void;
+  BillingButton?: JSX.Element;
   patientFullName?: string;
 }
 
@@ -33,6 +35,7 @@ export const CustomContainerFactory = (
   alt: string,
   footer?: JSX.Element,
   logoutHandler?: () => void,
+  BillingButton?: JSX.Element,
 ): FC<WrappedContainerProps> => {
   const CustomContainerWrapped: FC<WrappedContainerProps> = (props) => {
     const backgroundImage = imageForBackground(props.bgVariant);
@@ -43,6 +46,7 @@ export const CustomContainerFactory = (
       alt,
       footer,
       logoutHandler,
+      BillingButton
     };
     return <CustomContainer {...passThroughProps} />;
   };
@@ -65,9 +69,10 @@ export const CustomContainer: FC<ContainerProps> = ({
   alt,
   footer,
   logoutHandler,
+  BillingButton
 }) => {
   const theme = useTheme();
-  const { isAuthenticated, logout } = useAuth0();
+  const { isAuthenticated, logout  } = useAuth0();
 
   const handleLogout = useCallback(() => {
     localStorage.removeItem('welcomePath');
@@ -144,6 +149,8 @@ export const CustomContainer: FC<ContainerProps> = ({
                 </Box>
               </Link>
             </Tooltip>
+
+            {isAuthenticated && (BillingButton)}
 
             {isAuthenticated && (
               <Button

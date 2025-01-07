@@ -80,6 +80,18 @@ const ZAMBDAS: { [name: string]: DeployZambda } = {
   'GET-PRESIGNED-FILE-URL': {
     type: 'http_open',
   },
+  'GET-BILLING-PORTAL': {
+    type: 'http_auth',
+  },
+  'CREATE-CHECKOUT-SESSION': {
+    type: 'http_auth',
+  },
+  'CREATE-STRIPE-CUSTOMER': {
+    type: 'http_auth',
+  },
+  'GET-PATIENT-SUBSCRIPTION-STATUS': {
+    type: 'http_auth',
+  },
 };
 
 const updateZambdas = async (config: any): Promise<void> => {

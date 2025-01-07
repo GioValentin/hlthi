@@ -24,4 +24,11 @@ export type GetZapEHRAPIParams = {
   getProvidersZambdaID?: string;
   getLocationsZambdaID?: string;
   getGroupsZambdaID?: string;
+  getBillingPortalZambdaID?: string;
+  createStripeCustomerZambdaID?: string;
+  updateStripeCustomerZambdaID?: string;
+  createStripeCheckoutSessionZambdaID?: string;
+  updateStripeCheckoutSessionZambdaID?: string;
+  getStripeCheckoutZambdaID?: string;
+  getPatientSubscriptionStatusZambdaID?: string;
 };

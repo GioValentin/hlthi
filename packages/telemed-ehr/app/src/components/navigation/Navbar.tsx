@@ -158,7 +158,7 @@ export default function Navbar(): ReactElement {
                     fontSize: 16,
                     fontWeight: 700,
                     textTransform: 'capitalize',
-                    color: '#FFFFFF',
+                    color: '#39413e',
                   }}
                 />
               ))}
@@ -166,7 +166,7 @@ export default function Navbar(): ReactElement {
           {/* <IconButton color="primary" sx={{ mr: 2 }}>
             <Settings />
           </IconButton> */}
-          <Typography variant="body1" sx={{ mr: 2, color: '#FFFFFF' }}>
+          <Typography variant="body1" sx={{ mr: 2, color: '#39413e' }}>
             {user?.name || <Skeleton width={100} aria-busy="true" />}
           </Typography>
           <Button
