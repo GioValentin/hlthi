@@ -1,6 +1,8 @@
 
 export interface BillingPortalRequestParams {
-  customerId: string
+  customerId?: string
+  dob?: string,
+  email?: string
 }
 
 export interface BillingPortalResponse {

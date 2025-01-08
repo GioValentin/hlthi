@@ -37,53 +37,42 @@ const ScheduleSelect = (): JSX.Element => {
   const handleRequestVisit = (data: FieldValues): void => {
     navigate(
       `${IntakeFlowPageRoute.Welcome.path
-        .replace(':schedule-type', data['Schedule Type'].toLowerCase())
-        .replace(':slug', data[data['Schedule Type']])
-        .replace(':visit-service', data['Visit Service'])
-        .replace(':visit-type', data['Visit Type'])}`,
+        .replace(':schedule-type','location')
+        .replace(':slug', data['Location'])
+        .replace(':visit-service', 'telemedicine')
+        .replace(':visit-type', 'now')}`,
     );
   };
 
+  //setScheduleType('Location');
+
   const formElements: FormInputType[] = [
-    {
-      type: 'Select',
-      name: 'Schedule Type',
-      label: 'Schedule Type',
-      required: true,
-      selectOptions: [
-        { label: 'Provider', value: 'Provider' },
-        { label: 'Location', value: 'Location' },
-        { label: 'Group', value: 'Group' },
-      ],
-      onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
-        setScheduleType(event.target.value as 'Provider' | 'Location' | 'Group');
-      },
-    },
-    {
-      type: 'Select',
-      name: 'Provider',
-      label: 'Provider',
-      required: scheduleType === 'Provider',
-      selectOptions: providersData
-        ? filterResourcesWithSlug(providersData).map((provider) => ({
-            label: convertFhirNameToDisplayName(provider.name as HumanName[]),
-            value: provider.identifier?.[0]?.value || '',
-          }))
-        : [],
-      hidden: scheduleType !== 'Provider',
-    },
+    // {
+    //   type: 'Select',
+    //   name: 'Schedule Type',
+    //   label: 'Schedule Type',
+    //   required: true,
+    //   selectOptions: [
+    //     { label: 'Provider', value: 'Provider' },
+    //     { label: 'Location', value: 'Location' },
+    //     { label: 'Group', value: 'Group' },
+    //   ],
+    //   onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     setScheduleType(event.target.value as 'Provider' | 'Location' | 'Group');
+    //   },
+    // },
     {
       type: 'Select',
       name: 'Location',
       label: 'Location',
-      required: scheduleType === 'Location',
+      required: true,
       selectOptions: locationsData
         ? filterResourcesWithSlug(locationsData).map((location) => ({
             label: location.name as string,
             value: location.identifier?.[0]?.value || '',
           }))
         : [],
-      hidden: scheduleType !== 'Location',
+      hidden: false,
     },
     {
       type: 'Select',
@@ -97,39 +86,7 @@ const ScheduleSelect = (): JSX.Element => {
           }))
         : [],
       hidden: scheduleType !== 'Group',
-    },
-    {
-      type: 'Select',
-      name: 'Visit Service',
-      label: 'Visit Service',
-      required: true,
-      selectOptions: [
-        {
-          label: 'Telemedicine',
-          value: 'telemedicine',
-        },
-        {
-          label: 'In-Person',
-          value: 'in-person',
-        },
-      ],
-    },
-    {
-      type: 'Select',
-      name: 'Visit Type',
-      label: 'Visit Type',
-      required: true,
-      selectOptions: [
-        {
-          label: 'Prebook',
-          value: 'prebook',
-        },
-        {
-          label: 'Now',
-          value: 'now',
-        },
-      ],
-    },
+    }
   ];
 
   return (

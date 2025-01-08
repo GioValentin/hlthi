@@ -1,5 +1,6 @@
+import Stripe from 'stripe';
 export interface CreateStripeCustomerlResponse {
-    customerId: string;
+    customer: Stripe.Customer;
   }
   
   export interface CreateStripeCustomerRequestParams {

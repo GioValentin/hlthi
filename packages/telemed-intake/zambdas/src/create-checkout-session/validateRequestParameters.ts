@@ -8,18 +8,19 @@ export function validateRequestParameters(input: ZambdaInput): CreateStripeCheck
 
   const { 
       patientId,
-      email,
-      line_items,
+      customer_email,
+      items,
       mode,
       return_url,
-      success_url
+      success_url,
+      customerId
     } = JSON.parse(input.body);
 
   return {
     mode: mode,
-    email: email,
-    line_items: line_items,
-    patientId: patientId,
+    customerId: customerId,
+    customer_email: customer_email,
+    line_items: items,
     return_url: return_url,
     success_url: success_url,
     secrets: input.secrets

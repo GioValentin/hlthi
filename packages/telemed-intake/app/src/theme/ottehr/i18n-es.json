@@ -1,8 +1,8 @@
 {
   "general": {
-    "appName": "Ottehr Telemedicine",
-    "maximumAge": 26,
-    "minimumAge": 0,
+    "appName": "HLTHi Telemedicine",
+    "maximumAge": 88,
+    "minimumAge": 18,
     "button": {
       "back": "Atrás",
       "continue": "Continuar",

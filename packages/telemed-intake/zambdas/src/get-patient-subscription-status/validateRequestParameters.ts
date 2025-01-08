@@ -7,10 +7,14 @@ export function validateRequestParameters(input: ZambdaInput): GetStripeSubscrip
   }
 
   const { 
-      patientId
+      patientId,
+      dob,
+      email
     } = JSON.parse(input.body);
 
   return {
+    email: email,
+    dob: dob,
     patientId: patientId,
     secrets: input.secrets
   };

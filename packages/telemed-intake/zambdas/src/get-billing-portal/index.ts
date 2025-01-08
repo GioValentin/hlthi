@@ -8,7 +8,7 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
   try {
     console.group('validateRequestParameters');
     const validatedParameters = validateRequestParameters(input);
-    const { secrets, customerId } = validatedParameters;
+    const { secrets, customerId,dob,email } = validatedParameters;
     console.groupEnd();
     console.debug('validateRequestParameters success');
 
@@ -18,36 +18,45 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     // search codes
     try {
 
-      const customers = await stripe.customers.search({
-        query: 'metadata[\'patient_id\']:\''+customerId+'\'',
+      let customers;
+
+      // Check if a customer exists
+      customers = await stripe.customers.search({
+        query: 'metadata[\'date_of_birth\']:\''+dob+'\' AND email:\'' + email+'\'',
         limit: 1
       });
 
-      // Check if a customer exists
-      if(customers.data.length == 0) 
-      {
-
-        // Failed to Find a Customer 
-        
+      if(customers.data.length == 0) {
         return {
-          statusCode: 500,
+          statusCode: 400,
           body: JSON.stringify({
-            error: "Could not find customer"
+            message: "Could not find customer"
           }),
         };
-
       }
+      
+      if(customers != undefined) {
+        let customer = customers.data[0];
 
-      let customer = customers.data[0];
+        const session = await stripe.billingPortal.sessions.create({
+          configuration: 'bpc_1QWmn3IiL0oeTlYvNfo7TKMh',
+          customer: customer.id,
+          return_url: 'https://portal.hlthi.life/dashboard',
+        });
 
-      const session = await stripe.billingPortal.sessions.create({
-        configuration: 'bpc_1QWmn3IiL0oeTlYvNfo7TKMh',
-        customer: customer.id,
-        return_url: 'https://portal.hlthi.life/dashboard',
-      });
+        response.url = session.url;
+        response.customer = customer;
+      } else {
 
-      response.url = session.url;
-      response.customer = customer;
+        return {
+          statusCode: 400,
+          body: JSON.stringify({
+            message: "Could not find customer",
+            data: response
+          }),
+        };
+      }
+      
 
     } catch (error) {
       console.error('Error while trying to get billing portal link', JSON.stringify(error));

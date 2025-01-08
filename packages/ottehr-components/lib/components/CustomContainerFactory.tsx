@@ -135,12 +135,12 @@ export const CustomContainer: FC<ContainerProps> = ({
                     display: 'flex',
                     alignItems: 'center',
                     cursor: 'pointer',
-                    backgroundColor: 'rgba(226, 240, 255, 0.2)',
+                    backgroundColor: '#39413e',
                     padding: '12px',
                     border: 'none',
                     borderRadius: '50%',
                     '&:hover': {
-                      backgroundColor: 'rgba(226, 240, 255, 0.5)',
+                      opacity: '.5',
                     },
                   }}
                   onClick={() => localStorage.removeItem('welcomePath')}
@@ -187,9 +187,9 @@ export const CustomContainer: FC<ContainerProps> = ({
                   >
                     <Grid item xs={12} md={gridWidths.title}>
                       <Typography
-                        sx={{ width: isFirstPage ? '350px' : '100%' }}
+                        sx={{ width: '100%' }}
                         variant={isFirstPage ? 'h1' : 'h2'}
-                        color="primary.main"
+                        color="text.tab.label.primary"
                       >
                         {title}
                       </Typography>

@@ -1,17 +1,23 @@
 export const palette = {
   text: {
-    primary: '#212130',
+    primary: '#39413e',
     secondary: '#4F4F4F',
     disabled: '#C3C9D2',
     cancelled: '#D91B1B',
+    tab: {
+      label: {
+        primary: '#39413e',
+        secondary: '#4F4F4F'
+      }
+    } 
   },
   primary: {
-    main: '#061B74',
+    main: '#1f4638',
     contrast: '#FFFFFF',
     contrastText: '#FFFFFF',
   },
   secondary: {
-    main: '#2169F5',
+    main: '#1F4625',
     contrast: '#FFFFFF',
     contrastText: '#FFFFFF',
   },
@@ -41,7 +47,7 @@ export const palette = {
     focus: 'rgba(0, 0, 0, 0.12)',
   },
   background: {
-    default: '#15376A',
+    default: '#f8faf9',
     paper: '#FFFFFF',
     cancelled: '#FCBDBD',
   },
@@ -50,14 +56,14 @@ export const palette = {
 
 export const otherColors = {
   appointmentInfoBackground: '#8F66EF',
-  appbarBackground: '#0A2143',
+  appbarBackground: '#f8faf9',
   background: '#5324BE',
   borderGray: '#D6D8DF',
   borderLightBlue: '#4294F3',
   checkIcon: '#7045F2',
   clearImage: '#EB5757',
-  coachingVisit: '#aed4fc',
-  lightBlue: '#E2F0FF',
+  coachingVisit: '#caf7e7',
+  lightBlue: '#f8faf9',
   darkPurple: '#301367',
   brightPurple: '#2169F5',
   darkGreen: '#0F5A4C',

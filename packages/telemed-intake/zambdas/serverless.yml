@@ -476,7 +476,7 @@ functions:
     events:
       - http:
           path: zambda/get-patient-subscription-status/execute
-          method: GET
+          method: POST
     timeout: 25
     environment:
       AUTH0_ENDPOINT: ${file(./.env/${self:provider.stage}.json):AUTH0_ENDPOINT}

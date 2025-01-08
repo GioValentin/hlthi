@@ -80,6 +80,7 @@ const ZAMBDAS: { [name: string]: DeployZambda } = {
   'ICD-SEARCH': {
     type: 'http_auth',
   },
+  
   // 'COMMUNICATION-SUBSCRIPTION': {
   //   type: 'subscription',
   //   subscriptionDetails: [

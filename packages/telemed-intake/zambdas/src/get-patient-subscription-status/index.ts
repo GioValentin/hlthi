@@ -10,7 +10,8 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     const validatedParameters = validateRequestParameters(input);
     const { 
       secrets,
-      patientId 
+      dob,
+      email
     } = validatedParameters;
     console.groupEnd();
     
@@ -23,48 +24,54 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
 
     try {
 
-      const customers = await stripe.customers.search({
-        query: 'metadata[\'patient_id\']:\''+patientId+'\'',
-        limit: 1
-      });
-
-      // Check if a customer exists
-      if(customers.data.length == 0) 
-      {
-        return {
-          statusCode: 200,
-          body: JSON.stringify(response)
-        }
-
-      } else {
-
-        const subscriptions = await stripe.subscriptions.list({
-          customer: customers.data[0].id,
-          status: 'active'
+        const customers = await stripe.customers.search({
+          query: 'metadata[\'date_of_birth\']:\''+dob+'\' AND email:\'' + email+'\'',
+          limit: 1
         });
+  
+        // Check if a customer exists
+        if(customers.data.length == 0) 
+        {
+          console.log("Did not find customer: " + email + " DOB: " + dob);
+          return {
+            statusCode: 200,
+            body: JSON.stringify(response)
+          }
+  
+        } else {
+          
+          console.debug('Looking for subscriptions');
 
-        if(subscriptions.data.length == 0) {
-          const lookForTrials = await stripe.subscriptions.list({
+          const subscriptions = await stripe.subscriptions.list({
             customer: customers.data[0].id,
-            status: 'trialing'
+            status: 'active'
           });
+  
+          if(subscriptions.data.length == 0) {
 
-          if(lookForTrials.data.length == 0) {
-            return {
-              statusCode: 200,
-              body: JSON.stringify(response)
+            console.debug('Did not find any');
+            const lookForTrials = await stripe.subscriptions.list({
+              customer: customers.data[0].id,
+              status: 'trialing'
+            });
+  
+            if(lookForTrials.data.length == 0) {
+              return {
+                statusCode: 200,
+                body: JSON.stringify(response)
+              }
             }
           }
+  
+          response.active = true;
+
+          console.debug('Active');
+  
+          return {
+            statusCode: 200,
+            body: JSON.stringify(response)
+          }
         }
-
-        response.active = true;
-
-        return {
-          statusCode: 200,
-          body: JSON.stringify(response)
-        }
-      }
-
 
     } catch (error) {
       console.error('Error while trying to get billing portal link', JSON.stringify(error));

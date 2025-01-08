@@ -38,11 +38,11 @@ const HomepageOption: FC<HomepageOptionsProps> = ({ title, icon, handleClick, su
         <Box
           sx={{ display: 'flex', flexDirection: 'column ', alignItems: 'flex-start', justifyContent: 'center', gap: 1 }}
         >
-          <Typography variant="h3" color="primary.main" sx={{ textAlign: 'left' }}>
+          <Typography variant="h3" color="text.tab.label.secondary" sx={{ textAlign: 'left' }}>
             {title}
           </Typography>
           {subtitle && (
-            <Typography variant="caption" color="primary.main" sx={{ textAlign: 'left' }}>
+            <Typography variant="caption" color="text.tab.label.secondary" sx={{ textAlign: 'left' }}>
               {subtitle}
             </Typography>
           )}

@@ -17,7 +17,7 @@ const palette = {
     main: '#1c211f',
     light: '#0000009A',
     dark: '#377DCE',
-    contrast: '#E65100',
+    contrast: '#FFFFFF',
   },
   error: {
     main: '#D32F2F',

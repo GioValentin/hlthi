@@ -1,5 +1,7 @@
 export interface GetStripeSubscriptionRequestParams {
-  patientId: string
+  patientId?: string
+  dob?: string,
+  email?: string
 }
 
 export interface GetStripeSubscriptionStatusResponse {

@@ -6,10 +6,15 @@ export function validateRequestParameters(input: ZambdaInput): BillingPortalRequ
     throw new Error('No request body provided');
   }
 
-  const { customerId } = JSON.parse(input.body);
+  const { customerId,
+    dob,
+    email
+   } = JSON.parse(input.body);
 
   return {
     customerId: customerId || '',
+    email: email || '',
+    dob: dob || '',
     secrets: input.secrets,
   };
 }

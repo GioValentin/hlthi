@@ -17,14 +17,12 @@ export const BillingPortalButton = ({ fn }: BillingPortalButtonProps): JSX.Eleme
     }
 
     const onClick = async () => {
-        console.log(patient.id)
         if (isAuthenticated) {
             try {
                 const data = await zapEHRAPIClient?.getBillingPortalLink({
-                    customerId: patient.id,
+                    dob: patient.dateOfBirth,
+                    email: patient.email
                 });
-
-                console.log('What is the patient ID:  ' + patient.id);
 
                 if (data?.url) {
                     window.open(data.url, '_blank');

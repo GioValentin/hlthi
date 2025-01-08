@@ -3,5 +3,7 @@ export interface GetPatientSubscriptionStatusResponse {
 }
 
 export interface GetPatientSubscriptionStatusRequestParams {
-  patientId: string;
+  patientId?: string;
+  dob?:string;
+  email?: string;
 }

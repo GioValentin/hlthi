@@ -66,8 +66,8 @@ export const IntakeThemeProviderBase: FC<IntakeThemeProviderProps> = (props) => 
     palette,
     otherColors,
     i18n,
-    textFonts = ['Rubik'],
-    headerFonts = ['Rubik'],
+    textFonts = ['Uncut Sans','sans-serif'],
+    headerFonts = ['Uncut Sans','sans-serif'],
     customTypographyOverrides,
   } = props;
 
@@ -77,17 +77,19 @@ export const IntakeThemeProviderBase: FC<IntakeThemeProviderProps> = (props) => 
         root: {
           display: 'flex',
           backgroundColor: otherColors.appbarBackground,
-        },
+          boxShadow: 'none'
+        }
       },
     },
     MuiButton: {
       styleOverrides: {
         root: {
-          fontSize: 16,
-          fontWeight: 700,
+          fontSize: '1.125em',
+          color:palette.text.tab.label.primary,
+          fontWeight: 300,
           fontFamily: textFonts.join(','),
           textTransform: 'none',
-          lineHeight: '140%',
+          lineHeight: '1.35em',
           '&:not($sizeLarge):not($sizeSmall) $label': {
             fontSize: 16,
           },
@@ -95,12 +97,12 @@ export const IntakeThemeProviderBase: FC<IntakeThemeProviderProps> = (props) => 
         },
         sizeLarge: {
           '& $label': {
-            fontSize: 17,
+            fontSize: '1.125em',
           },
         },
         sizeSmall: {
           '& $label': {
-            fontSize: 15,
+            fontSize: '1.125em',
           },
         },
       },
@@ -193,10 +195,12 @@ export const IntakeThemeProviderBase: FC<IntakeThemeProviderProps> = (props) => 
     fontFamily: textFonts.join(','),
     fontWeightMedium: 600,
     h1: {
-      fontSize: 34,
-      fontWeight: '500',
+      fontVariationSettings: '"wght" 425',
+      letterSpacing: '-.01em',
+      fontWeight: 500,
       fontFamily: headerFonts.join(','),
-      lineHeight: '140%',
+      fontSize: '3.1em',
+      lineHeight: '1.05em'
     },
     h2: {
       fontSize: 26,
@@ -241,16 +245,19 @@ export const IntakeThemeProviderBase: FC<IntakeThemeProviderProps> = (props) => 
       lineHeight: '140%',
     },
     body1: {
-      fontSize: 16,
-      fontWeight: 400,
+      fontSize: '1.125em',
+      fontWeight: 300,
+      color: palette.text.tab.label.primary,
       fontFamily: textFonts.join(','),
-      lineHeight: '140%',
+      lineHeight: '1.35em',
     },
     body2: {
-      fontSize: 16,
-      fontWeight: 400,
+      fontSize: '1.125em',
+      fontWeight: 300,
+      color: palette.text.tab.label.primary,
       fontFamily: textFonts.join(','),
-      lineHeight: '140%',
+      lineHeight: '1.35em',
+      fontVariationSettings: '"wght" 550'
     },
     button: {},
     caption: {

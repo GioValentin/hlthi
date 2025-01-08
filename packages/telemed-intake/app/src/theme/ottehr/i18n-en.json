@@ -29,7 +29,7 @@
     },
     "loading": "loading...",
     "patientBirthday": "Birthday: {{formattedPatientBirthDay}}",
-    "footer": "If you believe that you or your child is having a medical emergency, please dial 911 or go to the nearest emergency room."
+    "footer": "If you believe that you are having a medical emergency, please dial 911 or go to the nearest emergency room."
   },
   "callSettings": {
     "callSettings": "Call Settings",
@@ -126,9 +126,15 @@
     "html": ""
   },
   "setupBilling": {
-    "title": "Let's Setup Your Billing Details!",
-    "imgAlt": "Clock icon",
-    "message": "We're pleased to offer this new technology for accessing care. You will need to enter your information again just once. Next time you return, it will all be here for you!",
+    "title": "Let's Activate Your Account So You Can See Your Provider",
+    "imgAlt": "Money icon",
+    "message": "You're all set to meet with your provider! To confirm your visit, please submit your payment information now. It only takes a moment, and you'll be on your way to receiving expert care.",
+    "html": ""
+  },
+  "setupBillingCompleted": {
+    "title": "Completed Successfully",
+    "imgAlt": "Money icon",
+    "message": "You've successfully completed your new patient intake. Please start your visit.",
     "html": ""
   },
   "pastVisits": {
@@ -187,7 +193,7 @@
     }
   },
   "patientPortal": {
-    "title": "Welcome to Ottehr Telemedicine",
+    "title": "Welcome to HLTHi Telemedicine",
     "description": "",
     "returnToCall": "Return to Call",
     "activeCall": "Active Call",
