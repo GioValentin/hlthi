@@ -52,12 +52,21 @@ const ControlButtons: FC<ControlButtonsProps> = ({
       )}
       <LoadingButton
         variant="contained"
-        color="secondary"
+        color='primary'
         disabled={submitDisabled}
         loading={loading}
         sx={{
           // align button to right if no back button
           ml: { xs: 0, md: 'auto' },
+          backgroundColor: '#39413e', // Set button background to black
+          color: 'white', // Set text color to white
+          '&:hover': {
+            backgroundColor: '#333', // Optional: Slightly lighter black for hover effect
+          },
+          '&:disabled': {
+            backgroundColor: '#aaa', // Optional: Grey background when disabled
+            color: '#fff', // Ensure text is still visible
+          },
         }}
         size="large"
         type="submit"

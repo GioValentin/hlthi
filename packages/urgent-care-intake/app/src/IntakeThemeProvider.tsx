@@ -65,6 +65,11 @@ export const palette = {
   success: {
     main: '#66BA70',
   },
+  continue: {
+    main: '#39413e',
+    contrast: '#39413e',
+    contrastText: '#FFFFFF',
+  },
   warning: {
     main: '#FFDF9A',
   },

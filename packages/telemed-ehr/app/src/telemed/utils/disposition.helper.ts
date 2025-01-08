@@ -168,15 +168,15 @@ export const dispositionCheckboxOptions = [
 export const labServiceOptions = [
   {
     label: 'COVID PCR',
-    note: 'Based on our medical evaluation, you will undergo COVID-19 PCR testing. You will be provided with additional instructions to access your patient portal and view test results during your in-person visit at our office. The Ottehr Telemedicine app is available daily beginning at 8AM to patients from birth through age 26 for all virtual urgent care needs. The Covid PCR test will be scheduled.',
+    note: 'Based on our medical evaluation, you will undergo COVID-19 PCR testing. You will be provided with additional instructions to access your patient portal and view test results during your in-person visit at our office. The HLTHi telemedicine app is available daily beginning at 8AM to patients from birth through age 26 for all virtual urgent care needs. The Covid PCR test will be scheduled.',
   },
   {
     label: 'COVID Rapid Antigen only',
-    note: 'Based on our medical evaluation, you will undergo a COVID-19 Rapid Antigen test. You will be provided with additional instructions to access your patient portal and view test results during your in-person visit at our office. The Ottehr Telemedicine app is available daily beginning at 8AM to patients from birth through age 26 for all virtual urgent care needs. Your Covid Rapid Antigen test will be scheduled.',
+    note: 'Based on our medical evaluation, you will undergo a COVID-19 Rapid Antigen test. You will be provided with additional instructions to access your patient portal and view test results during your in-person visit at our office. The HLTHi telemedicine app is available daily beginning at 8AM to patients from birth through age 26 for all virtual urgent care needs. Your Covid Rapid Antigen test will be scheduled.',
   },
   {
     label: 'COVID Rapid Antigen & Reflex PCR',
-    note: 'Based on our medical evaluation, you will undergo a COVID-19 Rapid Antigen test. If this rapid test is negative, a more accurate confirmatory “PCR” will be sent to the lab. You will be provided with additional instructions to access your patient portal and view test results during your in-person visit at our office. The Ottehr Telemedicine app is available daily beginning at 8AM to patients from birth through age 26 for all virtual urgent care needs. The Covid Rapid Antigen Test will be scheduled.',
+    note: 'Based on our medical evaluation, you will undergo a COVID-19 Rapid Antigen test. If this rapid test is negative, a more accurate confirmatory “PCR” will be sent to the lab. You will be provided with additional instructions to access your patient portal and view test results during your in-person visit at our office. The HLTHi telemedicine app is available daily beginning at 8AM to patients from birth through age 26 for all virtual urgent care needs. The Covid Rapid Antigen Test will be scheduled.',
   },
   { label: 'Multiple Tests', note: 'For the following tests, please proceed to Ottehr Care.' },
   {

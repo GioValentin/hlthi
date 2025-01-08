@@ -1,9 +1,9 @@
 {
     "appointment": {
         "email": {
-            "confirmation": "Appointment Confirmed - Ottehr Telemedicine",
-            "cancellation": "Appointment Cancelled - Ottehr Telemedicine",
-            "invitation": "Invitation to Join a Visit - Ottehr Telemedicine"
+            "confirmation": "Appointment Confirmed - HLTHi telemedicine",
+            "cancellation": "Appointment Cancelled - HLTHi telemedicine",
+            "invitation": "Invitation to Join a Visit - HLTHi telemedicine"
         },
         "sms": {
             "confirmation": "You're confirmed! Thanks for choosing Ottehr! Your check-in time for {{firstName}} at {{locationName}} is on {{startTime}}. Please complete your paperwork in advance to save time at check-in. To complete paperwork visit: {{paperworkUrl}}.",

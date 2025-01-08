@@ -56,7 +56,7 @@
     "callUs": "Call us: <strong>(123) 456-7890</strong>",
     "hours": "Sunday-Saturday 10am-10pm ET.",
     "moreInfo": "For wait times or more information:",
-    "moreInfoLink": "https://ottehr.com",
+    "moreInfoLink": "https://HLTHi.com",
     "moreInfoLinkText": "Click Here",
     "emergency": "If this is an emergency, please call 911."
   },
@@ -120,7 +120,7 @@
     "description": ""
   },
   "newUser": {
-    "title": "Thanks for choosing Ottehr!",
+    "title": "Thanks for choosing HLTHi!",
     "imgAlt": "Clock icon",
     "message": "We're pleased to offer this new technology for accessing care. You will need to enter your information again just once. Next time you return, it will all be here for you!",
     "html": ""
@@ -197,7 +197,7 @@
     "description": "",
     "returnToCall": "Return to Call",
     "activeCall": "Active Call",
-    "requestVisit": "Request Visit",
+    "requestVisit": "Start New Visit",
     "pastVisits": "Past Visits",
     "pastVisitsSubtitle": "School/Work Notes and Prescriptions",
     "contactSupport": "Contact Support"
@@ -218,7 +218,7 @@
     "loadingPatient": "Loading patient"
   },
   "thankYou": {
-    "title": "Thank you for choosing Ottehr Telemedicine",
+    "title": "Thank you for choosing HLTHi telemedicine",
     "description": "We look forward to helping you soon!",
     "checkInBookedTime": "Your check-in time is booked for:",
     "confirmationMessage": "You will receive a confirmation email and SMS for your upcoming check-in time shortly. If you need to make any changes, please follow the instructions in the email.",
@@ -244,7 +244,7 @@
     "cancelVisitSubtext": "You will not be charged if you cancel the visit"
   },
   "welcome": {
-    "title": "Ottehr {{visitService}}",
+    "title": "HLTHi {{visitService}}",
     "imgAlt": "Clock icon",
     "scheduleNotFound": "The schedule \"{{slug}}\" is not found",
     "scheduleNotAvailable": "The schedule \"{{slug}}\" is not available",

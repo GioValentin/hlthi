@@ -56,7 +56,7 @@
     "callUs": "Llámanos: <strong>(123) 456-7890</strong>",
     "hours": "Domingo-Sábado 10am-10pm ET.",
     "moreInfo": "Para tiempos de espera o más información:",
-    "moreInfoLink": "https://ottehr.com",
+    "moreInfoLink": "https://HLTHi.com",
     "moreInfoLinkText": "Haz clic aquí",
     "emergency": "Si es una emergencia, por favor llama al 911."
   },
@@ -120,7 +120,7 @@
     "description": ""
   },
   "newUser": {
-    "title": "¡Gracias por elegir Ottehr!",
+    "title": "¡Gracias por elegir HLTHi!",
     "imgAlt": "Ícono de reloj",
     "message": "Estamos encantados de ofrecer esta nueva tecnología para acceder a la atención. Tendrás que ingresar tu información nuevamente solo una vez. ¡La próxima vez que regreses, estará todo aquí para ti!",
     "html": ""
@@ -176,7 +176,7 @@
     }
   },
   "patientPortal": {
-    "title": "Bienvenido a Ottehr Telemedicine",
+    "title": "Bienvenido a HLTHi telemedicine",
     "description": "",
     "returnToCall": "Regresar a la llamada",
     "activeCall": "Llamada activa",
@@ -197,7 +197,7 @@
     "loadingPatient": "Cargando paciente"
   },
   "thankYou": {
-    "title": "Gracias por elegir Ottehr Telemedicine",
+    "title": "Gracias por elegir HLTHi telemedicine",
     "description": "¡Esperamos poder ayudarte pronto!",
     "checkInBookedTime": "Tu hora de check-in está reservada para:",
     "confirmationMessage": "Recibirás un correo electrónico y un SMS de confirmación para tu próxima hora de check-in en breve. Si necesitas hacer algún cambio, por favor sigue las instrucciones en el correo electrónico.",
@@ -223,7 +223,7 @@
     "cancelVisitSubtext": "No se te cobrará si cancelas la visita"
   },
   "welcome": {
-    "title": "Ottehr {{visitService}}",
+    "title": "HLTHi {{visitService}}",
     "imgAlt": "Ícono de reloj",
     "scheduleNotFound": "El horario \"{{slug}}\" no se encuentra",
     "scheduleNotAvailable": "El horario \"{{slug}}\" no está disponible",

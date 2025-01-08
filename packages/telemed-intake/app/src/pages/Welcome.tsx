@@ -130,12 +130,21 @@ const Welcome = (): JSX.Element => {
             <LoadingButton
               loading={isPatientsFetching}
               variant="contained"
-              color="secondary"
+              color="primary"
               size="large"
               className="next-button"
               type="submit"
               sx={{
                 mt: 2,
+                backgroundColor: '#39413e', // Set button background to black
+                color: 'white', // Set text color to white
+                '&:hover': {
+                  backgroundColor: '#333', // Optional: Slightly lighter black for hover effect
+                },
+                '&:disabled': {
+                  backgroundColor: '#aaa', // Optional: Grey background when disabled
+                  color: '#fff', // Ensure text is still visible
+                },
               }}
               onClick={onSubmit}
             >

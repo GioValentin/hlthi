@@ -7,7 +7,8 @@ export const palette = {
     tab: {
       label: {
         primary: '#39413e',
-        secondary: '#4F4F4F'
+        secondary: '#4F4F4F',
+        white: '#FFFFFF'
       }
     } 
   },
@@ -30,6 +31,12 @@ export const palette = {
   },
   success: {
     main: '#66BA70',
+  },
+  continue: {
+    main: '#39413e',
+    contrast: '#FFFFFF',
+    contrastText: '#FFFFFF',
+    text: '#FFFFFF'
   },
   warning: {
     main: '#FFDF9A',
@@ -90,4 +97,5 @@ export const otherColors = {
   black: '#000000',
   toolTipGrey: '#F9FAFB',
   toolTipClose: '#938B7D',
+  primary: '#39413e'
 };

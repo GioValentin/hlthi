@@ -52,7 +52,7 @@ const PastVisits = (): JSX.Element => {
         <Skeleton
           sx={{
             borderRadius: 2,
-            backgroundColor: otherColors.coachingVisit,
+            backgroundColor: otherColors.lightBlue,
             p: 8,
           }}
         />
@@ -70,13 +70,13 @@ const PastVisits = (): JSX.Element => {
                 px: 3,
                 py: 3,
                 my: 3,
-                backgroundColor: otherColors.lightPurple,
+                backgroundColor: otherColors.lightBlue,
                 cursor: appointment.appointmentStatus === 'cancelled' ? 'auto' : 'pointer',
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column ', alignItems: 'flex-start', gap: 1 }}>
-                  <Typography variant="subtitle1" color={otherColors.brightPurple}>
+                  <Typography variant="subtitle1" color={otherColors.primary}>
                     {formatVisitDate(appointment.start || '', 'visit')}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
@@ -101,7 +101,7 @@ const PastVisits = (): JSX.Element => {
                     backgroundColor: otherColors.white,
                     color: 'primary.main',
                     border: '1px solid',
-                    borderColor: otherColors.purple,
+                    borderColor: otherColors.primary,
                     borderRadius: '100px',
                     py: 1,
                     px: 2,
@@ -121,7 +121,7 @@ const PastVisits = (): JSX.Element => {
           backgroundColor: otherColors.white,
           color: 'primary.main',
           border: '1px solid',
-          borderColor: otherColors.purple,
+          borderColor: otherColors.primary,
           borderRadius: '100px',
           py: 1,
           px: 2,

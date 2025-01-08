@@ -8,5 +8,5 @@ const imageForBackground = (page: string): string => {
       return ottehrLogo;
   }
 };
-const CustomContainer = CustomContainerFactory(imageForBackground, ottehrLogo, 'Ottehr Telemedicine', <Footer />);
+const CustomContainer = CustomContainerFactory(imageForBackground, ottehrLogo, 'HLTHi telemedicine', <Footer />);
 export default CustomContainer;
