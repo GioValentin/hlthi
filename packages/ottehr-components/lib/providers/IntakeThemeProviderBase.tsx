@@ -50,6 +50,11 @@ type IntakeThemeProviderProps = PropsWithChildren & {
     };
     text: {
       disabled: string;
+      tab: {
+        label: {
+          primary: string
+        }
+      }
     };
   };
   otherColors: Record<string, string>;
@@ -85,7 +90,7 @@ export const IntakeThemeProviderBase: FC<IntakeThemeProviderProps> = (props) => 
       styleOverrides: {
         root: {
           fontSize: '1.125em',
-          color:palette.text.tab.label.primary,
+          color: palette.text.tab.label.primary,
           fontWeight: 300,
           fontFamily: textFonts.join(','),
           textTransform: 'none',

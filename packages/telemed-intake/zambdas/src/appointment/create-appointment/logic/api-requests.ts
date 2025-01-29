@@ -87,6 +87,10 @@ export const addParticipantsToConversation = async (
             ? person.telecom?.find((telecomTemp) => telecomTemp.system === 'phone')?.value
             : patient.phoneNumber,
         },
+        {
+          participantReference: `Patient/${patient.id}`,
+          channel: 'chat'
+        }
       ],
     }),
   });

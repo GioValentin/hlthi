@@ -1,6 +1,10 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { useCallback, useMemo } from 'react';
-import { SendSMSInput, SendSMSOutput } from '@zapehr/sdk';
+import { SendSMSInput, SendSMSOutput,  } from '@zapehr/sdk';
+
+export interface SendMessageOutput {
+    readonly resourceId: string;
+}
 
 export interface MessagingClient {
   sendSMS: (input: SendSMSInput) => Promise<SendSMSOutput>;

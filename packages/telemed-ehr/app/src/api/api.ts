@@ -211,6 +211,8 @@ export const getConversation = async (
       zambdaId: GET_CONVERSATION_ZAMBDA_ID,
       payload: parameters,
     });
+
+    console.log(response);
     return chooseJson(response, VITE_APP_IS_LOCAL);
   } catch (error: unknown) {
     throw new Error(JSON.stringify(error));

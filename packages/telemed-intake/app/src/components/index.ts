@@ -6,3 +6,4 @@ export * from './IconButtonContained';
 export * from './LoadingSpinner';
 export * from './VideoControls';
 export * from './VideoRoom';
+export * from './ChatCard';

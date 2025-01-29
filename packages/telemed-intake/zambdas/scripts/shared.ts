@@ -260,9 +260,6 @@ export const defaultQuestionnaire: Questionnaire = {
           type: 'choice',
           answerOption: [
             {
-              valueString: 'Parent/Guardian',
-            },
-            {
               valueString: 'Patient (Self)',
             },
           ],
@@ -331,65 +328,7 @@ export const defaultQuestionnaire: Questionnaire = {
               ],
             },
           ],
-        },
-        {
-          linkId: 'guardian-email',
-          text: 'Parent/Guardian email',
-          type: 'string',
-          required: false,
-          extension: [
-            {
-              url: 'https://fhir.zapehr.com/r4/StructureDefinitions/input-format',
-              valueString: 'Email',
-            },
-            {
-              url: 'https://fhir.zapehr.com/r4/StructureDefinitions/require-when',
-              extension: [
-                {
-                  url: 'https://fhir.zapehr.com/r4/StructureDefinitions/require-when-question',
-                  valueString: 'patient-filling-out-as',
-                },
-                {
-                  url: 'https://fhir.zapehr.com/r4/StructureDefinitions/require-when-operator',
-                  valueString: '=',
-                },
-                {
-                  url: 'https://fhir.zapehr.com/r4/StructureDefinitions/require-when-answer',
-                  valueString: 'Parent/Guardian',
-                },
-              ],
-            },
-          ],
-        },
-        {
-          linkId: 'guardian-number',
-          text: 'Parent/Guardian mobile',
-          type: 'string',
-          required: false,
-          extension: [
-            {
-              url: 'https://fhir.zapehr.com/r4/StructureDefinitions/input-format',
-              valueString: 'Phone Number',
-            },
-            {
-              url: 'https://fhir.zapehr.com/r4/StructureDefinitions/require-when',
-              extension: [
-                {
-                  url: 'https://fhir.zapehr.com/r4/StructureDefinitions/require-when-question',
-                  valueString: 'patient-filling-out-as',
-                },
-                {
-                  url: 'https://fhir.zapehr.com/r4/StructureDefinitions/require-when-operator',
-                  valueString: '=',
-                },
-                {
-                  url: 'https://fhir.zapehr.com/r4/StructureDefinitions/require-when-answer',
-                  valueString: 'Parent/Guardian',
-                },
-              ],
-            },
-          ],
-        },
+        }
       ],
     },
     {
@@ -1511,106 +1450,6 @@ export const defaultQuestionnaire: Questionnaire = {
             {
               url: 'https://fhir.zapehr.com/r4/StructureDefinitions/select-type',
               valueString: 'Radio List',
-            },
-          ],
-        },
-      ],
-    },
-    {
-      linkId: 'responsible-party-page',
-      text: 'Responsible party information',
-      type: 'group',
-      item: [
-        {
-          linkId: 'responsible-party-page-caption',
-          text: "A responsible party is the individual responsible for the visit's financial obligations. If the patient is not their own responsible party (most common), then the responsible party must be the patient's legal guardian or legal designee.",
-          type: 'display',
-          extension: [
-            {
-              url: 'https://fhir.zapehr.com/r4/StructureDefinitions/text-type',
-              valueString: 'p',
-            },
-          ],
-        },
-        {
-          linkId: 'responsible-party-relationship',
-          text: 'Relationship',
-          type: 'choice',
-          required: true,
-          answerOption: [
-            {
-              valueString: 'Self',
-            },
-            {
-              valueString: 'Legal Guardian',
-            },
-            {
-              valueString: 'Father',
-            },
-            {
-              valueString: 'Mother',
-            },
-            {
-              valueString: 'Spouse',
-            },
-          ],
-        },
-        {
-          linkId: 'responsible-party-first-name',
-          text: 'First name',
-          type: 'string',
-          required: true,
-          extension: [
-            {
-              url: 'https://fhir.zapehr.com/r4/StructureDefinitions/text-width',
-              valuePositiveInt: 6,
-            },
-          ],
-        },
-        {
-          linkId: 'responsible-party-last-name',
-          text: 'Last name',
-          type: 'string',
-          required: true,
-          extension: [
-            {
-              url: 'https://fhir.zapehr.com/r4/StructureDefinitions/text-width',
-              valuePositiveInt: 6,
-            },
-          ],
-        },
-        {
-          linkId: 'responsible-party-date-of-birth',
-          text: 'Date of birth',
-          type: 'date',
-          required: true,
-        },
-        {
-          linkId: 'responsible-party-birth-sex',
-          text: 'Birth sex',
-          type: 'choice',
-          required: true,
-          answerOption: [
-            {
-              valueString: 'Male',
-            },
-            {
-              valueString: 'Female',
-            },
-            {
-              valueString: 'Intersex',
-            },
-          ],
-        },
-        {
-          linkId: 'responsible-party-number',
-          text: 'Phone (optional)',
-          type: 'string',
-          required: false,
-          extension: [
-            {
-              url: 'https://fhir.zapehr.com/r4/StructureDefinitions/input-format',
-              valueString: 'Phone Number',
             },
           ],
         },

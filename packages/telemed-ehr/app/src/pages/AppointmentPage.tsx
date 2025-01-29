@@ -33,6 +33,9 @@ export const AppointmentPage: FC = () => {
       appointmentId: id,
     },
     (data) => {
+
+
+      console.log("WHAT IS DATA?", data);
       const questionnaireResponse = data?.find(
         (resource: FhirResource) => resource.resourceType === 'QuestionnaireResponse',
       ) as unknown as QuestionnaireResponse;
@@ -42,9 +45,13 @@ export const AppointmentPage: FC = () => {
         ) as unknown as Appointment,
         patient: data?.find((resource: FhirResource) => resource.resourceType === 'Patient') as unknown as Patient,
         location: data?.find((resource: FhirResource) => resource.resourceType === 'Location') as unknown as Location,
-        encounter: data?.find(
-          (resource: FhirResource) => resource.resourceType === 'Encounter',
-        ) as unknown as Encounter,
+        encounter: data?.find((resource: FhirResource) => {
+          if (resource.resourceType === 'Encounter') {
+            console.log('Found resource:', resource); // Log the matching resource
+          }
+        
+          return resource.resourceType === 'Encounter'; // Return the match condition
+        }) as unknown as Encounter,
         questionnaireResponse,
         patientPhotoUrls:
           (data

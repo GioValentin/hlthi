@@ -31,4 +31,5 @@ export type GetZapEHRAPIParams = {
   updateStripeCheckoutSessionZambdaID?: string;
   getStripeCheckoutZambdaID?: string;
   getPatientSubscriptionStatusZambdaID?: string;
+  getProviderZambdaID?: string;
 };

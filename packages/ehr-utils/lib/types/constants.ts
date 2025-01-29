@@ -1,4 +1,5 @@
 export const TELEMED_VIDEO_ROOM_CODE = 'chime-video-meetings';
+export const TELEMED_CHAT_ROOM_CODE = 'twilio-conversations';
 export const ERX_PATIENT_IDENTIFIER_SYSTEM = 'http://api.zapehr.com/photon-patient-id';
 
 export const PRACTITIONER_QUALIFICATION_EXTENSION_URL =

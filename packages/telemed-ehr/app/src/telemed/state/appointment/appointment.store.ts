@@ -7,6 +7,7 @@ type AppointmentState = {
   patient: Patient | undefined;
   location: Location | undefined;
   encounter: Encounter;
+  conversationEncounter: Encounter;
   questionnaireResponse: QuestionnaireResponse | undefined;
   questionnaire: Questionnaire | undefined;
   patientPhotoUrls: string[];
@@ -28,6 +29,7 @@ const APPOINTMENT_INITIAL: AppointmentState = {
   patient: undefined,
   location: undefined,
   encounter: {} as Encounter,
+  conversationEncounter: {} as Encounter,
   questionnaireResponse: undefined,
   questionnaire: undefined,
   patientPhotoUrls: [],

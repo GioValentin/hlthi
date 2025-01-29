@@ -6,6 +6,7 @@ export interface WaitingRoomState {
   estimatedTime?: number;
   encounterId?: string;
   videoRoomId?: string;
+  chatRoomId?: string;
   invites?: InvitedParticipantInfo[];
 }
 

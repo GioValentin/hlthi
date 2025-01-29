@@ -20,6 +20,7 @@ import { useIOSAppSync } from '../features/ios-communication/useIOSAppSync';
 import { UploadPhotosDialog, UploadPhotosListItemButton } from '../features/upload-photos';
 import { useGetWaitStatus, useWaitingRoomStore } from '../features/waiting-room';
 
+
 const waitingRoomDisabled = import.meta.env.VITE_APP_WAITING_ROOM_DISABLED == 'true';
 
 const WaitingRoom = (): JSX.Element => {
@@ -29,6 +30,7 @@ const WaitingRoom = (): JSX.Element => {
   const { estimatedTime } = getSelectors(useWaitingRoomStore, ['estimatedTime']);
   const [searchParams, _] = useSearchParams();
   const urlAppointmentID = searchParams.get('appointment_id');
+ 
   const location = useLocation();
   const isInvitedParticipant = location.pathname === IntakeFlowPageRoute.InvitedWaitingRoom.path;
   const { appointmentID, visitService } = getSelectors(useAppointmentStore, ['appointmentID', 'visitService']);
@@ -39,6 +41,7 @@ const WaitingRoom = (): JSX.Element => {
     if (urlAppointmentID) {
       useAppointmentStore.setState(() => ({ appointmentID: urlAppointmentID }));
     }
+
   }, [urlAppointmentID]);
 
   const { isIOSApp } = useIOSAppSync();
@@ -48,6 +51,15 @@ const WaitingRoom = (): JSX.Element => {
   const [isCallSettingsOpen, setIsCallSettingsOpen] = useState(false);
 
   useGetWaitStatus((data) => {
+
+    console.log(data);
+
+    
+    if(data.conversationId) {
+      
+      useAppointmentStore.setState(() => ({ conversationID: data.conversationId }));
+    }
+
     useWaitingRoomStore.setState(data);
     if (data.status == 'on-video') {
       if (isIOSApp && appointmentID) {

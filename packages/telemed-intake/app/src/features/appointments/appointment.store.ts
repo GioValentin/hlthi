@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 
 interface AppointmentState {
   appointmentID?: string;
+  conversationID?: string;
   appointmentDate?: string;
   visitType?: 'prebook' | 'now';
   visitService?: 'in-person' | 'telemedicine';
@@ -12,6 +13,7 @@ interface AppointmentState {
   groupID?: string;
   scheduleType?: 'location' | 'provider';
   slug?: string;
+  chat?: string;
 }
 
 const APOINTMENT_STATE_INITIAL: AppointmentState = {};

@@ -42,6 +42,8 @@ const TelemedAppointmentPageLazy = lazy(async () => {
 
 export const INSURANCES_PATH = '/telemed-admin/insurances';
 
+export const VITE_APP_ZAPEHR_PROJECT_ID = import.meta.env.VITE_APP_ZAPEHR_PROJECT_ID;
+
 const MUI_X_LICENSE_KEY = import.meta.env.VITE_APP_MUI_X_LICENSE_KEY;
 if (MUI_X_LICENSE_KEY != null) {
   LicenseInfo.setLicenseKey(MUI_X_LICENSE_KEY);

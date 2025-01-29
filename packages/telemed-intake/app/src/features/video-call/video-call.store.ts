@@ -6,7 +6,7 @@ export interface VideoCallState {
 }
 
 const VIDEO_CALL_STATE_INITIAL: VideoCallState = {
-  meetingData: null,
+  meetingData: null
 };
 
 export const useVideoCallStore = create<VideoCallState>()(() => ({

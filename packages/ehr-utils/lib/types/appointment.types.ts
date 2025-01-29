@@ -4,6 +4,8 @@ export enum ApptStatus {
   'ready' = 'ready',
   'pre-video' = 'pre-video',
   'on-video' = 'on-video',
+  'pre-chat' = 'pre-chat',
+  'on-chat' = 'on-chat',
   'unsigned' = 'unsigned',
   'complete' = 'complete',
   'cancelled' = 'cancelled',

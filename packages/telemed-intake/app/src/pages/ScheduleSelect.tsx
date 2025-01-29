@@ -5,11 +5,12 @@ import { IntakeFlowPageRoute } from '../App';
 import { otherColors } from '../IntakeThemeProvider';
 import { CustomContainer } from '../features/common';
 import { useZapEHRAPIClient } from '../utils';
-import { useGetGroups, useGetLocations, useGetProviders } from '../features/homepage';
+import { useGetGroups, useGetLocations, useGetProviders} from '../features/homepage';
 import { FieldValues, FormProvider, useForm } from 'react-hook-form';
 import { FormInputType, PageForm } from 'ottehr-components';
 import { useState } from 'react';
-import { HealthcareService, HumanName, Location, Practitioner } from 'fhir/r4';
+import { HealthcareService, Location, Practitioner } from 'fhir/r4';
+
 
 const ScheduleSelect = (): JSX.Element => {
   const methods = useForm();
@@ -17,14 +18,10 @@ const ScheduleSelect = (): JSX.Element => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const [scheduleType, setScheduleType] = useState<'Provider' | 'Location' | 'Group' | ''>('');
-  const { data: providersData, isFetching: isFetchingProviders } = useGetProviders(apiClient, Boolean(apiClient));
+  const [scheduleType] = useState<'Provider' | 'Location' | 'Group' | ''>('');
+  const {isFetching: isFetchingProviders } = useGetProviders(apiClient, Boolean(apiClient));
   const { data: locationsData, isFetching: isFetchingLocations } = useGetLocations(apiClient, Boolean(apiClient));
   const { data: groupsData, isFetching: isFetchingGroups } = useGetGroups(apiClient, Boolean(apiClient));
-
-  const convertFhirNameToDisplayName = (name: HumanName[]): string => {
-    return `${name?.[0]?.given?.[0]} ${name?.[0]?.family}`;
-  };
 
   const filterResourcesWithSlug = (
     resources: Location[] | Practitioner[] | HealthcareService[],
@@ -89,6 +86,7 @@ const ScheduleSelect = (): JSX.Element => {
     }
   ];
 
+  
   return (
     <FormProvider {...methods}>
       <CustomContainer
@@ -97,7 +95,8 @@ const ScheduleSelect = (): JSX.Element => {
         bgVariant={IntakeFlowPageRoute.PatientPortal.path}
         isFirstPage={true}
       >
-        {isFetchingProviders || isFetchingLocations || isFetchingGroups ? (
+        { 
+        isFetchingProviders || isFetchingLocations || isFetchingGroups ? (
           <Skeleton
             sx={{
               borderRadius: 2,
@@ -111,7 +110,9 @@ const ScheduleSelect = (): JSX.Element => {
             <PageForm
               formElements={formElements}
               controlButtons={{
+                
                 loading: isFetchingProviders || isFetchingLocations || isFetchingGroups,
+                
                 submitDisabled: isFetchingProviders || isFetchingLocations || isFetchingGroups,
               }}
               onSubmit={handleRequestVisit}

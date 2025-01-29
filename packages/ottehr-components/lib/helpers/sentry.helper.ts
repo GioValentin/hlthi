@@ -1,3 +1,4 @@
+
 import { captureException } from '@sentry/react';
 
 export function safelyCaptureException(error: unknown): void {

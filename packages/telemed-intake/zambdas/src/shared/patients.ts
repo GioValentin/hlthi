@@ -23,7 +23,17 @@ export async function getPatientsForUser(user: User, fhirClient: FhirClient): Pr
     ],
   });
   const resourcesTemp = resources.filter((resourceTemp) => resourceTemp.resourceType === 'Patient');
+
   return resourcesTemp as Patient[];
+}
+
+export async function getPatientUserProfile(user: User, fhirClient: FhirClient): Promise<Patient[]> {
+  const resources: Resource = await fhirClient.readResource({
+    resourceType: 'Patient',
+    resourceId: user.profile.replace('Patient/','')
+  });
+
+  return [resources] as Patient[];
 }
 
 export async function userHasAccessToPatient(user: User, patientID: string, fhirClient: FhirClient): Promise<boolean> {
@@ -31,6 +41,12 @@ export async function userHasAccessToPatient(user: User, patientID: string, fhir
   // get the ID for each patient,
   // check any of those patients match the patientID parameter,
   // if so return true otherwise return false
+
+  let patientProfile = 'Patient/' + patientID;
+  console.log(patientProfile);
+  console.log(user);
+
+  return user.profile == patientProfile; 
   return (await getPatientsForUser(user, fhirClient)).map((patientTemp) => patientTemp.id).includes(patientID);
 }
 

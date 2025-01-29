@@ -61,7 +61,7 @@ const SelectPatient = (): JSX.Element => {
         patientInfo: {
           ...selectedPatient,
           id: selectedPatient.id || undefined,
-          newPatient: false,
+          newPatient: selectedPatient.dateOfBirth == undefined ? true : false,
           dateOfBirth: DateTime.fromISO(selectedPatient.dateOfBirth || '').toString(),
           reasonForVisit: currentPatientInfo?.reasonForVisit,
         },

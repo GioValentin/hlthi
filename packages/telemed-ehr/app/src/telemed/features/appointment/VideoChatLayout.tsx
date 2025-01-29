@@ -1,4 +1,4 @@
-import { FC, useState, useRef } from 'react';
+import { FC, useState, useRef,useEffect } from 'react';
 import { Box, Card, Container, Dialog, Divider, PaperProps, useTheme } from '@mui/material';
 import PictureInPictureIcon from '@mui/icons-material/PictureInPicture';
 import PushPinIcon from '@mui/icons-material/PushPin';
@@ -13,7 +13,26 @@ type LayoutType = 'pip' | 'pinned' | 'fullscreen';
 export const VideoChatLayout: FC<PropsWithChildren> = ({ children }) => {
   const [type, setType] = useState<LayoutType>('pip');
   const nodeRef = useRef(null);
-  console.log(window.innerHeight);
+  const [videoPosition, setVideoPosition] = useState({ x: 0, y: 350 + 24 - window.innerHeight / 2});
+
+  // useEffect(() => {
+  //   const calculatePositions = () => {
+  //     setVideoPosition({
+  //       x: 0,
+  //       y: 350 + 24 - window.innerHeight / 2,
+  //     });
+
+  //     setChatPosition({
+  //       x: window.innerWidth - 500,
+  //       y: window.innerHeight / 2 - 350 - 24,
+  //     });
+  //   };
+
+  //   calculatePositions();
+  //   window.addEventListener('resize', calculatePositions);
+  //   return () => window.removeEventListener('resize', calculatePositions);
+  // }, []);
+
   if (type === 'pip') {
     return (
       <>
@@ -29,7 +48,7 @@ export const VideoChatLayout: FC<PropsWithChildren> = ({ children }) => {
               nodeRef={nodeRef}
               handle=".handle"
               bounds="parent"
-              defaultPosition={{ x: 0, y: 350 + 24 - window.innerHeight / 2 }}
+              defaultPosition={videoPosition}
             >
               <Card ref={nodeRef} {...props} sx={{ borderRadius: 2, height: '400px', width: '500px' }}></Card>
             </Draggable>
@@ -38,6 +57,7 @@ export const VideoChatLayout: FC<PropsWithChildren> = ({ children }) => {
           <VideoRoomContainer type={type} setType={setType}>
             {children}
           </VideoRoomContainer>
+
         </Dialog>
         <Box sx={{ height: '424px' }} />
       </>

@@ -34,19 +34,19 @@ function isPatientDetailsComplete(completedPaperwork: CompletedPaperwork, questi
     });
 }
 
-function isPaymentOptionComplete(completedPaperwork: CompletedPaperwork, questions: Question[]): boolean {
-  const requiredResponsesExist = questions
-    .filter((question) => {
-      return question.required;
-    })
-    .every((question) => {
-      return valueExists(completedPaperwork[question.id]);
-    });
+// function isPaymentOptionComplete(completedPaperwork: CompletedPaperwork, questions: Question[]): boolean {
+//   const requiredResponsesExist = questions
+//     .filter((question) => {
+//       return question.required;
+//     })
+//     .every((question) => {
+//       return valueExists(completedPaperwork[question.id]);
+//     });
 
-  const noInsurance = completedPaperwork['payment-option'] === 'I will pay without insurance';
+//   const noInsurance = completedPaperwork['payment-option'] === 'I will pay without insurance';
 
-  return noInsurance || requiredResponsesExist;
-}
+//   return noInsurance || requiredResponsesExist;
+// }
 
 function isResponsiblePartyComplete(completedPaperwork: CompletedPaperwork, questions: Question[]): boolean {
   return questions
@@ -135,8 +135,8 @@ export function isPaperworkPageComplete(
       return isContactInformationComplete(completedPaperwork);
     case 'patient-details':
       return isPatientDetailsComplete(completedPaperwork, questions);
-    case 'payment-option':
-      return isPaymentOptionComplete(completedPaperwork, questions);
+    // case 'payment-option':
+    //   return isPaymentOptionComplete(completedPaperwork, questions);
     case 'responsible-party':
       return isResponsiblePartyComplete(completedPaperwork, questions);
     case 'photo-id':

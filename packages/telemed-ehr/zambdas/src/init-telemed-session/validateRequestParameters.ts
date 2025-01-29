@@ -18,9 +18,10 @@ export function validateRequestParameters(
     throw new Error('These fields are required: "userName"');
   }
 
+  
   return {
     appointmentId: appointmentId,
     userId: userId,
-    secrets: input.secrets,
+    secrets: input.secrets
   };
 }

@@ -6,12 +6,10 @@ import { usePatientInfoStore } from '../features/patient-info';
 import { useNavigate,useSearchParams } from 'react-router-dom';
 import { useEffect,useState } from 'react';
 import { LoadingSpinner } from '../components';
-import {PageForm} from 'ottehr-components'
 import { money } from '@theme/icons';
 import { useZapEHRAPIClient } from '../utils'
 
 import { CustomContainer } from '../features/common';
-import { Console } from 'console';
 import { sleep } from 'ottehr-utils';
 
 
@@ -74,10 +72,10 @@ const SetupBilling = (): JSX.Element => {
               patientId: ''
             });
   
-            console.log(requestResponse);
             // Setup A Checkout Session
             const checkoutSession = await zapEHRAPIClient?.createStripeCheckoutSession({
-                customerId: requestResponse?.id || '',
+                
+                customerId: requestResponse.id || '',
                 mode: 'subscription',
                 return_url: 'https://portal.hlthi.life/setup-billing',
                 success_url: 'https://portal.hlthi.life/waiting-room?appointment_id=', // Add Appointment Ref,

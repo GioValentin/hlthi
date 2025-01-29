@@ -15,6 +15,7 @@ import {
   GetTelemedAppointmentsResponse,
   InviteParticipantRequestParameters,
   JoinCallRequestParameters,
+  JoinChatRoomRequestParameters,
   JoinCallResponse,
   ListInvitedParticipantsRequestParameters,
   ListInvitedParticipantsResponse,
@@ -36,8 +37,8 @@ import {
   CreateStripeCheckoutSessionResponse,
   CreateStripeCheckoutSessionRequestParams,
   GetPatientSubscriptionStatusRequestParams,
-  GetPatientSubscriptionStatusResponse
-  
+  GetPatientSubscriptionStatusResponse,
+  JoinChatRoomResponse
 } from 'ottehr-utils';
 import { ApiError, GetZapEHRAPIParams } from '../types/data';
 import { HealthcareService, Location, Practitioner } from 'fhir/r4';
@@ -66,7 +67,8 @@ enum ZambdaNames {
   'get billing portal' = 'get billing portal',
   'create stripe customer' = 'create stripe customer',
   'get patient subscription status' = 'get patient subscription status',
-  'create stripe checkout session' = 'create stripe checkout session'
+  'create stripe checkout session' = 'create stripe checkout session',
+  'get provider' = 'get provider'
 }
 
 const zambdasPublicityMap: Record<keyof typeof ZambdaNames, boolean> = {
@@ -93,7 +95,8 @@ const zambdasPublicityMap: Record<keyof typeof ZambdaNames, boolean> = {
   'get billing portal': false,
   'create stripe customer': false,
   'get patient subscription status': false,
-  'create stripe checkout session': false
+  'create stripe checkout session': false,
+  'get provider': true
 };
 
 export type ZapEHRAPIClient = ReturnType<typeof getZapEHRAPI>;
@@ -119,6 +122,8 @@ export const getZapEHRAPI = (
   getPaperworkPublic: typeof getPaperworkPublic;
   getWaitStatus: typeof getWaitStatus;
   joinCall: typeof joinCall;
+  getProvider: typeof getProvider;
+  getConversationLink: typeof getConversationLink;
   videoChatCreateInvite: typeof videoChatCreateInvite;
   videoChatCancelInvite: typeof videoChatCancelInvite;
   videoChatListInvites: typeof videoChatListInvites;
@@ -152,7 +157,8 @@ export const getZapEHRAPI = (
     getBillingPortalZambdaID,
     createStripeCustomerZambdaID,
     getPatientSubscriptionStatusZambdaID,
-    createStripeCheckoutSessionZambdaID
+    createStripeCheckoutSessionZambdaID,
+    getProviderZambdaID
   } = params;
 
   const zambdasToIdsMap: Record<keyof typeof ZambdaNames, string | undefined> = {
@@ -179,7 +185,8 @@ export const getZapEHRAPI = (
     'get billing portal':getBillingPortalZambdaID,
     'create stripe customer':createStripeCustomerZambdaID,
     'get patient subscription status': getPatientSubscriptionStatusZambdaID,
-    'create stripe checkout session': createStripeCheckoutSessionZambdaID
+    'create stripe checkout session': createStripeCheckoutSessionZambdaID,
+    'get provider': getProviderZambdaID
   };
   const isAppLocalProvided = params.isAppLocal != null;
   const isAppLocal = params.isAppLocal === 'true';
@@ -342,6 +349,65 @@ export const getZapEHRAPI = (
     return await makeZapRequest('join call', parameters);
   };
 
+  const getProvider = async (parameters: {uuid: string}): Promise<object> => {
+    return await makeZapRequest('get provider', parameters);
+  };
+
+  const getConversationLink = async (
+    token: string | null | undefined,
+    parameters: JoinChatRoomRequestParameters,
+    appointmentID: string,
+    person: Object,
+    VITE_APP_PROJECT_API_CONSOLE_URL: string, 
+    VITE_APP_ZAPEHR_PROJECT_ID: string,
+    VITE_APP_CHAT_ROOM_ENDPOINT: string
+  ): Promise<JoinChatRoomResponse> => {
+
+    if(!token) {
+      throw new Error('Failed to authenicate, are you sure you\'re logged in?');
+    }
+    
+    const url = `${VITE_APP_PROJECT_API_CONSOLE_URL}/messaging/conversation/token`;
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        authorization: `Bearer ${token}`,
+        'x-zapehr-project-id': VITE_APP_ZAPEHR_PROJECT_ID
+      }
+    };
+
+    const res = await fetch(url, options);
+    
+    if(!res.ok) {
+      throw new Error('Failed to obtain conversation token, are you sure you are allowed in?');
+    }
+
+    let to = await res.json();
+
+    console.log(parameters.conversationID);
+    console.log(parameters)
+    let requestObject = {
+      patient: person,
+      sid: parameters.conversationID,
+      appointmentId: appointmentID,
+      token: to?.token
+    };
+
+    let meetingData = {
+      tokenized: btoa(JSON.stringify(requestObject)),
+      endpoint: VITE_APP_CHAT_ROOM_ENDPOINT,
+      generatedLink: `${VITE_APP_CHAT_ROOM_ENDPOINT}?payload=${btoa(JSON.stringify(requestObject))}`
+    };
+
+    let responseData = {
+      Attendee: person,
+      Meeting: meetingData
+    } as JoinChatRoomResponse;
+
+    return Promise.resolve(responseData);
+  };
+
   const videoChatCreateInvite = async (
     parameters: InviteParticipantRequestParameters,
   ): Promise<VideoChatCreateInviteResponse> => {
@@ -421,7 +487,9 @@ export const getZapEHRAPI = (
     getBillingPortalLink,
     getPatientSubscriptionStatus,
     createStripeCheckoutSession,
-    createStripeCustomer
+    createStripeCustomer,
+    getProvider,
+    getConversationLink
   };
 };
 

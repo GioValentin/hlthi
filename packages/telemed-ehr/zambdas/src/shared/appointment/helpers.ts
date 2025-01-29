@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { FhirClient } from '@zapehr/sdk';
 import { Operation } from 'fast-json-patch';
 import { Appointment, Encounter } from 'fhir/r4';

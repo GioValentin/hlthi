@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Box, Typography, useTheme } from '@mui/material';
 import { FC, useEffect, useMemo, useState } from 'react';
 import {

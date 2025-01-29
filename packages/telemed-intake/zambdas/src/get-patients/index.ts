@@ -10,7 +10,7 @@ import {
 } from 'ottehr-utils';
 import { getM2MClientToken } from '../shared';
 import { getUser } from '../shared/auth';
-import { getPatientsForUser } from '../shared/patients';
+import { getPatientsForUser,getPatientUserProfile } from '../shared/patients';
 import { validateRequestParameters } from './validateRequestParameters';
 
 export interface GetPatientsInput {
@@ -42,8 +42,10 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     const fhirClient = createFhirClient(zapehrToken);
     console.log('getting user');
     const user = await getUser(input.headers.Authorization.replace('Bearer ', ''));
+    console.log("USER DETAILS: " +JSON.stringify(user) );
+
     console.log('getting patients for user: ' + user.name);
-    const patients = await getPatientsForUser(user, fhirClient);
+    const patients = await getPatientUserProfile(user, fhirClient);
 
     const patientsInformation = [];
     console.log('building patient information resource array');
@@ -75,10 +77,13 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
         lastName: patientTemp.name?.[0].family,
         email: email,
         emailUser: emailUser,
+        newPatient: email == undefined ? true : false,
       };
       patientsInformation.push(patient);
     }
 
+    console.log("ANY PATIENTS?");
+    console.log(patientsInformation);
     const response = {
       message: 'Successfully retrieved all patients',
       patients: patientsInformation,

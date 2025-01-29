@@ -1,6 +1,5 @@
-import { BatchInputPostRequest, BatchInputRequest, FhirClient, User } from '@zapehr/sdk';
+import { BatchInputPostRequest, BatchInputRequest, BatchInputPutRequest, FhirClient, User } from '@zapehr/sdk';
 import { APIGatewayProxyResult } from 'aws-lambda';
-import { Operation } from 'fast-json-patch';
 import {
   Appointment,
   AppointmentParticipant,
@@ -170,13 +169,13 @@ export async function createAppointment(
 ): Promise<CreateAppointmentUCTelemedResponse> {
   let maybeFhirPatient: Patient | undefined = undefined;
   let updatePatientRequest: BatchInputRequest | undefined = undefined;
-  let createPatientRequest: BatchInputPostRequest | undefined = undefined;
+  let createPatientRequest: BatchInputPostRequest | BatchInputPutRequest | undefined = undefined;
 
   let verifiedPhoneNumber: string | undefined;
   // let relatedPersonRef: string | undefined;
 
   // if it is a returning patient
-  if (patient.id) {
+  if (patient.id && patient.newPatient != true) {
     const { patient: foundPatient, verifiedPhoneNumber: foundPhoneNumber } =
       await getPatientResourceWithVerifiedPhoneNumber(patient.id, fhirClient);
     maybeFhirPatient = foundPatient;
@@ -196,6 +195,21 @@ export async function createAppointment(
     // }
 
     updatePatientRequest = await creatingPatientUpdateRequest(patient, maybeFhirPatient);
+  } else if(patient.id && patient.newPatient == true) {
+
+    const { patient: foundPatient, verifiedPhoneNumber: foundPhoneNumber } =
+      await getPatientResourceWithVerifiedPhoneNumber(patient.id, fhirClient);
+    maybeFhirPatient = foundPatient;
+
+    if (!maybeFhirPatient) {
+      throw new Error('Patient is not found in update new');
+      // return {
+      //   statusCode: 500,
+      //   body: JSON.stringify('Patient is not found'),
+      // };
+    }
+    
+    createPatientRequest = await creatingNewPatientUpdateRequest(patient, user);
   } else {
     createPatientRequest = await creatingPatientCreateRequest(patient, user);
   }
@@ -268,6 +282,91 @@ export async function createAppointment(
   };
 
   return response;
+}
+
+async function creatingNewPatientUpdateRequest(
+  patient: PatientInfo,
+  user: User,
+): Promise<BatchInputPutRequest | undefined> {
+  let createPatientRequest: BatchInputPutRequest | undefined = undefined;
+
+  if (!patient.firstName) {
+    throw new Error('First name is undefined');
+  }
+
+  console.log('building patient resource');
+  const patientResource: Patient = {
+    id: patient.id,
+    resourceType: 'Patient',
+    name: [
+      {
+        given: [patient.firstName],
+        family: patient.lastName,
+      },
+    ],
+    birthDate: removeTimeFromDate(patient.dateOfBirth ?? ''),
+    gender: patient.sex,
+    active: true,
+    extension: [
+      {
+        url: FHIR_EXTENSION.Patient.formUser.url,
+        valueString: patient.emailUser,
+      },
+    ],
+  };
+  // if (patient.emailUser === 'Parent/Guardian') {
+  //   patientResource.contact = [
+  //     {
+  //       relationship: [
+  //         {
+  //           coding: [
+  //             {
+  //               system: `${PRIVATE_EXTENSION_BASE_URL}/relationship`,
+  //               code: patient.emailUser,
+  //               display: patient.emailUser,
+  //             },
+  //           ],
+  //         },
+  //       ],
+  //       telecom: [{ system: 'email', value: patient.email }],
+  //     },
+  //   ];
+  // }
+  if (patient.emailUser === 'Patient') {
+    // if the user is the staff, which happens when using the add-patient page,
+    // user.name will not be a phone number, like it would be for a patient. In this
+    // case, we must insert the patient's phone number using patient.phoneNumber
+    // we use .startsWith('+') because the user's phone number will start with "+"
+    if (!user.name.startsWith('+')) {
+      patientResource.telecom = [
+        {
+          system: 'email',
+          value: patient.email,
+        },
+        {
+          system: 'phone',
+          value: patient.phoneNumber,
+        },
+      ];
+    } else {
+      patientResource.telecom = [
+        {
+          system: 'email',
+          value: patient.email,
+        },
+      ];
+    }
+  }
+
+  console.log('Running patient new update request for new patient resource');
+  console.log(patientResource);
+  createPatientRequest = {
+    method: 'PUT',
+    url: `/Patient/${patientResource.id}`,
+    resource: patientResource,
+  };
+
+  return createPatientRequest;
 }
 
 async function creatingPatientCreateRequest(
@@ -366,7 +465,7 @@ interface TransactionInput {
   visitType?: 'prebook' | 'now';
   visitService?: 'in-person' | 'telemedicine';
   additionalInfo?: string;
-  createPatientRequest?: BatchInputPostRequest;
+  createPatientRequest?: BatchInputPostRequest | BatchInputPutRequest;
   updatePatientRequest?: BatchInputRequest;
   scheduleType: 'location' | 'provider' | 'group';
   locationID: string;
@@ -401,11 +500,17 @@ export const performTransactionalFhirRequests = async (input: TransactionInput):
     isDemo,
   } = input;
 
+  
   if (!patient && !createPatientRequest?.fullUrl) {
+    console.log("DO WE REALLY HAVE NOT PATIENT: ");
+    console.log(patient);
+
     throw new Error('Unexpectedly have no patient and no request to make one');
   }
-  const patientRef = patient ? `Patient/${patient.id}` : createPatientRequest?.fullUrl;
 
+  
+  const patientRef = patient ? `Patient/${patient.id}` : createPatientRequest?.fullUrl;
+  
   const nowIso = DateTime.utc().toISO();
 
   const apptVirtualServiceExt: Extension = {

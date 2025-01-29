@@ -12,7 +12,7 @@
     "start:staging": "ENV=staging npm run start-skeleton",
     "start-skeleton": "sls offline --stage ${ENV} --httpPort 3000",
     "setup-zapehr-secrets": "ts-node scripts/configure-zapehr-secrets.ts ${ENV}",
-    "deploy-zambdas": "pnpm run package && ts-node scripts/deploy-zambdas.ts ${ENV}",
+    "deploy-zambdas": "pnpm run package && ts-node scripts/deploy-zambdas.ts development",
     "setup-default-locations": "ts-node scripts/setup-default-locations.ts",
     "update-permissions-for-users": "ts-node scripts/update-permissions-for-users.ts",
     "build": "tsc && sls package --stage development",

@@ -59,6 +59,9 @@ const ZAMBDAS: { [name: string]: DeployZambda } = {
   'GET-PROVIDERS': {
     type: 'http_open',
   },
+  'GET-PROVIDER': {
+    type: 'http_open',
+  },
   'GET-GROUPS': {
     type: 'http_open',
   },

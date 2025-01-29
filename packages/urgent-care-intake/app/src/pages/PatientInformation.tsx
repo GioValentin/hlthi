@@ -168,8 +168,9 @@ const PatientInformation = (): JSX.Element => {
             type: 'Radio List',
             name: 'emailUser',
             label: 'This email belongs to',
-            defaultValue: state.patientInfo?.emailUser || 'Parent/Guardian',
+            defaultValue: 'Patient',
             required: true,
+            hidden: true,
             radioOptions: [
               {
                 label: 'Parent/Guardian',

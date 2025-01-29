@@ -31,6 +31,7 @@ interface ImportMetaEnv {
   readonly VITE_APP_SAVE_PATIENT_INSTRUCTION_ZAMBDA_ID?: string;
   readonly VITE_APP_DELETE_PATIENT_INSTRUCTION_ZAMBDA_ID?: string;
   readonly VITE_APP_ICD_SEARCH_ZAMBDA_ID?: string;
+  readonly VITE_APP_ZAPEHR_PROJECT_ID?: string;
 }
 
 interface ImportMeta {

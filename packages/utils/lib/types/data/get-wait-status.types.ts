@@ -10,4 +10,5 @@ export interface WaitingRoomResponse {
   status: TelemedAppointmentStatus;
   estimatedTime?: number;
   encounterId?: string;
+  conversationId?: string;
 }

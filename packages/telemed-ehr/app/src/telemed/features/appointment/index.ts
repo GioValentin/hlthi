@@ -5,6 +5,8 @@ export * from './AppointmentTabs';
 export * from './AppointmentHeader';
 export * from './AppointmentSidePanel';
 export * from './VideoRoom';
+export * from './ChatRoom';
+export * from './ChatRoomContainer';
 export * from './VideoChatLayout';
 export * from './VideoControls';
 export * from './VideoChatContainer';

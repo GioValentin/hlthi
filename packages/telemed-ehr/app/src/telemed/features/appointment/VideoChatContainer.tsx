@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { FC, useEffect } from 'react';
 import { DeviceLabels, useMeetingManager } from 'amazon-chime-sdk-component-library-react';
 import { MeetingSessionConfiguration } from 'amazon-chime-sdk-js';

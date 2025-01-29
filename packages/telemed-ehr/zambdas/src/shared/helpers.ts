@@ -2,11 +2,13 @@ import { AppClient, BatchInputRequest, ClientConfig, FhirClient } from '@zapehr/
 import { Operation } from 'fast-json-patch';
 import { Appointment, Encounter, Person, RelatedPerson, Resource } from 'fhir/r4';
 import { DateTime } from 'luxon';
+import { v4 as uuidv4 } from 'uuid';
 import {
   EncounterVirtualServiceExtension,
   PUBLIC_EXTENSION_BASE_URL,
   Secrets,
   TELEMED_VIDEO_ROOM_CODE,
+  TELEMED_CHAT_ROOM_CODE,
   UCAppointmentInformation,
   VisitStatusHistoryEntry,
 } from 'ehr-utils';
@@ -197,6 +199,34 @@ export const getVideoRoomResourceExtension = (resource: Resource): EncounterVirt
     for (let j = 0; j < (extension?.extension?.length ?? 0); j++) {
       const internalExtension = extension.extension![j];
       if (internalExtension.url === 'channelType' && internalExtension.valueCoding?.code === TELEMED_VIDEO_ROOM_CODE) {
+        return extension as EncounterVirtualServiceExtension;
+      }
+    }
+  }
+  return null;
+};
+
+export const getChatRoomResourceExtension = (resource: Resource): EncounterVirtualServiceExtension | null => {
+  let resourcePrefix: string;
+  let castedResource;
+  if (resource.resourceType === 'Appointment') {
+    castedResource = resource as Appointment;
+    resourcePrefix = 'appointment';
+  } else if (resource.resourceType === 'Encounter') {
+    castedResource = resource as Encounter;
+    resourcePrefix = 'encounter';
+  } else {
+    return null;
+  }
+
+  for (let index = 0; index < (castedResource.extension?.length ?? 0); index++) {
+    const extension = castedResource.extension![index];
+    if (extension.url !== `${PUBLIC_EXTENSION_BASE_URL}/${resourcePrefix}-virtual-service-pre-release`) {
+      continue;
+    }
+    for (let j = 0; j < (extension?.extension?.length ?? 0); j++) {
+      const internalExtension = extension.extension![j];
+      if (internalExtension.url === 'channelType' && internalExtension.valueCoding?.code === TELEMED_CHAT_ROOM_CODE) {
         return extension as EncounterVirtualServiceExtension;
       }
     }

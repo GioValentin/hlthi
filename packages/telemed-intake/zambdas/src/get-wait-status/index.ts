@@ -1,6 +1,6 @@
 import { FhirClient, User } from '@zapehr/sdk';
 import { APIGatewayProxyResult } from 'aws-lambda';
-import { Appointment, Encounter, Location } from 'fhir/r4';
+import { Appointment, Encounter, Location, Practitioner } from 'fhir/r4';
 import { decodeJwt, jwtVerify } from 'jose';
 import {
   SecretsKeys,
@@ -10,11 +10,12 @@ import {
   getAppointmentResourceById,
   getSecret,
   getVirtualServiceResourceExtension,
+  getAddressString
 } from 'ottehr-utils';
 import { getM2MClientToken } from '../shared';
 import { estimatedTimeStatesGroups } from '../shared/appointment/constants';
 import { getUser } from '../shared/auth';
-import { getVideoEncounterForAppointment } from '../shared/encounters';
+import { getVideoEncounterForAppointment, getChatRoomEncounterForAppointment } from '../shared/encounters';
 import { convertStatesAbbreviationsToLocationIds, getAllAppointmentsByLocations } from './utils/fhir';
 import { validateRequestParameters } from './validateRequestParameters';
 import { mapStatusToTelemed } from '../shared/appointment/helpers';
@@ -95,8 +96,12 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     let videoEncounter: Encounter | undefined = undefined;
     videoEncounter = await getVideoEncounterForAppointment(appointment.id || 'Unknown', fhirClient);
 
+    let chatEncounter: Encounter | undefined = undefined;
+    chatEncounter = await getChatRoomEncounterForAppointment(appointment.id || 'Unknown', fhirClient);
+
     if (
       !videoEncounter ||
+      !chatEncounter ||
       videoEncounter.status !== 'in-progress' ||
       !getVirtualServiceResourceExtension(videoEncounter, TELEMED_VIDEO_ROOM_CODE)
     ) {
@@ -112,10 +117,12 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
       return response;
     } else {
       console.log(videoEncounter.status, appointment.status);
+
       const response = {
         statusCode: 200,
         body: JSON.stringify({
           status: mapStatusToTelemed(videoEncounter.status, appointment.status),
+          conversationId: getAddressString(chatEncounter),
           encounterId: videoEncounter?.id,
         }),
       };
@@ -129,6 +136,14 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
       body: JSON.stringify({ error: 'Internal error' }),
     };
   }
+};
+
+const readPractionerResource = async (fhirClient: FhirClient, practitionerId: string): Promise<Practitioner | undefined> => {
+  const practitioner = await fhirClient.readResource({
+    resourceType: 'Practitioner',
+    resourceId: practitionerId,
+  });
+  return practitioner as Practitioner;
 };
 
 const calculateEstimatedTime = async (

@@ -1,3 +1,4 @@
+
 import { useAuth0 } from '@auth0/auth0-react';
 import { Bundle, FhirResource, Patient } from 'fhir/r4';
 import { DateTime } from 'luxon';
@@ -12,11 +13,14 @@ import {
   SaveChartDataRequest,
   SchoolWorkNoteExcuseDocFileDTO,
   TelemedAppointmentInformation,
+  getConversationLink,
+  getAddressString
 } from 'ehr-utils';
 import { useApiClients } from '../../../hooks/useAppClients';
 import { PromiseReturnType, ZapEHRTelemedAPIClient } from '../../data';
 import { useZapEHRAPIClient } from '../../hooks/useZapEHRAPIClient';
 import { useAppointmentStore } from './appointment.store';
+import { Conversation, useChatStore } from '../chat';
 import useOttehrUser from '../../../hooks/useOttehrUser';
 import { getSelectors } from '../../../shared/store/getSelectors';
 import { CHAT_REFETCH_INTERVAL } from '../../../constants';
@@ -183,7 +187,7 @@ export const useGetTelemedAppointment = (
               name: '_revinclude:iterate',
               value: 'QuestionnaireResponse:encounter',
             },
-            { name: '_revinclude', value: 'DocumentReference:related' },
+            { name: '_revinclude', value: 'DocumentReference:related' }
           ],
         });
       }
@@ -294,6 +298,8 @@ export const useGetMeetingData = (
       const appointment = useAppointmentStore.getState();
       const token = await getAccessTokenSilently();
 
+      console.log(appointment);
+      
       if (appointment.encounter.id && token) {
         const videoTokenResp = await fetch(
           `${import.meta.env.VITE_APP_PROJECT_API_URL}/telemed/v2/meeting/${appointment.encounter.id}/join`,
@@ -321,6 +327,46 @@ export const useGetMeetingData = (
   );
 };
 
+export const useGetConversationData = (
+  getAccessTokenSilently: () => Promise<string>,
+  onSuccess: (data: Conversation) => void,
+  onError: (error: Error) => void,
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+) => {
+  return useQuery(
+    ['conversation'],
+    async () => {
+      const appointment = useAppointmentStore.getState();
+      const token = await getAccessTokenSilently();
+
+      if(appointment.conversationEncounter.id && token && getAddressString(appointment.conversationEncounter)) {
+        const data = await getConversationLink(
+          token,
+          getAddressString(appointment.conversationEncounter) ?? "",
+          appointment.conversationEncounter.id ?? "",
+          {},
+          import.meta.env?.VITE_APP_PROJECT_API_URL,
+          import.meta.env?.VITE_APP_ZAPEHR_PROJECT_ID ?? "",
+          import.meta.env?.VITE_APP_CHAT_ROOM_ENDPOINT ?? 'http://localhost:3005'
+        ); 
+
+        return {
+          id: getAddressString(appointment.conversationEncounter),
+          encounterId: appointment.conversationEncounter.id,
+          link: data?.Meeting.generatedLink
+        }
+      }
+
+      throw new Error('token or encounterId not provided');
+    },
+    {
+      enabled: false,
+      onSuccess,
+      onError,
+    },
+  );
+};
+
 export const useGetChartData = (
   { apiClient, encounterId }: { apiClient: ZapEHRTelemedAPIClient | null; encounterId?: string },
   onSuccess: (data: PromiseReturnType<ReturnType<ZapEHRTelemedAPIClient['getChartData']>>) => void,
@@ -335,6 +381,7 @@ export const useGetChartData = (
   return useQuery(
     ['telemed-get-chart-data', { apiClient, encounterId, user, isReadOnly, isAppointmentLoading }],
     () => {
+      console.log("What is the encounter ID?", encounterId);
       if (apiClient && encounterId) {
         return apiClient.getChartData({
           encounterId,

@@ -94,7 +94,7 @@ export async function createUpdateUserRelatedResources(
 
   let verifiedPhoneNumber: string | undefined = undefined;
 
-  if (!patientInfo.id && fhirPatient.id) {
+  if ((!patientInfo.id && fhirPatient.id) || (patientInfo.newPatient == true && fhirPatient.id))  {
     console.log('New patient');
     // If it is a new patient, create a RelatedPerson resource for the Patient
     // and create a Person resource if there is not one for the account
@@ -199,49 +199,49 @@ export async function creatingPatientUpdateRequest(
     }
   }
 
-  if (patient.emailUser === 'Parent/Guardian') {
-    const patientContacts = maybeFhirPatient.contact;
-    if (!patientContacts) {
-      // no existing contacts, add email
-      patientPatchOperations.push({
-        op: 'add',
-        path: '/contact',
-        value: [
-          {
-            relationship: [
-              {
-                coding: [
-                  {
-                    system: `${PRIVATE_EXTENSION_BASE_URL}/relationship`,
-                    code: patient.emailUser,
-                    display: patient.emailUser,
-                  },
-                ],
-              },
-            ],
-            telecom: [{ system: 'email', value: patient.email }],
-          },
-        ],
-      });
-    } else {
-      // check if different
-      const guardianContact = patientContacts.find((contact) =>
-        contact.relationship?.find((relationship) => relationship?.coding?.[0].code === 'Parent/Guardian'),
-      );
-      const guardianContactIdx = patientContacts.findIndex((contact) =>
-        contact.relationship?.find((relationship) => relationship?.coding?.[0].code === 'Parent/Guardian'),
-      );
-      const guardianEmail = guardianContact?.telecom?.find((telecom) => telecom.system === 'email')?.value;
-      const guardianEmailIdx = guardianContact?.telecom?.findIndex((telecom) => telecom.system === 'email');
-      if (patient.email !== guardianEmail) {
-        patientPatchOperations.push({
-          op: 'replace',
-          path: `/contact/${guardianContactIdx}/telecom/${guardianEmailIdx}`,
-          value: { system: 'email', value: patient.email },
-        });
-      }
-    }
-  }
+  // if (patient.emailUser === 'Parent/Guardian') {
+  //   const patientContacts = maybeFhirPatient.contact;
+  //   if (!patientContacts) {
+  //     // no existing contacts, add email
+  //     patientPatchOperations.push({
+  //       op: 'add',
+  //       path: '/contact',
+  //       value: [
+  //         {
+  //           relationship: [
+  //             {
+  //               coding: [
+  //                 {
+  //                   system: `${PRIVATE_EXTENSION_BASE_URL}/relationship`,
+  //                   code: patient.emailUser,
+  //                   display: patient.emailUser,
+  //                 },
+  //               ],
+  //             },
+  //           ],
+  //           telecom: [{ system: 'email', value: patient.email }],
+  //         },
+  //       ],
+  //     });
+  //   } else {
+  //     // check if different
+  //     const guardianContact = patientContacts.find((contact) =>
+  //       contact.relationship?.find((relationship) => relationship?.coding?.[0].code === 'Parent/Guardian'),
+  //     );
+  //     const guardianContactIdx = patientContacts.findIndex((contact) =>
+  //       contact.relationship?.find((relationship) => relationship?.coding?.[0].code === 'Parent/Guardian'),
+  //     );
+  //     const guardianEmail = guardianContact?.telecom?.find((telecom) => telecom.system === 'email')?.value;
+  //     const guardianEmailIdx = guardianContact?.telecom?.findIndex((telecom) => telecom.system === 'email');
+  //     if (patient.email !== guardianEmail) {
+  //       patientPatchOperations.push({
+  //         op: 'replace',
+  //         path: `/contact/${guardianContactIdx}/telecom/${guardianEmailIdx}`,
+  //         value: { system: 'email', value: patient.email },
+  //       });
+  //     }
+  //   }
+  // }
 
   if (patient.sex !== maybeFhirPatient.gender) {
     patientPatchOperations.push({

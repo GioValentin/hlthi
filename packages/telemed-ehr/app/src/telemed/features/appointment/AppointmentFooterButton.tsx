@@ -1,33 +1,42 @@
+
 import { useAuth0 } from '@auth0/auth0-react';
 import { LoadingButton } from '@mui/lab';
 import { Box, darken, styled, useTheme } from '@mui/material';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useQueryClient } from 'react-query';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ApptStatus, mapStatusToTelemed } from 'ehr-utils';
+import { ApptStatus, mapStatusToTelemed, getConversationLink, getAddressString } from 'ehr-utils';
 import { getSelectors } from '../../../shared/store/getSelectors';
 import { ConfirmationDialog } from '../../components';
 import { useGetAppointmentAccessibility } from '../../hooks';
 import { useZapEHRAPIClient } from '../../hooks/useZapEHRAPIClient';
+import { useAuthToken } from '../../../hooks/useAuthToken';
 import {
   useAppointmentStore,
   useChangeTelemedAppointmentStatusMutation,
   useGetMeetingData,
+  useGetConversationData,
   useInitTelemedSessionMutation,
   useVideoCallStore,
+  useChatStore,
 } from '../../state';
 import { updateEncounterStatusHistory } from '../../utils';
 import useOttehrUser from '../../../hooks/useOttehrUser';
+import { red } from '@mui/material/colors';
+import { Encounter } from 'fhir/r4';
+
+const VITE_APP_ZAPEHR_PROJECT_ID = import.meta.env.VITE_APP_ZAPEHR_PROJECT_ID;
+const VITE_APP_PROJECT_API_URL = import.meta.env.VITE_APP_PROJECT_API_URL;
 
 const FooterButton = styled(LoadingButton)(({ theme }) => ({
   textTransform: 'none',
   fontSize: '15px',
   fontWeight: 700,
   borderRadius: 20,
-  backgroundColor: theme.palette.primary.light,
-  '&:hover': { backgroundColor: darken(theme.palette.primary.light, 0.125) },
+  backgroundColor: theme.palette.primary.main,
+  '&:hover': { backgroundColor: darken(theme.palette.primary.main, 0.125) },
   '&.MuiLoadingButton-loading': {
-    backgroundColor: darken(theme.palette.primary.light, 0.25),
+    backgroundColor: darken(theme.palette.primary.main, 0.25),
   },
   '& .MuiLoadingButton-loadingIndicator': {
     color: darken(theme.palette.primary.contrastText, 0.25),
@@ -59,6 +68,16 @@ export const AppointmentFooterButton: FC = () => {
     },
   );
 
+  const getConversationData = useGetConversationData(
+    getAccessTokenSilently,
+    (data) => {
+      useChatStore.setState({ conversation: data });
+    },
+    () => {
+      throw new Error('Error trying to connect to patient conversation');
+    }
+  );
+
   const [buttonType, setButtonType] = useState<'assignMe' | 'connectUnassign' | 'reconnect' | null>(null);
 
   const appointmentAccessibility = useGetAppointmentAccessibility('telemedicine');
@@ -73,6 +92,8 @@ export const AppointmentFooterButton: FC = () => {
     } else if (appointmentAccessibility.status === ApptStatus['on-video']) {
       setButtonType('reconnect');
     }
+
+    console.log(appointmentAccessibility.status);
   }, [appointmentAccessibility]);
 
   const onAssignMe = async (): Promise<void> => {
@@ -87,9 +108,14 @@ export const AppointmentFooterButton: FC = () => {
     await queryClient.invalidateQueries({ queryKey: ['telemed-appointment'] });
   };
 
+  const userAuthToken = useAuthToken();
+
   const onConnect = useCallback((): void => {
+    
     if (mapStatusToTelemed(encounter.status, appointment?.status) === ApptStatus['on-video']) {
       void getMeetingData.refetch({ throwOnError: true });
+      void getConversationData.refetch({throwOnError: true});
+
     } else {
       if (!apiClient || !appointment?.id) {
         throw new Error('api client not defined or userId not provided');
@@ -98,16 +124,40 @@ export const AppointmentFooterButton: FC = () => {
         { apiClient, appointmentId: appointment.id, userId: ottehrUser?.id || '' },
         {
           onSuccess: async (response) => {
-            useVideoCallStore.setState({
-              meetingData: response.meetingData,
-            });
+
             useAppointmentStore.setState({
               encounter: {
                 ...encounter,
                 status: 'in-progress',
                 statusHistory: updateEncounterStatusHistory('in-progress', encounter.statusHistory),
               },
+              conversationEncounter: response.conversation as Encounter
             });
+
+            const c = await getConversationLink(
+              userAuthToken,
+              getAddressString(response),
+              appointment.id,
+              {},
+              import.meta.env.VITE_APP_PROJECT_API_URL,
+              import.meta.env.VITE_APP_FHIR_API_URL,
+              import.meta.env.VITE_APP_CHAT_ROOM_ENDPOINT ?? "http://localhost:3005"
+            );
+
+            if(response?.conversation) {
+
+              if(response.conversation.id) {
+                useChatStore.setState({
+                  conversation: {
+                    id: getAddressString(response),
+                    encounterId: response?.conversation?.id,
+                    link: c.Meeting.generatedLink
+                  }
+                });
+              }
+            }
+            
+
           },
           onError: () => {
             throw new Error('Error trying to connect to a patient.');
@@ -167,7 +217,7 @@ export const AppointmentFooterButton: FC = () => {
         <Box sx={{ display: 'flex', gap: 1 }}>
           <ConfirmationDialog
             title="Do you want to connect to the patient?"
-            description="This action will start the video call."
+            description="This action will start the (optional) video call & chat."
             response={onConnect}
             actionButtons={{
               proceed: {

@@ -2,6 +2,7 @@ import { FhirClient } from '@zapehr/sdk';
 import { Appointment, Encounter, Location } from 'fhir/r4';
 import {
   TELEMED_VIDEO_ROOM_CODE,
+  
   getEncounterForAppointment,
   getParticipantFromAppointment,
   getVirtualServiceResourceExtension,
@@ -36,10 +37,37 @@ export const getVideoEncounterForAppointment = async (
     ],
   });
 
-  // encounter = (encounters ?? []).find((encounterTemp) =>
-  //   Boolean(getVirtualServiceResourceExtension(encounterTemp, TELEMED_VIDEO_ROOM_CODE)),
-  // );
-  encounter = encounters[0];
+  console.log(encounters);
+  
+  encounter = (encounters ?? []).find((encounterTemp) =>
+    Boolean(getVirtualServiceResourceExtension(encounterTemp, TELEMED_VIDEO_ROOM_CODE)),
+  );
+
+  //encounter = encounters[0];
+  return encounter;
+};
+
+export const getChatRoomEncounterForAppointment = async (
+  appointmentID: string,
+  fhirClient: FhirClient,
+): Promise<Encounter | undefined> => {
+  let encounter: Encounter | undefined = undefined;
+
+  const encounters: Encounter[] = await fhirClient.searchResources({
+    resourceType: 'Encounter',
+    searchParams: [
+      {
+        name: 'appointment',
+        value: `Appointment/${appointmentID}`,
+      },
+    ],
+  });
+
+  encounter = (encounters ?? []).find((encounterTemp) =>
+    Boolean(getVirtualServiceResourceExtension(encounterTemp, 'twilio-conversations')),
+  );
+
+  //encounter = encounters[0];
   return encounter;
 };
 

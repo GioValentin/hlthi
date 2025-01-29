@@ -40,6 +40,7 @@ export const useZapEHRAPIClient = (
         createStripeCheckoutSessionZambdaID: import.meta.env.VITE_APP_CREATE_CHECKOUT_SESSION_ZAMBDA_ID,
         getPatientSubscriptionStatusZambdaID: import.meta.env.VITE_APP_GET_PATIENT_SUBSCRIPTION_STATUS_ZAMBDA_ID,
         isAppLocal: import.meta.env.VITE_APP_IS_LOCAL,
+        getProviderZambdaID: import.meta.env.VITE_APP_GET_PROVIDER_ZAMBDA_ID
       },
       zambdaClient,
     );

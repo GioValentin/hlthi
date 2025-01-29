@@ -44,6 +44,7 @@ const execCreateVideoRoomRequest = async (
     method: 'POST',
   });
   if (!response.ok) {
+    console.debug(response);
     throw new Error(`Request failed to create a telemed video room: ${response.statusText}`);
   }
   const responseData = (await response.json()) as CreateTelemedVideoRoomResponse;

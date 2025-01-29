@@ -6,6 +6,15 @@ export interface InitTelemedSessionRequestParams {
 export interface InitTelemedSessionResponse {
   meetingData: MeetingData;
   encounterId: string;
+  conversation?: {
+    id: string
+  };
+}
+
+export interface InitTelemedChatSessionResponse {
+  conversation: {
+    id: string
+  }
 }
 
 export interface MeetingData {

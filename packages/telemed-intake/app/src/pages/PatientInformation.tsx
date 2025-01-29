@@ -149,6 +149,8 @@ const PatientInformation = (): JSX.Element => {
       return;
     }
 
+    console.log("Coming into here?");
+
     if (!patientInfo.id) {
       data.newPatient = patientInfo.newPatient;
     }
@@ -371,8 +373,9 @@ const PatientInformation = (): JSX.Element => {
             type: 'Radio List',
             name: 'emailUser',
             label: t('patientInfo.formElement.labels.emailOwner'),
-            defaultValue: patientInfo.emailUser || t('patientInfo.formElement.labels.emailOwnerParent'),
-            required: true,
+            defaultValue: t('patientInfo.formElement.labels.emailOwnerPatient'),
+            hidden: true,
+            required: false,
             radioOptions: [
               {
                 label: t('patientInfo.formElement.labels.emailOwnerParent'),

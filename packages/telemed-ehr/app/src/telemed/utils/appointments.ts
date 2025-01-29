@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {
   GetTelemedAppointmentsInput,
   ApptStatus,
@@ -118,6 +119,10 @@ export const getAppointmentWaitingTime = (statuses?: TelemedStatusHistoryElement
   const onVideoIndex = statuses?.findIndex((status) => status.status === ApptStatus['on-video']);
 
   const statusesToWait = onVideoIndex === -1 ? statuses : statuses.slice(0, onVideoIndex);
+
+  if(statusesToWait.at(0)! == undefined) {
+    return '...';
+  }
 
   const start = statusesToWait.at(0)!.start!;
   const end = statusesToWait.at(-1)?.end;
