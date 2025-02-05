@@ -34,8 +34,6 @@ export const AppointmentPage: FC = () => {
     },
     (data) => {
 
-
-      console.log("WHAT IS DATA?", data);
       const questionnaireResponse = data?.find(
         (resource: FhirResource) => resource.resourceType === 'QuestionnaireResponse',
       ) as unknown as QuestionnaireResponse;
@@ -73,6 +71,7 @@ export const AppointmentPage: FC = () => {
       patient: undefined,
       location: undefined,
       encounter: {} as Encounter,
+      conversationEncounter: {} as Encounter,
       questionnaireResponse: undefined,
       patientPhotoUrls: [],
       chartData: undefined,

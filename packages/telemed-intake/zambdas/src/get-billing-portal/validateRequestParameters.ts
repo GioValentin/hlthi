@@ -1,5 +1,16 @@
-import { BillingPortalRequestParams } from 'ottehr-components';
+
 import { Secrets, ZambdaInput } from 'ottehr-utils';
+export interface BillingPortalRequestParams {
+  customerId?: string
+  dob?: string,
+  email?: string
+}
+
+export interface BillingPortalResponse {
+  customer: object,
+  return_url: string,
+  url: string
+}
 
 export function validateRequestParameters(input: ZambdaInput): BillingPortalRequestParams & { secrets: Secrets | null } {
   if (!input.body) {

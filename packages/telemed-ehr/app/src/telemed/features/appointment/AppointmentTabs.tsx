@@ -9,6 +9,7 @@ import { useExamObservations } from '../../hooks/useExamObservations';
 import { AssessmentTab } from './AssessmentTab';
 import { PlanTab } from './PlanTab';
 import { ReviewTab } from './ReviewTab';
+import { MessageTab } from './MessageTab';
 
 export const AppointmentTabs: FC = () => {
   const apiClient = useZapEHRAPIClient();
@@ -50,6 +51,9 @@ export const AppointmentTabs: FC = () => {
       </TabPanel>
       <TabPanel value="sign" sx={{ p: 0 }}>
         <ReviewTab />
+      </TabPanel>
+      <TabPanel value="view_chat" sx={{ p: 0 }}>
+        <MessageTab />
       </TabPanel>
     </TabContext>
   );

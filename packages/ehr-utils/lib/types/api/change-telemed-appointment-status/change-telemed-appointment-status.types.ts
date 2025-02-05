@@ -4,6 +4,7 @@ import { TelemedCallStatuses } from '../../appointment.types';
 export interface ChangeTelemedAppointmentStatusInput {
   appointmentId: string;
   newStatus: TelemedCallStatuses;
+  chat?: boolean | null
   secrets: Secrets | null;
 }
 

@@ -4,7 +4,7 @@ import { Box, Tab, Typography } from '@mui/material';
 import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
 import { getSelectors } from '../../../shared/store/getSelectors';
 import { useAppointmentStore } from '../../state';
-import { ContractEditIcon, DiagnosisIcon, PatientListIcon, StethoscopeIcon } from '../../assets';
+import { ContractEditIcon, DiagnosisIcon, PatientListIcon, StethoscopeIcon, ChatOutlinedIcon} from '../../assets';
 
 export const AppointmentTabsHeader: FC = () => {
   const { currentTab } = getSelectors(useAppointmentStore, ['currentTab']);
@@ -64,6 +64,15 @@ export const AppointmentTabsHeader: FC = () => {
             </Box>
           }
           value="sign"
+        />
+        <Tab
+          label={
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+              <ChatOutlinedIcon />
+              <Typography sx={{ textTransform: 'none', fontWeight: 700, fontSize: '14px' }}>Messages & IM</Typography>
+            </Box>
+          }
+          value="view_chat"
         />
       </TabList>
     </TabContext>

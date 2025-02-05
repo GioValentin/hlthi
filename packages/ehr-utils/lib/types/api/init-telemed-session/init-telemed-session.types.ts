@@ -1,3 +1,4 @@
+import { Encounter } from 'fhir/r4';
 export interface InitTelemedSessionRequestParams {
   appointmentId: string;
   userId: string;
@@ -6,8 +7,14 @@ export interface InitTelemedSessionRequestParams {
 export interface InitTelemedSessionResponse {
   meetingData: MeetingData;
   encounterId: string;
+}
+
+
+export interface InitChatTelemedSessionResponse {
+  encounter: Encounter;
   conversation?: {
-    id: string
+    id: string,
+    link: string
   };
 }
 

@@ -11,6 +11,7 @@ export type GetZapEHRTelemedAPIParams = {
   savePatientInstructionZambdaID?: string;
   deletePatientInstructionZambdaID?: string;
   icdSearchZambdaId?: string;
+  initChatTelemedSessionZambdaID?: string;
 };
 
 export interface ApiError {

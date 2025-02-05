@@ -347,7 +347,7 @@ export const useGetConversationData = (
           {},
           import.meta.env?.VITE_APP_PROJECT_API_URL,
           import.meta.env?.VITE_APP_ZAPEHR_PROJECT_ID ?? "",
-          import.meta.env?.VITE_APP_CHAT_ROOM_ENDPOINT ?? 'http://localhost:3005'
+          import.meta.env?.VITE_APP_CHAT_ROOM_ENDPOINT ?? 'https://chat.hlthi.life'
         ); 
 
         return {
@@ -410,7 +410,9 @@ export const useSaveChartData = () => {
         throw new Error('update disabled in read only mode');
       }
 
-      if (apiClient && encounter.id) {
+      console.log(encounter);
+      
+      if (apiClient && encounter.id ) {
         return apiClient.saveChartData({
           encounterId: encounter.id,
           ...chartDataFields,

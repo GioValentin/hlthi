@@ -16,7 +16,7 @@ import { ContainedPrimaryToggleButton } from '../../components';
 import { useTrackingBoardStore } from '../../state';
 import { TrackingBoardTabs } from './TrackingBoardTabs';
 
-const PROVIDER_CONTACTS = ['(123) 456-7890', '(123) 456-7850', 'example@ottehr.com'];
+const PROVIDER_CONTACTS = ['813-335-6791'];
 
 export function TrackingBoardBody(): ReactElement {
   const { alignment, setAlignment } = getSelectors(useTrackingBoardStore, ['alignment', 'setAlignment']);

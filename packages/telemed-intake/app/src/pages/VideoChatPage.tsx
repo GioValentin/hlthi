@@ -3,7 +3,7 @@ import { Container, Typography } from '@mui/material';
 import { useSearchParams } from 'react-router-dom';
 import { getSelectors } from 'ottehr-utils';
 import { IntakeFlowPageRoute } from '../App';
-import { CallSideCard, LoadingSpinner, VideoRoom,ChatCard } from '../components';
+import { CallSideCard, LoadingSpinner, VideoRoom } from '../components';
 import { useAppointmentStore } from '../features/appointments';
 import { CustomContainer } from '../features/common';
 import { useJoinCall, useVideoCallStore } from '../features/video-call';
@@ -69,9 +69,6 @@ const VideoChatPage: FC = () => {
       <Container maxWidth="xl" sx={{ display: 'flex', gap: 3, alignItems: 'flex-start' }}>
         <VideoRoom />
         <CallSideCard />
-      </Container>
-      <Container maxWidth="xl"  sx={{ marginTop: 10, display: 'flex', gap: 3, alignItems: 'flex-start', height: 900}}>
-        <ChatCard />
       </Container>
     </CustomContainer>
   );

@@ -7,3 +7,4 @@ export * from './LoadingSpinner';
 export * from './VideoControls';
 export * from './VideoRoom';
 export * from './ChatCard';
+export * from './ChatSideCard';

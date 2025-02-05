@@ -40,6 +40,7 @@ export enum TelemedAppointmentStatusEnum {
   'ready' = 'ready',
   'pre-video' = 'pre-video',
   'on-video' = 'on-video',
+  'on-chat' = 'on-chat',
   'unsigned' = 'unsigned',
   'complete' = 'complete',
   'cancelled' = 'cancelled',

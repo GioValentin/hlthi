@@ -100,6 +100,7 @@ export const AppointmentPage: FC = () => {
     },
     (data) => {
       
+      
       const conversationEncounter = data?.find((resource: FhirResource) => {
         // Check if the resource is of type 'Encounter'
         if (resource.resourceType === 'Encounter') {
@@ -114,40 +115,6 @@ export const AppointmentPage: FC = () => {
         }
         return false; // Exclude non-matching resources
       }) as unknown as Encounter
-
-      if(conversationEncounter) {
-
-        const getLink = async () => {
-          const response = await getConversationLink(
-            user,
-            getAddressString(conversationEncounter),
-            id,
-            {},
-            import.meta.env.VITE_APP_PROJECT_API_URL,
-            import.meta.env.VITE_APP_FHIR_API_URL,
-            import.meta.env.VITE_APP_CHAT_ROOM_ENDPOINT ?? "http://localhost:3005"
-          );
-
-          return response.Meeting.generatedLink;
-        };
-        
-        const setConversation = async () => {
-          const link = await getLink();
-        
-          useChatStore.setState({
-            conversation: {
-              id: getAddressString(conversationEncounter),
-              encounterId: conversationEncounter.id,
-              link: link,
-            },
-          });
-        };
-        
-        // Call the function to set the state
-        setConversation();
-
-
-      }
 
       const questionnaireResponse = data?.find(
         (resource: FhirResource) => resource.resourceType === 'QuestionnaireResponse',
@@ -266,15 +233,6 @@ export const AppointmentPage: FC = () => {
               </MeetingProvider>
             </ThemeProvider>
           )}
-
-          { conversation?.link && (
-
-            <ThemeProvider theme={lightTheme}>
-              <GlobalStyles/>
-              <ChatRoomContainer/>
-            </ThemeProvider>
-          )}
-
 
           <Box sx={{ width: '100%' }}>
             <AppointmentTabs />

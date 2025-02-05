@@ -4,6 +4,7 @@ import { ExamCardsNames, ExamFieldsNames, SNOMEDCodeConceptInterface, SCHOOL_WOR
 import { examCardsMap, examFieldsMap } from 'ehr-utils/lib/types/api/chart-data/exam-fields-map';
 import { checkOrCreateM2MClientToken, createFhirClient } from '../shared/helpers';
 import { ZambdaInput } from '../types';
+
 import {
   filterServiceRequestsFromFhir,
   followUpToPerformerMap,
@@ -12,7 +13,7 @@ import {
   validateBundleAndExtractSavedChartData,
 } from './helpers';
 import { validateRequestParameters } from './validateRequestParameters';
-import { CodeableConcept, DocumentReference, Encounter, FhirResource, Patient } from 'fhir/r4';
+import { Bundle, BundleEntry, CodeableConcept, DocumentReference, Encounter, FhirResource, Patient } from 'fhir/r4';
 // import { createschoolWorkNotePDF } from '../shared/pdf/pdf';
 import {
   createCodingCode,
@@ -38,10 +39,20 @@ import { createSchoolWorkNotePDF } from '../shared/pdf/pdf';
 // Lifting up value to outside of the handler allows it to stay in memory across warm lambda invocations
 let m2mtoken: string;
 
+export const chunkArray = (arr: any, size: any) => {
+  const chunks = [];
+  for (let i = 0; i < arr.length; i += size) {
+      chunks.push(arr.slice(i, i + size));
+  }
+  return chunks;
+}
+
 export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> => {
   try {
-    console.log(`Input: ${JSON.stringify(input)}`);
+    
     console.log('Validating input');
+
+    
     const {
       encounterId,
       chiefComplaint,
@@ -81,8 +92,11 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     if (patient?.id === undefined) throw new Error(`Encounter ${encounter.id} must be associated with a patient... `);
     console.log(`Got patient with id ${patient.id}`);
 
-    const saveOrUpdateRequests: (BatchInputPostRequest | BatchInputPutRequest)[] = [];
+    let saveOrUpdateRequests: (BatchInputPostRequest | BatchInputPutRequest)[] = [];
     let updatedEncounterResource: Encounter = { ...encounter };
+
+    console.log(updatedEncounterResource.status);
+
     const additionalResourcesForResponse: FhirResource[] = [];
 
     if (chiefComplaint) {
@@ -144,9 +158,15 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
         ),
       );
     }
-
+    
     // convert ExamObservation[] to Observation(FHIR)[] and preserve FHIR resource IDs
-    examObservations?.forEach((element) => {
+
+    for(var i = 0; examObservations?.length; i++) {
+      if(i > 10) {
+        continue;
+      }
+      
+      const element = examObservations[i];
       const mappedSnomedField = examFieldsMap[element.field as ExamFieldsNames];
       const mappedSnomedCard = examCardsMap[element.field as ExamCardsNames];
       let snomedCode: SNOMEDCodeConceptInterface;
@@ -167,7 +187,7 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
       saveOrUpdateRequests.push(
         saveOrUpdateResourceRequest(makeExamObservationResource(encounterId, patient.id!, element, snomedCode)),
       );
-    });
+    }
 
     // 9. convert Medical Decision to ClinicalImpression (FHIR) and preserve FHIR resource IDs
     if (medicalDecision) {
@@ -306,11 +326,25 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     }
 
     saveOrUpdateRequests.push(saveOrUpdateResourceRequest(updatedEncounterResource));
+
+    console.debug("Saving chart");
     console.log('Starting a transaction update of chart data...');
-    const transactionBundle = await fhirClient.transactionRequest({
-      requests: saveOrUpdateRequests,
-    });
-    console.log('Updated chart data as a transaction');
+
+    // const transactions = [];
+    // const chunked = chunkArray(saveOrUpdateRequests, 500);
+
+    // for(var i = 0; i < chunked.length; i++) {
+      const transactionBundle = await fhirClient.transactionRequest({
+        requests: saveOrUpdateRequests,
+      });
+
+    //   transactions.push(transactionBundle.entry);
+      
+    // }
+
+    // let bundle = {
+    //   entry: transactions.flat() as BundleEntry<FhirResource>
+    // } as Bundle
 
     const output = await validateBundleAndExtractSavedChartData(
       transactionBundle,

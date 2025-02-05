@@ -1,5 +1,19 @@
-import { CreateStripeCustomerRequestParams } from 'ottehr-components';
+
 import { Secrets, ZambdaInput } from 'ottehr-utils';
+
+
+export interface CreateStripeCustomerRequestParams {
+  email: string,
+  phone:string,
+  firstName: string,
+  lastName: string,
+  dob: string,
+  patientId: string
+}
+
+export interface CreateStripeCustomerResponse {
+  customer: object
+}
 
 export function validateRequestParameters(input: ZambdaInput): CreateStripeCustomerRequestParams & { secrets: Secrets | null } {
   if (!input.body) {

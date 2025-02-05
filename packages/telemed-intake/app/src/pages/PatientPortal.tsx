@@ -17,7 +17,7 @@ const PatientPortal = (): JSX.Element => {
   const { data: appointmentsData, isFetching } = useGetAppointments(apiClient, Boolean(apiClient));
 
   const activeAppointment = appointmentsData?.appointments.find((appointment) =>
-    ['ready', 'pre-video', 'on-video'].includes(appointment.telemedStatus),
+    ['ready', 'pre-video', 'on-video', 'on-chat'].includes(appointment.telemedStatus),
   );
 
   const { data: patientsData, isFetching: isPatientsFetching } = useGetPatients(apiClient, (data) => {

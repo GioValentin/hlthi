@@ -1,5 +1,4 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
-import { CreateStripeCheckoutSessionResponse } from 'ottehr-components';
 import { Secrets, ZambdaInput,getSecret,SecretsKeys } from 'ottehr-utils';
 import { validateRequestParameters } from './validateRequestParameters';
 import Stripe from 'stripe'

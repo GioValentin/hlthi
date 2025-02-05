@@ -1,5 +1,4 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
-import { CreateStripeCustomerResponse } from 'ottehr-components';
 import { Secrets, ZambdaInput,getSecret,SecretsKeys } from 'ottehr-utils';
 import { validateRequestParameters } from './validateRequestParameters';
 import Stripe from 'stripe'
@@ -19,7 +18,7 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
 
     const stripe = new Stripe(getSecret(SecretsKeys.STRIPE_SECRET, secrets));
 
-    const response: CreateStripeCustomerResponse = { 
+    const response = { 
         customer: {}
     };
 

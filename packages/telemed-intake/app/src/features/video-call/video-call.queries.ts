@@ -71,3 +71,53 @@ export const useJoinCall = (
     },
   );
 };
+
+export const useJoinChat = (
+  apiClient: ZapEHRAPIClient | null,
+  token: string | undefined,
+  onSuccess: (data: PromiseReturnType<Boolean>) => void,
+  setError: (err: Error) => void,
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+) => {
+  return useQuery(
+    ['join-call', apiClient, token],
+    () => {
+      
+      const { appointmentID, conversationID } = useAppointmentStore.getState();
+      const patient = usePatientInfoStore.getState();
+
+      if (apiClient && appointmentID) {
+        
+        const conversationLink = apiClient.getConversationLink(
+          
+          token,
+          {
+            conversationID: conversationID
+          },
+          appointmentID,
+          patient,
+          VITE_APP_PROJECT_API_CONSOLE_URL,
+          VITE_APP_ZAPEHR_PROJECT_ID,
+          VITE_APP_CHAT_ROOM_ENDPOINT
+        );
+
+        conversationLink.then((data) => {
+          useAppointmentStore.setState({
+            chat: data?.Meeting.generatedLink
+          });
+        });
+        
+        return true
+      }
+
+      throw new Error('api client not defined or appointmentID not provided');
+    },
+    {
+      onSuccess,
+      onError: (err: Error) => {
+        setError(err);
+        console.error('Error during executing joinCall: ', err);
+      },
+    },
+  );
+};

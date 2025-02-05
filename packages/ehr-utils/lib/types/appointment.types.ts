@@ -12,7 +12,7 @@ export enum ApptStatus {
 }
 
 export type TelemedCallStatuses = `${ApptStatus}`;
-export const TelemedCallStatusesArr = ['ready', 'pre-video', 'on-video', 'unsigned', 'complete'];
+export const TelemedCallStatusesArr = ['ready', 'pre-video', 'on-video', 'unsigned', 'complete', 'on-chat'];
 
 export const mapStatusToTelemed = (
   encounterStatus: string,
@@ -30,6 +30,8 @@ export const mapStatusToTelemed = (
       else return ApptStatus.unsigned;
     case 'cancelled':
       return ApptStatus.cancelled;
+    case 'on-chat':
+      return ApptStatus['on-chat'];
   }
   return undefined;
 };

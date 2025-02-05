@@ -48,6 +48,7 @@ export const mapStatusToTelemed = (
   encounterStatus: string,
   appointmentStatus: string | undefined,
 ): TelemedAppointmentStatus | undefined => {
+  
   switch (encounterStatus) {
     case 'planned':
       return TelemedAppointmentStatusEnum.ready;

@@ -1,8 +1,20 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
-import { BillingPortalResponse } from 'ottehr-components';
+
 import { Secrets, ZambdaInput,getSecret,SecretsKeys } from 'ottehr-utils';
 import { validateRequestParameters } from './validateRequestParameters';
 import Stripe from 'stripe'
+
+export interface BillingPortalRequestParams {
+  customerId?: string
+  dob?: string,
+  email?: string
+}
+
+export interface BillingPortalResponse {
+  customer: object,
+  return_url: string,
+  url: string
+}
 
 export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> => {
   try {

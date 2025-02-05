@@ -1,8 +1,17 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
-import { GetStripeSubscriptionStatusResponse } from 'ottehr-components';
+
 import { Secrets, ZambdaInput,getSecret,SecretsKeys } from 'ottehr-utils';
 import { validateRequestParameters } from './validateRequestParameters';
 import Stripe from 'stripe'
+export interface GetStripeSubscriptionRequestParams {
+  patientId?: string
+  dob?: string,
+  email?: string
+}
+
+export interface GetStripeSubscriptionStatusResponse {
+  active: boolean
+}
 
 export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> => {
   try {

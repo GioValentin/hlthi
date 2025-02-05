@@ -21,6 +21,7 @@ import PatientInformation from './pages/PatientInformation';
 import ReviewPaperwork from './pages/ReviewPaperwork';
 import SelectPatient from './pages/SelectPatient';
 import VideoChatPage from './pages/VideoChatPage';
+import ChatRoomPage from './pages/ChatRoomPage';
 import VisitDetails from './pages/VisitDetails';
 import SetupBilling from './pages/SetupBilling';
 import WaitingRoom from './pages/WaitingRoom';
@@ -83,6 +84,7 @@ export class IntakeFlowPageRoute {
   static readonly InvitedWaitingRoom = new IntakeFlowPageRoute('/invited-waiting-room', <WaitingRoom />);
   static readonly ReviewPaperwork = new IntakeFlowPageRoute('/review-paperwork', <ReviewPaperwork />);
   static readonly VideoCall = new IntakeFlowPageRoute('/video-call', <VideoChatPage />);
+  static readonly ChatRoom = new IntakeFlowPageRoute('/chat-room', <ChatRoomPage />);
   static readonly InvitedVideoCall = new IntakeFlowPageRoute('/invited-video-call', <VideoChatPage />);
   static readonly ThankYou = new IntakeFlowPageRoute('/thank-you', <ThankYou />);
 
@@ -163,6 +165,7 @@ function App(): JSX.Element {
                 element={IntakeFlowPageRoute.ReviewPaperwork.page}
               />
               <Route path={IntakeFlowPageRoute.VideoCall.path} element={IntakeFlowPageRoute.VideoCall.page} />
+              <Route path={IntakeFlowPageRoute.ChatRoom.path} element={IntakeFlowPageRoute.ChatRoom.page} />
             </Route>
             {/* TODO: make IOS routes be under protected route but without custom container */}
             <Route

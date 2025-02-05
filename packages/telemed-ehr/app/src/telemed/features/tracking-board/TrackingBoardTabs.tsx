@@ -47,10 +47,10 @@ export function TrackingBoardTabs(): ReactElement {
   }, [isFetchedAfterMount]);
 
   return (
-    <Box sx={{ width: '100%', marginTop: 3 }}>
+    <Box sx={{ width: '100%', marginTop: 5 }}>
       <TabContext value={value}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <TabList onChange={handleChange} aria-label="appointment tabs">
+        <Box sx={{ borderBottom: 1, borderColor: 'divider',}}>
+          <TabList onChange={handleChange} aria-label="appointment tabs" >
             <Tab label="Ready for provider" value={ApptTab.ready} sx={{ textTransform: 'none', fontWeight: 700 }} />
             <Tab label="Provider" value={ApptTab.provider} sx={{ textTransform: 'none', fontWeight: 700 }} />
             <Tab label="Unsigned" value={ApptTab['not-signed']} sx={{ textTransform: 'none', fontWeight: 700 }} />
@@ -58,7 +58,7 @@ export function TrackingBoardTabs(): ReactElement {
             {isFetching && <Loading />}
           </TabList>
         </Box>
-        <Paper sx={{ marginTop: 5 }}>
+        <Paper sx={{ marginTop: 5,  overflow: 'scroll', paddingTop: 5 }}>
           <TabPanel value={value} sx={{ padding: 0 }}>
             <TrackingBoardTable tab={value} />
           </TabPanel>

@@ -149,6 +149,22 @@ functions:
       PROJECT_API: ${file(./.env/${self:provider.stage}.json):PROJECT_API}
       FHIR_API: ${file(./.env/${self:provider.stage}.json):FHIR_API}
       ENVIRONMENT: ${file(./.env/${self:provider.stage}.json):ENVIRONMENT}
+  init-chat-telemed-session:
+    handler: src/init-chat-telemed-session/index.index
+    events:
+      - http:
+          path: zambda/init-chat-telemed-session/execute
+          method: POST
+    timeout: 25
+    environment:
+      PROJECT_ID: ${file(./.env/${self:provider.stage}.json):PROJECT_ID}
+      AUTH0_ENDPOINT: ${file(./.env/${self:provider.stage}.json):AUTH0_ENDPOINT}
+      URGENT_CARE_AUTH0_CLIENT: ${file(./.env/${self:provider.stage}.json):URGENT_CARE_AUTH0_CLIENT}
+      URGENT_CARE_AUTH0_SECRET: ${file(./.env/${self:provider.stage}.json):URGENT_CARE_AUTH0_SECRET}
+      AUTH0_AUDIENCE: ${file(./.env/${self:provider.stage}.json):AUTH0_AUDIENCE}
+      PROJECT_API: ${file(./.env/${self:provider.stage}.json):PROJECT_API}
+      FHIR_API: ${file(./.env/${self:provider.stage}.json):FHIR_API}
+      ENVIRONMENT: ${file(./.env/${self:provider.stage}.json):ENVIRONMENT}
   save-chart-data:
     handler: src/save-chart-data/index.index
     events:

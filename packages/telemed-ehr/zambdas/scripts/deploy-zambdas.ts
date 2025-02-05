@@ -49,6 +49,9 @@ const ZAMBDAS: { [name: string]: DeployZambda } = {
   'INIT-TELEMED-SESSION': {
     type: 'http_auth',
   },
+  'INIT-CHAT-TELEMED-SESSION': {
+    type: 'http_auth',
+  },
   'GET-USER': {
     type: 'http_auth',
   },

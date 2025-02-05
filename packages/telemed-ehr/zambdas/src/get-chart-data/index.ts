@@ -69,7 +69,7 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
   } catch (error) {
     console.log(error);
     return {
-      body: JSON.stringify({ message: 'Error saving encounter data...' }),
+      body: JSON.stringify({ message: 'Error getting encounter data...' }),
       statusCode: 500,
     };
   }

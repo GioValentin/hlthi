@@ -500,7 +500,7 @@ export const performTransactionalFhirRequests = async (input: TransactionInput):
     isDemo,
   } = input;
 
-  
+  //@ts-ignore
   if (!patient && !createPatientRequest?.fullUrl) {
     console.log("DO WE REALLY HAVE NOT PATIENT: ");
     console.log(patient);
@@ -508,7 +508,7 @@ export const performTransactionalFhirRequests = async (input: TransactionInput):
     throw new Error('Unexpectedly have no patient and no request to make one');
   }
 
-  
+  //@ts-ignore
   const patientRef = patient ? `Patient/${patient.id}` : createPatientRequest?.fullUrl;
   
   const nowIso = DateTime.utc().toISO();

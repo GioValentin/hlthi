@@ -26,6 +26,7 @@ export const changeStatusIfPossible = async (
   let appointmentPatchOp: Operation[] = [];
   let encounterPatchOp: Operation[] = [];
 
+
   switch (true) {
     case currentStatus === 'ready' && newStatus === 'pre-video': {
       encounterPatchOp = defaultEncounterOperations(newStatus, resourcesToUpdate);
@@ -51,6 +52,28 @@ export const changeStatusIfPossible = async (
       }
       break;
     }
+    case currentStatus === 'pre-video' && newStatus === 'on-chat': {
+      encounterPatchOp = defaultEncounterOperations(newStatus, resourcesToUpdate);
+      break;
+    }
+
+    case currentStatus === 'on-chat' && newStatus === 'complete':
+      encounterPatchOp = encounterOperationsWrapper(
+        newStatus,
+        resourcesToUpdate,
+        (newEncounterStatus, statusHistoryLength) => {
+          return [
+            addStatusHistoryRecordOp(statusHistoryLength, newEncounterStatus, now()),
+            changeStatusOp(newEncounterStatus),
+          ];
+        },
+      );
+      break;
+    
+      case currentStatus === 'pre-video' && newStatus === 'unsigned':
+        encounterPatchOp = defaultEncounterOperations(newStatus, resourcesToUpdate);
+        encounterPatchOp.push(addPeriodEndOp(now()));
+        break;
     case currentStatus === 'on-video' && newStatus === 'unsigned':
       encounterPatchOp = defaultEncounterOperations(newStatus, resourcesToUpdate);
       encounterPatchOp.push(addPeriodEndOp(now()));

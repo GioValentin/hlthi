@@ -1,5 +1,21 @@
-import { CreateStripeCheckoutSessionRequestParams } from 'ottehr-components';
 import { Secrets, ZambdaInput } from 'ottehr-utils';
+
+import Stripe from 'stripe';
+
+export interface CreateStripeCheckoutSessionRequestParams {
+  customerId: string;
+  customer_email: string;
+  line_items: Stripe.Checkout.SessionCreateParams.LineItem[];
+  mode: 'setup' | 'payment' | 'subscription',
+  return_url: string,
+  success_url: string
+}
+
+export interface CreateStripeCheckoutSessionResponse {
+  id?: string;
+  url?: string;
+  client_secret: string;
+}
 
 export function validateRequestParameters(input: ZambdaInput): CreateStripeCheckoutSessionRequestParams & { secrets: Secrets | null } {
   if (!input.body) {

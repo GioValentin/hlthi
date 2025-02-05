@@ -10,7 +10,7 @@ import {
 import { SecretsKeys, getSecret } from '../shared';
 import { checkOrCreateM2MClientToken, createAppClient, createFhirClient } from '../shared/helpers';
 import { ZambdaInput } from '../types';
-import { getVideoResources } from './helpers/fhir-utils';
+import { getVideoResources,getChatResources } from './helpers/fhir-utils';
 import { changeStatusIfPossible } from './helpers/helpers';
 import { postChargeIssueRequest } from './helpers/payments';
 import { validateRequestParameters } from './validateRequestParameters';
@@ -34,6 +34,7 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
       body: JSON.stringify(response),
     };
   } catch (error: any) {
+    
     console.error(JSON.stringify(error));
     return {
       statusCode: 500,
@@ -47,24 +48,72 @@ export const performEffect = async (
   appClient: AppClient,
   params: ChangeTelemedAppointmentStatusInput,
 ): Promise<ChangeTelemedAppointmentStatusResponse> => {
-  const { appointmentId, newStatus } = params;
+  const { appointmentId, newStatus, chat } = params;
 
-  const visitResources = await getVideoResources(fhirClient, appointmentId);
-  if (!visitResources) {
-    {
-      throw new Error(`Visit resources are not properly defined for appointment ${appointmentId}`);
+  if(chat == false) {
+
+    const visitResources = await getVideoResources(fhirClient, appointmentId);
+
+    if (!visitResources) {
+      {
+        throw new Error(`Visit resources are not properly defined for appointment ${appointmentId}`);
+      }
     }
-  }
 
-  if (visitResources.encounter?.subject?.reference === undefined) {
-    throw new Error(`No subject reference defined for encoutner ${visitResources.encounter?.id}`);
-  }
+    if (visitResources.encounter?.subject?.reference === undefined) {
+      throw new Error(`No subject reference defined for encoutner ${visitResources.encounter?.id}`);
+    }
 
-  console.log(
-    `appointment and encounter statuses: ${visitResources.appointment.status}, ${visitResources.encounter.status}`,
-  );
-  const currentStatus = mapStatusToTelemed(visitResources.encounter.status, visitResources.appointment.status);
-  if (currentStatus) await changeStatusIfPossible(fhirClient, appClient, visitResources, currentStatus, newStatus);
+    console.log(
+      `appointment and encounter statuses: ${visitResources.appointment.status}, ${visitResources.encounter.status}`,
+    );
+    const currentStatus = mapStatusToTelemed(visitResources.encounter.status, visitResources.appointment.status);
+
+    if (currentStatus) await changeStatusIfPossible(fhirClient, appClient, visitResources, currentStatus, newStatus);
+
+  } else {
+
+    const visitResources = await getChatResources(fhirClient, appointmentId);
+
+    if (!visitResources) {
+      {
+        throw new Error(`Visit resources are not properly defined for appointment ${appointmentId}`);
+      }
+    }
+
+    if (visitResources.encounter?.subject?.reference === undefined) {
+      throw new Error(`No subject reference defined for encoutner ${visitResources.encounter?.id}`);
+    }
+
+    console.log(
+      `appointment and encounter statuses: ${visitResources.appointment.status}, ${visitResources.encounter.status}`,
+    );
+    const currentStatus = 'on-chat'; //mapStatusToTelemed(visitResources.encounter.status, visitResources.appointment.status);
+
+    if (currentStatus) await changeStatusIfPossible(fhirClient, appClient, visitResources, currentStatus, newStatus);
+
+    const _visitResources = await getVideoResources(fhirClient, appointmentId);
+
+    if (!_visitResources) {
+      {
+        throw new Error(`Visit resources are not properly defined for appointment ${appointmentId}`);
+      }
+    }
+
+    if (_visitResources.encounter?.subject?.reference === undefined) {
+      throw new Error(`No subject reference defined for encoutner ${_visitResources.encounter?.id}`);
+    }
+
+    console.log(
+      `appointment and encounter statuses: ${_visitResources.appointment.status}, ${_visitResources.encounter.status}`,
+    );
+    const _currentStatus = 'finished';
+
+    if (_currentStatus) await changeStatusIfPossible(fhirClient, appClient, _visitResources, currentStatus, newStatus);
+
+    
+  }
+  
 
   console.debug(`Status has been changed.`);
 

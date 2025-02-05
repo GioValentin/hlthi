@@ -11,6 +11,7 @@ export const useZapEHRAPIClient = (): ReturnType<typeof getZapEHRTelemedAPI> | n
         {
           getTelemedAppointmentsZambdaID: import.meta.env.VITE_APP_GET_TELEMED_APPOINTMENTS_ZAMBDA_ID,
           initTelemedSessionZambdaID: import.meta.env.VITE_APP_INIT_TELEMED_SESSION_ZAMBDA_ID,
+          initChatTelemedSessionZambdaID: import.meta.env.VITE_APP_INIT_CHAT_TELEMED_SESSION_ZAMBDA_ID,
           getChartDataZambdaID: import.meta.env.VITE_APP_GET_CHART_DATA_ZAMBDA_ID,
           saveChartDataZambdaID: import.meta.env.VITE_APP_SAVE_CHART_DATA_ZAMBDA_ID,
           deleteChartDataZambdaID: import.meta.env.VITE_APP_DELETE_CHART_DATA_ZAMBDA_ID,

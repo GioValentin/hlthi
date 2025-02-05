@@ -2,7 +2,7 @@
 import { FhirClient } from '@zapehr/sdk';
 import { APIGatewayProxyResult } from 'aws-lambda';
 import { Appointment, Encounter } from 'fhir/r4';
-import { InitTelemedChatSessionResponse, InitTelemedSessionResponse, MeetingData, Secrets, TELEMED_VIDEO_ROOM_CODE } from 'ehr-utils';
+import { InitChatTelemedSessionResponse, Secrets, getAddressString } from 'ehr-utils';
 import { SecretsKeys, getSecret } from '../shared';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -15,6 +15,7 @@ import {
 import { ZambdaInput } from '../types';
 import { validateRequestParameters } from './validateRequestParameters';
 import { createVideoRoom } from './video-room-creation';
+import {createChatRoom} from './chat-room-creation';
 
 // Lifting up value to outside of the handler allows it to stay in memory across warm lambda invocations
 let m2mtoken: string;
@@ -35,40 +36,50 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     const { appointment, encounters } = await getAppointmentWithEncounters({ appointmentId, fhirClient });
     const appClient = createAppClient(m2mtoken, secrets);
     
-
-    // // Handle Video Encounter
-    // //if(type == 'video') {
-
     const videoEncounter = encounters.find((enc) => Boolean(getVideoRoomResourceExtension(enc)));
-    console.log(JSON.stringify(videoEncounter));
-    
-    if (!videoEncounter) {
-      throw new Error(`Appointment ${appointmentId} doesn't have virtual video encounter`);
+
+    let chatRoomEncounterResource;
+
+    let chatEncounter = encounters.find((enc) => Boolean(getChatRoomResourceExtension(enc)));
+
+    if (!chatEncounter) {
+
+      // Chat Encounter Needs to be created
+      chatRoomEncounterResource = await createChatRoom(
+        appointment,
+        videoEncounter, // Use video encounter for location etc.
+        fhirClient,
+        userId,
+        secrets,
+        appClient,
+        true
+      );
+
+    } else {
+      chatRoomEncounterResource = await createChatRoom(
+        appointment,
+        chatEncounter,
+        fhirClient,
+        userId,
+        secrets,
+        appClient,
+        false
+      );
     }
     
-    const encounterResource = await createVideoRoom(
-      appointment,
-      videoEncounter,
-      fhirClient,
-      userId,
-      secrets,
-      appClient,
-    );
+    console.debug('Chat Room Encounter');
 
-    const userToken: string = input.headers.Authorization.replace('Bearer ', '');
-    const meetingData = await execJoinVideoRoomRequest(secrets, encounterResource.id, userToken);
-
-    const output: InitTelemedSessionResponse = {
-      meetingData,
-      encounterId: encounterResource.id!
+    const output: InitChatTelemedSessionResponse = {
+      encounter: chatRoomEncounterResource,
+      conversation: {
+        id: getAddressString(chatRoomEncounterResource)
+      }
     };
 
     return {
       body: JSON.stringify(output),
       statusCode: 200,
     };
-
-   // }
 
   } catch (error) {
     console.log(error);
@@ -109,30 +120,3 @@ async function getAppointmentWithEncounters({
   ) as Encounter[];
   return { appointment: fhirAppointment, encounters };
 }
-
-const execJoinVideoRoomRequest = async (
-  secrets: Secrets | null,
-  encounterId: Encounter['id'],
-  userToken: string,
-): Promise<MeetingData> => {
-  /** HINT: for this request to work - user should have the role with access policy rules as described in
-   * https://docs.zapehr.com/reference/get_telemed-token
-   * Also user should be listed in Encounter.participants prop or other-participants extension
-   * */
-  const response = await fetch(
-    `${getSecret(SecretsKeys.PROJECT_API, secrets)}/telemed/v2/meeting/${encounterId}/join`,
-    {
-      headers: {
-        Authorization: `Bearer ${userToken}`,
-      },
-      method: 'GET',
-    },
-  );
-  if (!response.ok) {
-    console.log(response);
-    throw new Error(`Getting telemed token call failed: ${response.statusText}`);
-  }
-
-  const responseData = (await response.json()) as MeetingData;
-  return responseData;
-};

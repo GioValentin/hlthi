@@ -19,7 +19,7 @@ export enum ApptTab {
 
 export const ApptTabToStatus: Record<ApptTab, ApptStatus[]> = {
   [ApptTab.ready]: [ApptStatus.ready],
-  [ApptTab.provider]: [ApptStatus['pre-video'], ApptStatus['on-video']],
+  [ApptTab.provider]: [ApptStatus['pre-video'], ApptStatus['on-video'], ApptStatus['on-chat']],
   [ApptTab['not-signed']]: [ApptStatus.unsigned],
   [ApptTab.complete]: [ApptStatus.complete],
 };
@@ -41,6 +41,7 @@ export const updateEncounterStatusHistory = (
     | 'finished'
     | 'cancelled'
     | 'entered-in-error'
+    | 'on-chat'
     | 'unknown',
   history?: EncounterStatusHistory[],
 ): EncounterStatusHistory[] => {
@@ -168,6 +169,14 @@ export const ApptStatusToPalette: {
       primary: '#311B92',
     },
   },
+  'on-chat': {
+    background: {
+      primary: '#D1C4E9',
+    },
+    color: {
+      primary: '#311B92',
+    },
+  },
   unsigned: {
     background: {
       primary: '#FFCCBC',
@@ -228,6 +237,14 @@ export const APPT_STATUS_MAP: {
     },
   },
   'on-video': {
+    background: {
+      primary: '#D1C4E9',
+    },
+    color: {
+      primary: '#311B92',
+    },
+  },
+  'on-chat': {
     background: {
       primary: '#D1C4E9',
     },

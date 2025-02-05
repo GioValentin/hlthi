@@ -50,9 +50,6 @@ export const createChatRoom = async (
   
   const updatedEncounter = updateChatRoomEncounter(encounter)
 
-  console.log("What is the updated encounter?");
-  console.debug(JSON.stringify(updatedEncounter));
-
   const chatRoomEncounterResource = await execCreateChatRoomRequest(secrets, updatedEncounter);
 
   // Update Chat Room Participants
@@ -72,8 +69,7 @@ const execCreateChatRoomRequest =  async (
   encounter: Encounter,
 ): Promise<CreateTelemedChatRoomResponse['encounter']> => {
   const token = await getAuth0Token(secrets);
-  
-  const response = await fetch(`${getSecret(SecretsKeys.PROJECT_API, secrets)}/messaging/conversation`, {
+  const response = await fetch(`https://project-api.zapehr.com/v1/messaging/conversation`, {
     body: JSON.stringify({ encounter: encounter }),
     headers: {
       Authorization: `Bearer ${token}`
@@ -82,15 +78,12 @@ const execCreateChatRoomRequest =  async (
   });
 
   if (!response.ok) {
-    console.debug(await response.json());
     throw new Error(`Request failed to create a chat room: ${response.statusText}`);
   }
 
   let data = await response.json();
 
   const responseData = data as CreateTelemedChatRoomResponse;
-
-  console.debug(responseData);
 
   return responseData.encounter;
 };
@@ -115,13 +108,12 @@ const updateChatRoomParticipants = async (secrets: Secrets | null, encounter: st
          }),
         headers: {
             Authorization: `Bearer ${token}`,
-            'x-zapehr-project-id': '658f1e23-ed46-4b0e-b26b-34ad923d209d'
+            'x-zapehr-project-id': getSecret(SecretsKeys.PROJECT_ID, secrets)
         },
         method: 'POST',
     });
 
     if (response.status != 204) {
-      console.debug(await response.json());
       throw new Error(`Request failed to create a chat room participants: ${response.statusText}`);
     }
 
@@ -189,8 +181,6 @@ const createsChatRoomEncounter = async (
 
     };
 
-    console.log(JSON.stringify(encounter));
-
     const url = 'https://fhir-api.zapehr.com/r4b/Encounter';
     const options = {
         method: 'POST',
@@ -198,7 +188,7 @@ const createsChatRoomEncounter = async (
             accept: 'application/json',
             'content-type': 'application/json',
             authorization: `Bearer ${token}`,
-            'x-zapehr-project-id': '658f1e23-ed46-4b0e-b26b-34ad923d209d'
+            'x-zapehr-project-id': getSecret(SecretsKeys.PROJECT_ID, secrets)
         },
         body: JSON.stringify(encounter)
     };
@@ -208,11 +198,8 @@ const createsChatRoomEncounter = async (
     if(!res.ok) {
         let message = await res.json();
 
-        console.log(JSON.stringify(message));
         throw new Error('Issue creating encounter');
     }
-
-    console.log(await res.json());
 
     return encounter;
 

@@ -105,6 +105,24 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
       videoEncounter.status !== 'in-progress' ||
       !getVirtualServiceResourceExtension(videoEncounter, TELEMED_VIDEO_ROOM_CODE)
     ) {
+
+      if(chatEncounter) {
+
+        if(chatEncounter.status == 'in-progress') {
+          const response = {
+            statusCode: 200,
+            body: JSON.stringify({
+              status: 'on-chat',
+              conversationId: getAddressString(chatEncounter),
+              encounterId: videoEncounter?.id,
+            }),
+          };
+
+          return response;
+        }
+       
+      }
+
       const estimatedTime = await calculateEstimatedTime(fhirClient, appointment);
       const response = {
         statusCode: 200,

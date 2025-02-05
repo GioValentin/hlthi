@@ -25,14 +25,14 @@ export const ChatCard: FC = () => {
     <Card
       sx={{
         flex: '1 auto',
-        py: 5,
-        px: 5,
+        py: 0,
+        px: 1,
         borderRadius: 2,
         boxShadow: 0,
         position: 'relative',
         minWidth: '347px',
         width: '100%',
-        height: '900px',
+        height: '600px',
         transition: 'all 0.5s',
       }}
     >

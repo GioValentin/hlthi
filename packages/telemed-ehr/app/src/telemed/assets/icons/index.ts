@@ -4,3 +4,4 @@ export * from './ContractEdit';
 export * from './PatientList';
 export * from './icons';
 export * from './Reminder';
+export * from './ChatOutlined';

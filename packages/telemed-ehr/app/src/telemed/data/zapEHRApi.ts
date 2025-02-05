@@ -18,6 +18,7 @@ import {
   SaveChartDataResponse,
   SavePatientInstructionInput,
   SyncUserResponse,
+  InitChatTelemedSessionResponse
 } from 'ehr-utils';
 import { GetAppointmentsRequestParams } from '../utils';
 import { ApiError, GetZapEHRTelemedAPIParams } from './types';
@@ -34,6 +35,7 @@ enum ZambdaNames {
   'save patient instruction' = 'save patient instruction',
   'delete patient instruction' = 'delete patient instruction',
   'icd search' = 'icd search',
+  'init chat telemed session' = 'init chat telemed session',
 }
 
 const zambdasPublicityMap: Record<keyof typeof ZambdaNames, boolean> = {
@@ -48,6 +50,7 @@ const zambdasPublicityMap: Record<keyof typeof ZambdaNames, boolean> = {
   'save patient instruction': false,
   'delete patient instruction': false,
   'icd search': false,
+  'init chat telemed session': false
 };
 
 export type ZapEHRTelemedAPIClient = ReturnType<typeof getZapEHRTelemedAPI>;
@@ -67,6 +70,8 @@ export const getZapEHRTelemedAPI = (
   savePatientInstruction: typeof savePatientInstruction;
   deletePatientInstruction: typeof deletePatientInstruction;
   icdSearch: typeof icdSearch;
+  initChatTelemedSession: typeof initChatTelemedSession;
+  changeChatTelemedAppointmentStatus: typeof changeChatTelemedAppointmentStatus;
 } => {
   const {
     getTelemedAppointmentsZambdaID,
@@ -80,6 +85,7 @@ export const getZapEHRTelemedAPI = (
     savePatientInstructionZambdaID,
     deletePatientInstructionZambdaID,
     icdSearchZambdaId,
+    initChatTelemedSessionZambdaID,
   } = params;
 
   const zambdasToIdsMap: Record<keyof typeof ZambdaNames, string | undefined> = {
@@ -94,6 +100,7 @@ export const getZapEHRTelemedAPI = (
     'save patient instruction': savePatientInstructionZambdaID,
     'delete patient instruction': deletePatientInstructionZambdaID,
     'icd search': icdSearchZambdaId,
+    'init chat telemed session': initChatTelemedSessionZambdaID
   };
   const isAppLocalProvided = params.isAppLocal != null;
   const isAppLocal = params.isAppLocal === 'true';
@@ -159,6 +166,12 @@ export const getZapEHRTelemedAPI = (
     return await makeZapRequest('init telemed session', parameters);
   };
 
+  const initChatTelemedSession = async (
+    parameters: InitTelemedSessionRequestParams,
+  ): Promise<InitChatTelemedSessionResponse> => {
+    return await makeZapRequest('init chat telemed session', parameters);
+  };
+
   const getChartData = async (parameters: GetChartDataRequest): Promise<GetChartDataResponse> => {
     return await makeZapRequest('get chart data', parameters);
   };
@@ -174,6 +187,16 @@ export const getZapEHRTelemedAPI = (
   const changeTelemedAppointmentStatus = async (
     parameters: Omit<ChangeTelemedAppointmentStatusInput, 'secrets'>,
   ): Promise<ChangeTelemedAppointmentStatusResponse> => {
+    parameters.chat = false;
+    return await makeZapRequest('change telemed appointment status', parameters);
+  };
+
+  const changeChatTelemedAppointmentStatus = async (
+    parameters: Omit<ChangeTelemedAppointmentStatusInput, 'secrets'>,
+  ): Promise<ChangeTelemedAppointmentStatusResponse> => {
+
+    parameters.chat = true;
+
     return await makeZapRequest('change telemed appointment status', parameters);
   };
 
@@ -209,6 +232,8 @@ export const getZapEHRTelemedAPI = (
     savePatientInstruction,
     deletePatientInstruction,
     icdSearch,
+    initChatTelemedSession,
+    changeChatTelemedAppointmentStatus
   };
 };
 

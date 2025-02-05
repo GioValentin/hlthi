@@ -56,11 +56,11 @@ const WaitingRoom = (): JSX.Element => {
 
     
     if(data.conversationId) {
-      
       useAppointmentStore.setState(() => ({ conversationID: data.conversationId }));
     }
 
     useWaitingRoomStore.setState(data);
+
     if (data.status == 'on-video') {
       if (isIOSApp && appointmentID) {
         try {
@@ -76,6 +76,10 @@ const WaitingRoom = (): JSX.Element => {
       } else {
         navigate(IntakeFlowPageRoute.VideoCall.path);
       }
+    }
+
+    if(data.status == 'on-chat') {
+      navigate(IntakeFlowPageRoute.ChatRoom.path);
     }
   });
 

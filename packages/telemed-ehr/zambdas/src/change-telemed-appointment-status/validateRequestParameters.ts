@@ -9,7 +9,7 @@ export function validateRequestParameters(input: ZambdaInput): ChangeTelemedAppo
     throw new Error('No request body provided');
   }
 
-  const { appointmentId, newStatus } = JSON.parse(input.body);
+  const { appointmentId, newStatus, chat } = JSON.parse(input.body);
 
   if (appointmentId === undefined) {
     throw new Error('These fields are required: "appointmentId".');
@@ -37,6 +37,7 @@ export function validateRequestParameters(input: ZambdaInput): ChangeTelemedAppo
   return {
     appointmentId,
     newStatus,
+    chat,
     secrets: input.secrets,
   };
 }

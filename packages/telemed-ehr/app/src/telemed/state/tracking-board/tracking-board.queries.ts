@@ -66,18 +66,52 @@ export const useInitTelemedSessionMutation = () =>
   });
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const useInitChatTelemedSessionMutation = () =>
+  useMutation({
+    mutationFn: ({
+      apiClient,
+      appointmentId,
+      userId,
+    }: {
+      apiClient: ZapEHRTelemedAPIClient;
+    } & InitTelemedSessionRequestParams) => {
+      return apiClient.initChatTelemedSession({
+        appointmentId,
+        userId,
+      });
+    },
+  });
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const useChangeTelemedAppointmentStatusMutation = () =>
   useMutation({
     mutationFn: ({
       apiClient,
       appointmentId,
-      newStatus,
+      newStatus
     }: {
       apiClient: ZapEHRTelemedAPIClient;
     } & Omit<ChangeTelemedAppointmentStatusInput, 'secrets'>) => {
       return apiClient.changeTelemedAppointmentStatus({
         appointmentId,
         newStatus,
+      });
+    },
+  });
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const useChangeChatTelemedAppointmentStatusMutation = () =>
+  useMutation({
+    mutationFn: ({
+      apiClient,
+      appointmentId,
+      newStatus
+    }: {
+      apiClient: ZapEHRTelemedAPIClient;
+    } & Omit<ChangeTelemedAppointmentStatusInput, 'secrets'>) => {
+      return apiClient.changeChatTelemedAppointmentStatus({
+        appointmentId,
+        newStatus
       });
     },
   });

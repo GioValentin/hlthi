@@ -55,6 +55,8 @@ export const telemedStatusToEncounter = (telemedStatus: TelemedCallStatuses): En
       return 'arrived';
     case 'on-video':
       return 'in-progress';
+    case 'on-chat':
+      return 'in-progress';
     case 'unsigned':
       return 'finished';
     case 'complete':

@@ -14,9 +14,11 @@ import { useAuthToken } from '../../../hooks/useAuthToken';
 import {
   useAppointmentStore,
   useChangeTelemedAppointmentStatusMutation,
+  useChangeChatTelemedAppointmentStatusMutation,
   useGetMeetingData,
   useGetConversationData,
   useInitTelemedSessionMutation,
+  useInitChatTelemedSessionMutation,
   useVideoCallStore,
   useChatStore,
 } from '../../state';
@@ -44,11 +46,13 @@ const FooterButton = styled(LoadingButton)(({ theme }) => ({
 }));
 
 export const AppointmentFooterButton: FC = () => {
-  const { encounter, appointment, isAppointmentLoading } = getSelectors(useAppointmentStore, [
+  const { encounter, appointment, isAppointmentLoading, conversationEncounter } = getSelectors(useAppointmentStore, [
     'encounter',
     'appointment',
     'isAppointmentLoading',
+    'conversationEncounter'
   ]);
+
   const ottehrUser = useOttehrUser();
   const { getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
@@ -57,7 +61,9 @@ export const AppointmentFooterButton: FC = () => {
   const queryClient = useQueryClient();
   const apiClient = useZapEHRAPIClient();
   const changeTelemedAppointmentStatus = useChangeTelemedAppointmentStatusMutation();
+  const changeChatTelemedAppointmentStatus = useChangeChatTelemedAppointmentStatusMutation();
   const initTelemedSession = useInitTelemedSessionMutation();
+  const initChatTelemedSession = useInitChatTelemedSessionMutation();
   const getMeetingData = useGetMeetingData(
     getAccessTokenSilently,
     (data) => {
@@ -71,10 +77,17 @@ export const AppointmentFooterButton: FC = () => {
   const getConversationData = useGetConversationData(
     getAccessTokenSilently,
     (data) => {
-      useChatStore.setState({ conversation: data });
+
+      useChatStore.setState({
+        conversation: {
+          id: data.id,
+          encounterId: data.encounterId,
+          link: data.link
+        }
+      });
     },
     () => {
-      throw new Error('Error trying to connect to patient conversation');
+      throw new Error('Error trying to connect to a patient.');
     }
   );
 
@@ -93,7 +106,6 @@ export const AppointmentFooterButton: FC = () => {
       setButtonType('reconnect');
     }
 
-    console.log(appointmentAccessibility.status);
   }, [appointmentAccessibility]);
 
   const onAssignMe = async (): Promise<void> => {
@@ -110,16 +122,123 @@ export const AppointmentFooterButton: FC = () => {
 
   const userAuthToken = useAuthToken();
 
+  const endChatConnect = useCallback((): void => {
+
+    if (!apiClient || !appointment?.id) {
+      throw new Error('api client not defined or userId not provided');
+    }
+
+    const executeStatusChange = async (apiClient: any , appointment:any) => {
+      try {
+        await changeChatTelemedAppointmentStatus.mutateAsync(
+          {
+            apiClient,
+            appointmentId: appointment?.id,
+            newStatus: ApptStatus.complete,
+          },
+          {}
+        );
+      } catch (error) {
+        console.error("Failed to update appointment status:", error);
+      }
+
+      useAppointmentStore.setState({
+        encounter: {
+          ...encounter,
+          status: 'finished',
+          statusHistory: updateEncounterStatusHistory('finished', encounter.statusHistory),
+        },
+        conversationEncounter: {
+          ...conversationEncounter,
+          status: 'finished',
+          statusHistory: updateEncounterStatusHistory('finished', conversationEncounter.statusHistory),
+        }
+      });
+    };
+  
+    executeStatusChange(apiClient,appointment);
+
+  }, [apiClient, appointment?.id, appointment?.status, conversationEncounter, getMeetingData, ottehrUser]);
+
+
+  const onChatConnect = useCallback((): void => {
+
+    let hasChatResource = undefined;
+
+    if(conversationEncounter) {
+      hasChatResource = conversationEncounter.extension?.some((ext) =>
+        ext.extension?.some(
+          (nestedExt) =>
+            nestedExt.url === 'channelType' &&
+            nestedExt.valueCoding?.code === 'twilio-conversations'
+        )
+      );
+    } 
+
+    if(hasChatResource) {
+
+      if(conversationEncounter?.status == 'finished') {
+        throw new Error('Conversation Already Completed');
+      }
+
+      void getConversationData.refetch({ throwOnError: true });
+    } else {
+
+      if (!apiClient || !appointment?.id) {
+        throw new Error('api client not defined or userId not provided');
+      }
+      
+      initChatTelemedSession.mutate(
+        { apiClient, appointmentId: appointment.id, userId: ottehrUser?.id || '' },
+        {
+          onSuccess: async (response) => {
+            
+            useAppointmentStore.setState({
+              conversationEncounter: response.encounter
+            });
+  
+            const c = await getConversationLink(
+              userAuthToken,
+              getAddressString(response.encounter),
+              appointment.id,
+              {},
+              import.meta.env.VITE_APP_PROJECT_API_URL,
+              import.meta.env.VITE_APP_FHIR_API_URL,
+              import.meta.env.VITE_APP_CHAT_ROOM_ENDPOINT ?? "https://chat.hlthi.life"
+            );
+  
+            if(response?.encounter) {
+  
+              if(response.encounter.id) {
+                useChatStore.setState({
+                  conversation: {
+                    id: getAddressString(response.encounter),
+                    encounterId: response?.encounter?.id,
+                    link: c.Meeting.generatedLink
+                  }
+                });
+              }
+            }
+          },
+          onError: () => {
+            throw new Error('Error trying to connect to a patient.');
+          },
+        },
+      );
+
+    }
+
+  }, [apiClient, appointment?.id, appointment?.status, encounter, getMeetingData, initChatTelemedSession, ottehrUser]);
+
   const onConnect = useCallback((): void => {
     
     if (mapStatusToTelemed(encounter.status, appointment?.status) === ApptStatus['on-video']) {
       void getMeetingData.refetch({ throwOnError: true });
-      void getConversationData.refetch({throwOnError: true});
-
     } else {
       if (!apiClient || !appointment?.id) {
         throw new Error('api client not defined or userId not provided');
       }
+
       initTelemedSession.mutate(
         { apiClient, appointmentId: appointment.id, userId: ottehrUser?.id || '' },
         {
@@ -130,33 +249,8 @@ export const AppointmentFooterButton: FC = () => {
                 ...encounter,
                 status: 'in-progress',
                 statusHistory: updateEncounterStatusHistory('in-progress', encounter.statusHistory),
-              },
-              conversationEncounter: response.conversation as Encounter
-            });
-
-            const c = await getConversationLink(
-              userAuthToken,
-              getAddressString(response),
-              appointment.id,
-              {},
-              import.meta.env.VITE_APP_PROJECT_API_URL,
-              import.meta.env.VITE_APP_FHIR_API_URL,
-              import.meta.env.VITE_APP_CHAT_ROOM_ENDPOINT ?? "http://localhost:3005"
-            );
-
-            if(response?.conversation) {
-
-              if(response.conversation.id) {
-                useChatStore.setState({
-                  conversation: {
-                    id: getAddressString(response),
-                    encounterId: response?.conversation?.id,
-                    link: c.Meeting.generatedLink
-                  }
-                });
               }
-            }
-            
+            });
 
           },
           onError: () => {
@@ -174,6 +268,7 @@ export const AppointmentFooterButton: FC = () => {
         onConnect();
       }
     }
+
   }, [appointmentAccessibility.status, location, navigate, onConnect]);
 
   const onUnassign = async (): Promise<void> => {
@@ -232,8 +327,72 @@ export const AppointmentFooterButton: FC = () => {
                 onClick={showDialog}
                 variant="contained"
               >
-                Connect to Patient
+                Connect to Patient Video
               </FooterButton>
+            )}
+          </ConfirmationDialog>
+
+          <ConfirmationDialog
+            title="Do you want to connect to the patient via chat?"
+            description="This action will start the chat."
+            response={onChatConnect}
+            actionButtons={{
+              proceed: {
+                text: 'Start Chat',
+              },
+              back: { text: 'Cancel' },
+            }}
+          >
+            {(showDialog) => (
+
+              (!conversationEncounter?.id) && (
+                <FooterButton
+                loading={initTelemedSession.isLoading || getMeetingData.isLoading}
+                onClick={showDialog}
+                variant="contained"
+              >
+               Start Chat With Patient
+              </FooterButton>
+
+              )
+              
+            )}
+          </ConfirmationDialog>
+
+          <ConfirmationDialog
+            title="Do you want to end chat with patient?"
+            description="This action will end the chat."
+            response={endChatConnect}
+            actionButtons={{
+              proceed: {
+                text: 'End Chat',
+              },
+              back: { text: 'Cancel' },
+            }}
+          >
+            {(showDialog) => (
+
+              (conversationEncounter?.id && conversationEncounter?.status == 'in-progress') && (
+                <FooterButton
+                loading={initTelemedSession.isLoading || getMeetingData.isLoading}
+                onClick={showDialog}
+                variant="contained"
+                sx={{
+                  backgroundColor: theme.palette.warning.main,
+                  '&:hover': { backgroundColor: darken(theme.palette.warning.main, 0.125) },
+                  '&.MuiLoadingButton-loading': {
+                    backgroundColor: darken(theme.palette.warning.main, 0.25),
+                  },
+                  '& .MuiLoadingButton-loadingIndicator': {
+                    color: darken(theme.palette.warning.contrastText, 0.25),
+                  },
+                }}
+              >
+               End Chat With Patient
+              </FooterButton>
+
+              )
+              
             )}
           </ConfirmationDialog>
 

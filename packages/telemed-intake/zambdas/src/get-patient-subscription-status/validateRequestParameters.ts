@@ -1,5 +1,15 @@
-import { GetStripeSubscriptionRequestParams } from 'ottehr-components';
+
 import { Secrets, ZambdaInput } from 'ottehr-utils';
+
+export interface GetStripeSubscriptionRequestParams {
+  patientId?: string
+  dob?: string,
+  email?: string
+}
+
+export interface GetStripeSubscriptionStatusResponse {
+  active: boolean
+}
 
 export function validateRequestParameters(input: ZambdaInput): GetStripeSubscriptionRequestParams & { secrets: Secrets | null } {
   if (!input.body) {
