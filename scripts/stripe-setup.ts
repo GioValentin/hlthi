@@ -4,7 +4,7 @@ import Stripe from 'stripe';
 
 async function runCLI(): Promise<void> {
   
-  const stripe = new Stripe("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");
+  const stripe = new Stripe("");
   try {
    const configuration = await stripe.billingPortal.configurations.create({
       features: {
