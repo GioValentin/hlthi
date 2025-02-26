@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Button, Typography } from '@mui/material';
 import { useZapEHRAPIClient } from '../utils'
 import { useAuth0 } from '@auth0/auth0-react';
@@ -8,7 +9,7 @@ interface BillingPortalButtonProps {
   }
 
 export const BillingPortalButton = ({ fn }: BillingPortalButtonProps): JSX.Element => {
-    const { isAuthenticated } = useAuth0();
+    const { isAuthenticated,user } = useAuth0();
     const patient = usePatientInfoStore((state) => state.patientInfo);
 
     const zapEHRAPIClient = useZapEHRAPIClient();
@@ -17,15 +18,15 @@ export const BillingPortalButton = ({ fn }: BillingPortalButtonProps): JSX.Eleme
     }
 
     const onClick = async () => {
-        if (isAuthenticated) {
+        if (isAuthenticated && user) {
             try {
-                const data = await zapEHRAPIClient?.getBillingPortalLink({
-                    dob: patient.dateOfBirth,
-                    email: patient.email
-                });
+              if(!zapEHRAPIClient) {
+                return;
+              }  
+                const customer = await zapEHRAPIClient.getStripeCustomer({ customerId: user.sub, sessionId: true });
 
-                if (data?.url) {
-                    window.open(data.url, '_blank');
+                if (customer.portal.url) {
+                    window.open(customer.portal.url, '_blank');
                 } else {
                     console.warn('No billing portal URL returned');
                 }

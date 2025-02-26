@@ -1506,6 +1506,40 @@ export const defaultQuestionnaire: Questionnaire = {
       ],
     },
     {
+      linkId: 'billing-detail-page',
+      text: 'Confirm Billing Information',
+      type: 'group',
+      item: [
+        {
+          linkId: 'billing-detail-page-caption',
+          text: "Please choose a valid payment option or provide one for your visit today.",
+          type: 'display',
+          extension: [
+            {
+              url: 'https://fhir.zapehr.com/r4/StructureDefinitions/text-type',
+              valueString: 'p',
+            },
+          ],
+        },
+        {
+          linkId: 'billing-detail-page-options',
+          text: 'Please choose a payment method',
+          type: 'attachment',
+          required: true,
+          extension: [
+            {
+              url: 'https://fhir.zapehr.com/r4/StructureDefinitions/attachment-text',
+              valueString: 'Please attach a method of payment for your visit',
+            },
+            {
+              url: 'https://fhir.zapehr.com/r4/StructureDefinitions/document-type',
+              valueString: '52556-8',
+            }
+          ],
+        },
+      ]
+    },
+    {
       linkId: 'consent-forms-page',
       text: 'Complete consent forms',
       type: 'group',

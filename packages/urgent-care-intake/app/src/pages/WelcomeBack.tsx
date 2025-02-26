@@ -223,11 +223,6 @@ const WelcomeBack = (): JSX.Element => {
                   value: patient.id,
                   color: otherColors.lightBlue,
                 };
-              })
-              .concat({
-                label: 'Different family member',
-                value: 'new-patient',
-                color: otherColors.lightBlue,
               }),
           },
         ]}

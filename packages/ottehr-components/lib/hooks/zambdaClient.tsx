@@ -51,3 +51,45 @@ export function useZambdaClient({ tokenless }: { tokenless: boolean }): ZambdaCl
   }
   return null;
 }
+
+export function useZambdaClientNoParam({ tokenless }: { tokenless: boolean }): ZambdaClient | null {
+  const [client, setClient] = useState<ZambdaClient | null>(zambdaWithToken);
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+
+  const urlToken = null;
+
+  const [refreshingToken, setRefreshingToken] = useState(false);
+
+  useEffect(() => {
+    let token: string | null = null;
+
+    async function setZambdaClientToken(): Promise<void> {
+      setRefreshingToken(true);
+      try {
+        token = isAuthenticated ? await getAccessTokenSilently() : urlToken;
+        if (token) {
+          zambdaWithToken = new ZambdaClient({
+            apiUrl: import.meta.env.VITE_APP_PROJECT_API_URL,
+            accessToken: token,
+          });
+          setClient(zambdaWithToken);
+        }
+      } catch (e) {
+        console.error('error refreshing token');
+      } finally {
+        setRefreshingToken(false);
+      }
+    }
+
+    if (((isAuthenticated && !tokenless) || urlToken) && !zambdaWithToken) {
+      setZambdaClientToken().catch((error) => console.log(error));
+    }
+  }, [getAccessTokenSilently, isAuthenticated, tokenless, urlToken]);
+
+  if (tokenless) {
+    return tokenlessClient;
+  } else if (!refreshingToken) {
+    return client;
+  }
+  return null;
+}

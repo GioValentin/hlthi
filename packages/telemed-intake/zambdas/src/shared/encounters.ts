@@ -36,14 +36,11 @@ export const getVideoEncounterForAppointment = async (
       },
     ],
   });
-
-  console.log(encounters);
   
   encounter = (encounters ?? []).find((encounterTemp) =>
     Boolean(getVirtualServiceResourceExtension(encounterTemp, TELEMED_VIDEO_ROOM_CODE)),
   );
 
-  //encounter = encounters[0];
   return encounter;
 };
 

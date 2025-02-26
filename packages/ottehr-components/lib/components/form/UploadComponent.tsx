@@ -77,7 +77,7 @@ const UploadComponent: FC<UploadComponentProps> = ({
       aria-labelledby={`${name}-label`}
       aria-describedby={`${name}-description`}
       variant="contained"
-      sx={{ textTransform: 'none', mt: fileUploadType ? -1 : 2 }}
+      sx={{ textTransform: 'none', mt: fileUploadType ? -1 : 2, color: 'white'  }}
       onKeyDown={handleKeyDown}
       onClick={handleOnClick}
     >

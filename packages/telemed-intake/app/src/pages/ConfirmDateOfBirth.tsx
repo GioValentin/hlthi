@@ -193,6 +193,7 @@ const ConfirmDateOfBirth = (): JSX.Element => {
     const { pendingPatientInfoUpdates } = usePatientInfoStore.getState();
     const { appointmentID } = useAppointmentStore.getState();
     const { paperworkQuestions } = usePaperworkStore.getState();
+
     if (pendingPatientInfoUpdates || !appointmentID) {
       createOrUpdateAppointment(formattedDOB !== patientInfo?.dateOfBirth);
       return;

@@ -11,7 +11,6 @@ import { FormInputType, PageForm } from 'ottehr-components';
 import { useState } from 'react';
 import { HealthcareService, Location, Practitioner } from 'fhir/r4';
 
-
 const ScheduleSelect = (): JSX.Element => {
   const methods = useForm();
   const apiClient = useZapEHRAPIClient();
@@ -31,14 +30,14 @@ const ScheduleSelect = (): JSX.Element => {
     });
   };
 
-  const handleRequestVisit = (data: FieldValues): void => {
-    navigate(
-      `${IntakeFlowPageRoute.Welcome.path
-        .replace(':schedule-type','location')
-        .replace(':slug', data['Location'])
-        .replace(':visit-service', 'telemedicine')
-        .replace(':visit-type', 'now')}`,
-    );
+  const handleRequestVisit = async (data: FieldValues) => {
+      navigate(
+        `${IntakeFlowPageRoute.Welcome.path
+          .replace(':schedule-type','location')
+          .replace(':slug', data['Location'])
+          .replace(':visit-service', 'telemedicine')
+          .replace(':visit-type', 'now')}`,
+      );
   };
 
   //setScheduleType('Location');

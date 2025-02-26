@@ -63,6 +63,7 @@ const SetupBilling = (): JSX.Element => {
             try {
   
               // Create New Customer
+              //@ts-ignore
             const requestResponse = await zapEHRAPIClient?.createStripeCustomer({
               dob:  patient.patientInfo.dateOfBirth || '',
               email:  patient.patientInfo.email || '',

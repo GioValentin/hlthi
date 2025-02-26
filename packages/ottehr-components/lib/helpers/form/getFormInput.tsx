@@ -13,6 +13,8 @@ import {
   RadioListInput,
   SelectInput,
   YearInput,
+  PaymentElementProvider,
+  MembershipDetails
 } from '../../components';
 import CoalescedDateInput from '../../components/form/CoalescedDateInput';
 import { DateFieldMap } from '../../components/form/DateInput';
@@ -304,6 +306,34 @@ export const getFormInputField = (
             );
           case 'Form list':
             return <FormList formInput={formInput} values={methods.watch()} methods={methods} />;
+          case 'Payment Method':
+              return <PaymentElementProvider 
+              // @ts-ignore
+              client={formInput.apiClient} 
+              name={formInput.name}
+              label={formInput.label || 'No label'}
+              helperText={formInput.helperText}
+              showHelperTextIcon={formInput.showHelperTextIcon}
+              required={formInput.required}
+              value={formInput.value ?? ''}
+              defaultValue={formInput.defaultValue}
+              onChange={(event) => {
+                const target = event.target as HTMLInputElement;
+                methods.setValue(formInput.name, target.value);
+                if (formInput.onChange) {
+                  formInput.onChange(event);
+                }
+              }}
+                // radioStyling={{
+                //   alignSelf: 'start',
+                //   mt: '8px',
+                // }}
+               />;
+          case 'Membership Details':   
+
+            // @ts-ignore
+            return (<MembershipDetails client={formInput.apiClient}/>);
+
           default:
             console.log(formInput);
             console.log('Form input type without a match', formInput.type);

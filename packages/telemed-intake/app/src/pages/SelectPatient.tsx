@@ -15,12 +15,14 @@ import { usePatientInfoStore } from '../features/patient-info';
 import { useGetPatients, usePatientsStore } from '../features/patients';
 import { useZapEHRAPIClient } from '../utils';
 
+
 const SelectPatient = (): JSX.Element => {
   const { patientInfo: currentPatientInfo, setNewPatient } = usePatientInfoStore.getState();
   const apiClient = useZapEHRAPIClient();
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+  
 
   const urlParams = new URLSearchParams(window.location.search);
   const flow = urlParams.get('flow');
@@ -40,13 +42,6 @@ const SelectPatient = (): JSX.Element => {
     required: true,
   };
 
-  const DIFFERENT_FAMILY_MEMBER_DATA = {
-    label: t('selectPatient.differentFamilyMember'),
-    description: t('selectPatient.differentFamilyMemberDescription'),
-    value: 'new-patient',
-    color: otherColors.lightBlue,
-  };
-
   useEffect(() => {
     if (apiClient) {
       void refetch();
@@ -57,6 +52,7 @@ const SelectPatient = (): JSX.Element => {
     const selectedPatient = patientsStore.patients?.find((patient) => patient.id === data.patientId);
 
     if (selectedPatient) {
+
       usePatientInfoStore.setState(() => ({
         patientInfo: {
           ...selectedPatient,
@@ -68,6 +64,7 @@ const SelectPatient = (): JSX.Element => {
         pendingPatientInfoUpdates: undefined,
       }));
     } else {
+
       setNewPatient();
     }
 
@@ -146,15 +143,14 @@ const SelectPatient = (): JSX.Element => {
                   return {
                     label: getPatientInfoFullName(patient),
                     description: t('general.patientBirthday', {
-                      formattedPatientBirthDay: DateTime.fromFormat(patient.dateOfBirth || '', 'yyyy-MM-dd').toFormat(
+                      formattedPatientBirthDay: patient.dateOfBirth ? DateTime.fromFormat(patient.dateOfBirth || '', 'yyyy-MM-dd').toFormat(
                         'MMMM dd, yyyy',
-                      ),
+                      ) : 'Not Provided',
                     }),
                     value: patient.id,
                     color: otherColors.lightBlue,
                   };
-                })
-                .concat(flow !== 'pastVisits' ? DIFFERENT_FAMILY_MEMBER_DATA : []),
+                }),
             },
           ]}
           onSubmit={onSubmit}

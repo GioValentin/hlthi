@@ -4,6 +4,7 @@ import { APIGatewayProxyResult } from 'aws-lambda';
 import { Operation } from 'fast-json-patch';
 import { Appointment, HealthcareService, Location, Patient, Practitioner } from 'fhir/r4';
 import { DateTime } from 'luxon';
+import Stripe from 'stripe';
 import {
   CancellationReasonOptionsTelemed,
   DATETIME_FULL_NO_YEAR,
@@ -233,6 +234,27 @@ async function performEffect(props: PerformEffectInput): Promise<APIGatewayProxy
   }
 
   await createAuditEvent(AuditableZambdaEndpoints.appointmentCancel, fhirClient, input, patient.id || '', secrets);
+
+  try {
+    const stripe = new Stripe(getSecret(SecretsKeys.STRIPE_SECRET, secrets));
+
+    const paymentIntents = await stripe.paymentIntents.search({
+      query: 'metadata[\'appointment_id\']:\''+appointmentID+'\'',
+    });
+
+    if(paymentIntents.data.length) {
+
+      const refund = await stripe.refunds.create({
+        payment_intent: paymentIntents.data[0].id,
+        reason: 'requested_by_customer'
+      });
+
+    }
+
+  } catch(e) {
+    console.log(e);
+  }
+  
 
   return {
     statusCode: 200,

@@ -38,4 +38,7 @@ export type PatientInfo = PatientBaseInfo & {
   reasonForVisit?: string[];
   phoneNumber?: string;
   pointOfDiscovery?: boolean;
+  paymentMethod?: string;
+  visitRate?:number;
+  customerId?: string;
 };

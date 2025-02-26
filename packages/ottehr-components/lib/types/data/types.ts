@@ -25,7 +25,7 @@ export type GetZapEHRAPIParams = {
   getLocationsZambdaID?: string;
   getGroupsZambdaID?: string;
   getBillingPortalZambdaID?: string;
-  createStripeCustomerZambdaID?: string;
+  getStripeCustomerZambdaID?: string;
   updateStripeCustomerZambdaID?: string;
   createStripeCheckoutSessionZambdaID?: string;
   updateStripeCheckoutSessionZambdaID?: string;

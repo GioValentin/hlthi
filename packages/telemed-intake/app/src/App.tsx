@@ -4,6 +4,7 @@ import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-d
 import { MixpanelContextProps, ScrollToTop, setupMixpanel, setupSentry } from 'ottehr-components';
 import { IntakeThemeProvider } from './IntakeThemeProvider';
 import { ProtectedRoute } from './features/auth';
+import { Box, CircularProgress } from '@mui/material';
 import { ErrorFallbackScreen, LoadingScreen } from './features/common';
 import { useIOSAppSync } from './features/ios-communication/useIOSAppSync';
 import './lib/i18n';
@@ -31,6 +32,8 @@ import ThankYou from './pages/ThankYou';
 import { useTranslation } from 'react-i18next';
 import ScheduleSelect from './pages/ScheduleSelect';
 import Version from './pages/Version';
+import {useStripeCustomer} from './utils';
+
 
 const isLowerEnvs =
   import.meta.env.MODE === 'dev' ||
@@ -104,12 +107,35 @@ export class IntakeFlowPageRoute {
 }
 
 function App(): JSX.Element {
+
   useIOSAppSync();
   const { t } = useTranslation();
 
   useEffect(() => {
     document.title = t('general.appName');
+
   }, [t]);
+
+  const {isLoading} = useStripeCustomer();
+
+  if(isLoading) {
+    return (
+      <Box sx={{ mb: 2 }}>
+      <Box
+        sx={{
+          height: 260,
+          border: `1px dashed #ccccc`,
+          borderRadius: 2,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    </Box>
+    )
+  }
 
   return (
     <QueryClientProvider client={queryClient}>

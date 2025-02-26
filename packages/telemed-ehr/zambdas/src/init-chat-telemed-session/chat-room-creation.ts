@@ -53,7 +53,7 @@ export const createChatRoom = async (
   const chatRoomEncounterResource = await execCreateChatRoomRequest(secrets, updatedEncounter);
 
   // Update Chat Room Participants
-  updateChatRoomParticipants(
+  await updateChatRoomParticipants(
     secrets,
     chatRoomEncounterResource.id,
     practitioner.id,
@@ -112,6 +112,12 @@ const updateChatRoomParticipants = async (secrets: Secrets | null, encounter: st
         },
         method: 'POST',
     });
+
+    console.debug("What is the response from adding participants? ");
+    console.debug(response.status);
+    console.debug(practitioner);
+    console.debug(patientId);
+
 
     if (response.status != 204) {
       throw new Error(`Request failed to create a chat room participants: ${response.statusText}`);

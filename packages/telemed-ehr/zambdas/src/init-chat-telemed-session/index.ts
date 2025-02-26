@@ -66,8 +66,6 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
         false
       );
     }
-    
-    console.debug('Chat Room Encounter');
 
     const output: InitChatTelemedSessionResponse = {
       encounter: chatRoomEncounterResource,

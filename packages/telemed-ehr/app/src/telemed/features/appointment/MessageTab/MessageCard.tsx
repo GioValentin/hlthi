@@ -29,7 +29,7 @@ export const MessageCard: FC = () => {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
             <iframe src={conversation?.link} style={{
                 display: "block",
-                height: "100vh",
+                height: "70vh",
                 width: "65vw",
                 border: "none"
             }}></iframe>

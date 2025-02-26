@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import { Container, Typography } from '@mui/material';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { getSelectors } from 'ottehr-utils';
 import { IntakeFlowPageRoute } from '../App';
 import { LoadingSpinner,ChatCard } from '../components';
@@ -8,10 +8,12 @@ import { useAppointmentStore } from '../features/appointments';
 import { CustomContainer } from '../features/common';
 import { useAuthToken, useZapEHRAPIClient } from '../utils';
 import { useJoinChat } from '../features/video-call'
+import { useGetWaitStatus } from '../features/waiting-room';
 
 const ChatRoomPage: FC = () => {
   const token = useAuthToken()
   const apiClient = useZapEHRAPIClient();
+  const navigate = useNavigate();
   
 
   const [error, setError] = useState<Error | null>(null);
@@ -24,6 +26,15 @@ const ChatRoomPage: FC = () => {
   if (urlAppointmentID) {
     useAppointmentStore.setState(() => ({ appointmentID: urlAppointmentID }));
   }
+
+  useGetWaitStatus((data) => {
+
+    if(data.status == 'ready') {
+      useAppointmentStore.setState(() => ({ conversationID: undefined }));
+      navigate(IntakeFlowPageRoute.PatientPortal.path);
+    }
+
+  });
 
   useJoinChat(
     apiClient,

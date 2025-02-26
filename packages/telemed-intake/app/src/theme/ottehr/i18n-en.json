@@ -233,7 +233,7 @@
   "waitingRoom": {
     "title": "Waiting Room",
     "imgAlt": "Clock icon",
-    "subtext": "Please wait, call will start automatically. A pediatric expert will connect with you soon.",
+    "subtext": "Please wait, call will start automatically. A provider will connect with you soon.",
     "approxWaitTime": "Approx. wait time - {{estimatedTime}}",
     "fallbackWaitTime": "...mins",
     "callSettingsTitle": "Call settings & Test",
@@ -250,7 +250,7 @@
     "scheduleNotAvailable": "The schedule \"{{slug}}\" is not available",
     "visitServiceNotAvailable": "The service \"{{visitService}}\" is not available",
     "scheduleError": "There was an error getting the schedule. Please refresh and if you still get errors contact us.",
-    "message": "We're pleased to offer this new technology for accessing care. You will need to enter your information again just once. Next time you return, it will all be here for you!",
+    "message": "To get started with your care, we just need a bit more information. Our quick intake process helps our providers better understand your needs, so you can get the right treatment—fast. Whether you’re a new or returning patient, please follow the next few steps. It won’t take long, and once completed, a licensed provider will review your information and connect with you shortly.",
     "html": "",
     "dateError": {
       "title": "Please select a date and time",

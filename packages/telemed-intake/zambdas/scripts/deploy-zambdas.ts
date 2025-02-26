@@ -89,7 +89,7 @@ const ZAMBDAS: { [name: string]: DeployZambda } = {
   'CREATE-CHECKOUT-SESSION': {
     type: 'http_auth',
   },
-  'CREATE-STRIPE-CUSTOMER': {
+  'GET-STRIPE-CUSTOMER': {
     type: 'http_auth',
   },
   'GET-PATIENT-SUBSCRIPTION-STATUS': {

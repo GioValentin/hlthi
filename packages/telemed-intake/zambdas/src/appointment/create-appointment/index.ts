@@ -12,6 +12,8 @@ import {
   Practitioner,
   Resource,
 } from 'fhir/r4';
+import Stripe from 'stripe';
+
 import { DateTime } from 'luxon';
 import { uuid } from 'short-uuid';
 import {
@@ -53,10 +55,11 @@ import { validateCreateAppointmentParams } from './validateRequestParameters';
 let zapehrToken: string;
 
 export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> => {
-  console.log(`Input: ${JSON.stringify(input)}`);
+  
   try {
     const validatedParameters = validateCreateAppointmentParams(input);
 
+   
     // todo access check? or just let zapehr handle??
     validateInternalInformation(validatedParameters.patient);
 
@@ -99,12 +102,13 @@ async function performEffect(props: PerformEffectInputProps): Promise<APIGateway
     timezone,
     unconfirmedDateOfBirth,
     isDemo,
-    phoneNumber,
+    phoneNumber
   } = params;
   const { secrets } = input;
   const fhirClient = createFhirClient(zapehrToken);
 
   const user = await getUser(input.headers.Authorization.replace('Bearer ', ''));
+  console.log(user);
   const isEHRUser = !user.name.startsWith('+');
 
   // If it's a returning patient, check if the user has
@@ -120,7 +124,20 @@ async function performEffect(props: PerformEffectInputProps): Promise<APIGateway
       };
     }
   }
-  console.log('creating appointment');
+  
+  const stripe = new Stripe(getSecret(SecretsKeys.STRIPE_SECRET, input.secrets));
+
+  // Get Customer 
+  const paymentIntent = await stripe.paymentIntents.create({
+    customer: patient.customerId,
+    amount: patient?.visitRate ? patient?.visitRate : 0,
+    currency: 'usd',
+    payment_method: patient.paymentMethod,
+    off_session: true,
+    confirm: true,
+    statement_descriptor: 'HLTHi - APPOINTMENT',
+    statement_descriptor_suffix: 'HLTHi'
+  });
 
   const { message, appointmentId, patientId } = await createAppointment(
     patient,
@@ -144,6 +161,20 @@ async function performEffect(props: PerformEffectInputProps): Promise<APIGateway
 
   const response = { message, appointmentId };
   console.log(`fhirAppointment = ${JSON.stringify(response)}`, 'Telemed visit');
+
+  try {
+    const updatedPaymentIntent = await stripe.paymentIntents.update(
+      paymentIntent.id,
+      {
+        metadata: {
+          appointment_id: appointmentId,
+        },
+      }
+    );
+  } catch(e) {
+    console.error("Could not store Payment Intent ID: " + paymentIntent.id);
+  }
+
   return {
     statusCode: 200,
     body: JSON.stringify(response),
@@ -242,9 +273,10 @@ export async function createAppointment(
       throw new Error(`Couldn't find group for id ${groupID}`);
     }
   }
-  console.log(slot, endTime);
+  
+  // Attempt Authorization 
 
-  console.log('performing Transactional Fhir Requests for new appointment');
+
 
   const { appointment, patient: fhirPatient } = await performTransactionalFhirRequests({
     fhirClient,
@@ -378,7 +410,7 @@ async function creatingPatientCreateRequest(
   if (!patient.firstName) {
     throw new Error('First name is undefined');
   }
-  console.log('building patient resource');
+  
   const patientResource: Patient = {
     resourceType: 'Patient',
     name: [
@@ -502,9 +534,6 @@ export const performTransactionalFhirRequests = async (input: TransactionInput):
 
   //@ts-ignore
   if (!patient && !createPatientRequest?.fullUrl) {
-    console.log("DO WE REALLY HAVE NOT PATIENT: ");
-    console.log(patient);
-
     throw new Error('Unexpectedly have no patient and no request to make one');
   }
 

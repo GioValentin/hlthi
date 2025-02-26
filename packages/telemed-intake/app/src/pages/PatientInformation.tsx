@@ -28,6 +28,7 @@ import { useGetPaperwork, usePaperworkStore } from '../features/paperwork';
 import { usePatientInfoStore } from '../features/patient-info';
 import { handleClosePastTimeErrorDialog, isSlotTimePassed, useZapEHRAPIClient } from '../utils';
 
+
 const UPDATEABLE_PATIENT_INFO_FIELDS: (keyof Omit<PatientInfo, 'id'>)[] = [
   'firstName',
   'lastName',
@@ -38,6 +39,9 @@ const UPDATEABLE_PATIENT_INFO_FIELDS: (keyof Omit<PatientInfo, 'id'>)[] = [
   'weight',
   'email',
   'emailUser',
+  'paymentMethod',
+  'visitRate',
+  'customerId'
 ];
 
 const isPatientInfoEqual = (firstInfo: PatientInfo, newInfo: PatientInfo): boolean => {
@@ -62,6 +66,7 @@ const createPatientInfoWithChangedFields = (source: PatientInfo, newInfo: Omit<P
 };
 
 const PatientInformation = (): JSX.Element => {
+  
   const apiClient = useZapEHRAPIClient();
   const [getPaperworkEnabled, setGetPaperworkEnabled] = useState(false);
 
@@ -113,13 +118,16 @@ const PatientInformation = (): JSX.Element => {
   );
 
   const { getIdTokenClaims } = useAuth0();
+
   const [isLoading, setIsLoading] = useState(true);
   const [userEmail, setUserEmail] = useState<string | undefined>(undefined);
+
 
   useEffect(() => {
     const getUserEmail = async (): Promise<void> => {
       try {
         const idTokenClaims = await getIdTokenClaims();
+        
         setUserEmail(idTokenClaims?.email);
       } catch (error) {
         console.error('Error getting id token claims:', error);
@@ -129,6 +137,7 @@ const PatientInformation = (): JSX.Element => {
     if (patientInfo.email === undefined) {
       void getUserEmail();
     }
+
     setIsLoading(false);
   }, [getIdTokenClaims, patientInfo.email]);
 
@@ -149,8 +158,6 @@ const PatientInformation = (): JSX.Element => {
       return;
     }
 
-    console.log("Coming into here?");
-
     if (!patientInfo.id) {
       data.newPatient = patientInfo.newPatient;
     }
@@ -159,6 +166,7 @@ const PatientInformation = (): JSX.Element => {
 
     if (!isPatientInfoEqual(initialPatientInfoRef.current, data)) {
       pendingUpdates = createPatientInfoWithChangedFields(patientInfo, data);
+
       usePatientInfoStore.setState(() => ({
         pendingPatientInfoUpdates: pendingUpdates,
       }));
@@ -188,8 +196,9 @@ const PatientInformation = (): JSX.Element => {
         updateAppointment.mutate(
           { appointmentID: appointmentID, apiClient, patientInfo: pendingUpdates },
           {
+            // @ts-ignore
             onSuccess: (response: UpdateAppointmentResponse) => {
-              console.log('Appointment updated successfully', response);
+              
               usePatientInfoStore.setState(() => ({
                 patientInfo: pendingUpdates,
                 pendingPatientInfoUpdates: undefined,
@@ -368,6 +377,32 @@ const PatientInformation = (): JSX.Element => {
             format: 'Email',
             defaultValue: patientInfo.email ?? userEmail,
             required: true,
+          },
+          {
+            type: 'Payment Method',
+            name: 'paymentMethod',
+            label: "Choose A Payment Method",
+            defaultValue: null,
+            required: true,
+            //@ts-ignore
+            apiClient: apiClient
+          },
+          {
+            type: 'Text',
+            name: 'customerId',
+            label: "Choose A Payment Method",
+            defaultValue: null,
+            required: true,
+            hidden: true,
+          },
+          {
+            type: 'Membership Details',
+            name: 'visitRate',
+            label: "Membership Details",
+            defaultValue: null,
+            required: true,
+            //@ts-ignore
+            apiClient: apiClient
           },
           {
             type: 'Radio List',

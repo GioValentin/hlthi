@@ -92,6 +92,7 @@ export const AppointmentFooterButton: FC = () => {
   );
 
   const [buttonType, setButtonType] = useState<'assignMe' | 'connectUnassign' | 'reconnect' | null>(null);
+  const [conversationLoading, setConversationLoading] =  useState<boolean>(false);
 
   const appointmentAccessibility = useGetAppointmentAccessibility('telemedicine');
 
@@ -124,7 +125,10 @@ export const AppointmentFooterButton: FC = () => {
 
   const endChatConnect = useCallback((): void => {
 
+    setConversationLoading(true);
+
     if (!apiClient || !appointment?.id) {
+      setConversationLoading(false);
       throw new Error('api client not defined or userId not provided');
     }
 
@@ -154,6 +158,10 @@ export const AppointmentFooterButton: FC = () => {
           statusHistory: updateEncounterStatusHistory('finished', conversationEncounter.statusHistory),
         }
       });
+
+      setConversationLoading(false);
+      
+      useAppointmentStore.setState({ currentTab: 'hpi' });
     };
   
     executeStatusChange(apiClient,appointment);
@@ -162,6 +170,9 @@ export const AppointmentFooterButton: FC = () => {
 
 
   const onChatConnect = useCallback((): void => {
+
+    // Conversation Loading
+    setConversationLoading(true);
 
     let hasChatResource = undefined;
 
@@ -178,10 +189,16 @@ export const AppointmentFooterButton: FC = () => {
     if(hasChatResource) {
 
       if(conversationEncounter?.status == 'finished') {
-        throw new Error('Conversation Already Completed');
+        setConversationLoading(false);
+
+        // throw new Error('Conversation Already Completed');
       }
 
       void getConversationData.refetch({ throwOnError: true });
+
+      setConversationLoading(false);
+
+      useAppointmentStore.setState({ currentTab: 'view_chat' });
     } else {
 
       if (!apiClient || !appointment?.id) {
@@ -219,6 +236,9 @@ export const AppointmentFooterButton: FC = () => {
                 });
               }
             }
+            
+            setConversationLoading(false);
+            useAppointmentStore.setState({ currentTab: 'view_chat' });
           },
           onError: () => {
             throw new Error('Error trying to connect to a patient.');
@@ -347,7 +367,7 @@ export const AppointmentFooterButton: FC = () => {
 
               (!conversationEncounter?.id) && (
                 <FooterButton
-                loading={initTelemedSession.isLoading || getMeetingData.isLoading}
+                loading={conversationLoading}
                 onClick={showDialog}
                 variant="contained"
               >
@@ -374,7 +394,7 @@ export const AppointmentFooterButton: FC = () => {
 
               (conversationEncounter?.id && conversationEncounter?.status == 'in-progress') && (
                 <FooterButton
-                loading={initTelemedSession.isLoading || getMeetingData.isLoading}
+                loading={conversationLoading}
                 onClick={showDialog}
                 variant="contained"
                 sx={{

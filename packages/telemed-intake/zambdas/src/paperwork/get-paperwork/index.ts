@@ -112,7 +112,7 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
           page: page || 'Unknown',
           reviewPageName: reviewPageName,
           slug: questionPage.linkId.replace('-page', ''),
-          questions: items.map((item) => questionnaireItemToInputType(item)),
+         questions: items.map((item) => questionnaireItemToInputType(item)),
         };
       });
 
@@ -276,7 +276,10 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     const fileQuestionIDs: string[] = [];
 
     paperworkPages.forEach((page: PaperworkPage) => {
+
+      
       page.questions.forEach((question) => {
+
         if (question.type === 'File' || question.type === 'Photos') {
           fileQuestionIDs.push(question.id);
           question.docType && docTypes.add(question.docType);

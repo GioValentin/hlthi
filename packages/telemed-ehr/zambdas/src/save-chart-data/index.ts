@@ -160,35 +160,36 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     }
     
     // convert ExamObservation[] to Observation(FHIR)[] and preserve FHIR resource IDs
-
-    for(var i = 0; examObservations?.length; i++) {
-      if(i > 10) {
-        continue;
-      }
-      
-      const element = examObservations[i];
-      const mappedSnomedField = examFieldsMap[element.field as ExamFieldsNames];
-      const mappedSnomedCard = examCardsMap[element.field as ExamCardsNames];
-      let snomedCode: SNOMEDCodeConceptInterface;
-
-      if (!mappedSnomedField && !mappedSnomedCard)
-        throw new Error('Provided "element.field" property is not recognized.');
-      if (mappedSnomedField && typeof element.value === 'boolean') {
-        snomedCode = mappedSnomedField;
-      } else if (mappedSnomedCard && element.note) {
-        element.value = undefined;
-        snomedCode = mappedSnomedCard;
-      } else {
-        throw new Error(
-          `Exam observation resource must contain string field: 'note', or boolean: 'value', depends on this resource type is exam-field or exam-card. Resource type determines by 'field' prop.`,
+    if(examObservations != undefined) {
+      for(var i = 0; i < examObservations?.length; i++) {
+        if(i > 10) {
+          continue;
+        }
+        
+        const element = examObservations[i];
+        const mappedSnomedField = examFieldsMap[element.field as ExamFieldsNames];
+        const mappedSnomedCard = examCardsMap[element.field as ExamCardsNames];
+        let snomedCode: SNOMEDCodeConceptInterface;
+  
+        if (!mappedSnomedField && !mappedSnomedCard)
+          throw new Error('Provided "element.field" property is not recognized.');
+        if (mappedSnomedField && typeof element.value === 'boolean') {
+          snomedCode = mappedSnomedField;
+        } else if (mappedSnomedCard && element.note) {
+          element.value = undefined;
+          snomedCode = mappedSnomedCard;
+        } else {
+          throw new Error(
+            `Exam observation resource must contain string field: 'note', or boolean: 'value', depends on this resource type is exam-field or exam-card. Resource type determines by 'field' prop.`,
+          );
+        }
+  
+        saveOrUpdateRequests.push(
+          saveOrUpdateResourceRequest(makeExamObservationResource(encounterId, patient.id!, element, snomedCode)),
         );
       }
-
-      saveOrUpdateRequests.push(
-        saveOrUpdateResourceRequest(makeExamObservationResource(encounterId, patient.id!, element, snomedCode)),
-      );
     }
-
+    
     // 9. convert Medical Decision to ClinicalImpression (FHIR) and preserve FHIR resource IDs
     if (medicalDecision) {
       saveOrUpdateRequests.push(

@@ -49,6 +49,11 @@ export function getFullName(individual: Patient | Practitioner | RelatedPerson |
 
 export function getPatientInfoFullName(patient: PatientInfo): string {
   const { firstName, middleName, lastName } = patient;
+
+  if(!firstName) {
+    return `New Patient`;
+  }
+
   return `${firstName}${middleName ? ` ${middleName}` : ''} ${lastName}`;
 }
 

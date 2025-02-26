@@ -40,6 +40,7 @@ export type FormInputTypeField = {
   validationRegexError?: string;
   characterLimit?: number;
   description?: ReactElement;
+  apiClient?: object
 } & TextFieldProps;
 
 export type FormInputTypeGroup = {

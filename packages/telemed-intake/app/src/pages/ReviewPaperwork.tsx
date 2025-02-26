@@ -91,8 +91,7 @@ const ReviewPaperwork = (): JSX.Element => {
         onSuccess: async () => {
           usePaperworkStore.setState({ paperworkQuestions: undefined, completedPaperwork: undefined });
           useFilesStore.setState({ fileURLs: undefined });
-
-          console.log(patientInfo);
+          
           if (visitService === 'telemedicine' && visitType === 'now') {
             navigate(`${IntakeFlowPageRoute.WaitingRoom.path}?appointment_id=${appointmentID}`);
           } else {

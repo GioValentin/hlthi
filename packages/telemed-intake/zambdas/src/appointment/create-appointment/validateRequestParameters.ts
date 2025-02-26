@@ -81,6 +81,7 @@ export function validateCreateAppointmentParams(
     patient.dateOfBirth === undefined ||
     patient.email === undefined ||
     patient.emailUser === undefined ||
+    patient.paymentMethod === undefined ||
     patient.firstName === '' ||
     patient.lastName === '' ||
     patient.sex === '' ||

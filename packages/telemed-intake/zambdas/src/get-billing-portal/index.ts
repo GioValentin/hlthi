@@ -51,7 +51,7 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
         let customer = customers.data[0];
 
         const session = await stripe.billingPortal.sessions.create({
-          configuration: 'bpc_1QWmn3IiL0oeTlYvNfo7TKMh',
+          configuration: getSecret(SecretsKeys.STRIPE_BILLING_CONFIGURATION, secrets),
           customer: customer.id,
           return_url: 'https://portal.hlthi.life/dashboard',
         });

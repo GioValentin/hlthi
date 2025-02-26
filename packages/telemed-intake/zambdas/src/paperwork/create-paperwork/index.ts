@@ -66,9 +66,7 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     if (!token) {
       console.log('getting token');
       token = await getM2MClientToken(secrets);
-    } else {
-      console.log('already have token');
-    }
+    } 
 
     const fhirClient = createFhirClient(token);
     const questionnaireSearch: Questionnaire[] = await fhirClient.searchResources({
@@ -139,7 +137,7 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
       );
     }
     if (questionnaireResponseResource) {
-      console.log(`Found a QuestionnaireResponse with ID ${questionnaireResponseResource.id}`);
+      console.log("Coming into update!");
       await updateQuestionnaireResponse(
         paperwork,
         nowISO,
@@ -153,6 +151,7 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
         fhirClient,
       );
     } else {
+      console.log("Coming into create!");
       await createQuestionnaireResponse(
         paperwork,
         nowISO,
@@ -183,7 +182,7 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
 
     if (relatedPerson?.id && location && patient && appointment) {
       const relatedPersonRef = `RelatedPerson/${relatedPerson.id}`;
-      console.log(`Sms data: recipient: ${relatedPersonRef}; verifiedPhoneNumber: ${verifiedPhoneNumber};`);
+      
 
       if (getSecret(SecretsKeys.SENDGRID_API_KEY, secrets)) {
         await sendConfirmationMessages(

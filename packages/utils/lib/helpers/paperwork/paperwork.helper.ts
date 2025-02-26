@@ -120,6 +120,7 @@ export function questionnaireItemToInputType(item: QuestionnaireItem, valueSets?
   }));
   let multiline = false;
 
+  
   if (questionItemType === 'string') {
     formItemType = 'Text';
     // const inputType = item.extension?.find(
@@ -164,7 +165,7 @@ export function questionnaireItemToInputType(item: QuestionnaireItem, valueSets?
   } else if (questionItemType === 'text') {
     formItemType = 'Text';
     multiline = true;
-  } else if (questionItemType === 'attachment') {
+  } else if (questionItemType === 'attachment') { // add payment checker
     if (
       attributes?.find((attributeTemp) => attributeTemp.name === 'attachment-type' && attributeTemp.value === 'photos')
     ) {
@@ -172,6 +173,7 @@ export function questionnaireItemToInputType(item: QuestionnaireItem, valueSets?
     } else {
       formItemType = 'File';
     }
+    
   } else if (questionItemType === 'boolean') {
     formItemType = 'Checkbox';
   } else if (questionItemType === 'group') {

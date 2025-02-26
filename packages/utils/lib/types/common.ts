@@ -84,6 +84,8 @@ export type FormItemType =
   | 'Group'
   | 'Form list'
   | 'Photos'
+  | 'Payment Method'
+  | 'Membership Details'
   | undefined;
 
 export type PromiseReturnType<T> = T extends Promise<infer R> ? R : never;

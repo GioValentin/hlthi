@@ -65,7 +65,7 @@ enum ZambdaNames {
   'get providers' = 'get providers',
   'get locations' = 'get locations',
   'get billing portal' = 'get billing portal',
-  'create stripe customer' = 'create stripe customer',
+  'get stripe customer' = 'get stripe customer',
   'get patient subscription status' = 'get patient subscription status',
   'create stripe checkout session' = 'create stripe checkout session',
   'get provider' = 'get provider'
@@ -93,7 +93,7 @@ const zambdasPublicityMap: Record<keyof typeof ZambdaNames, boolean> = {
   'get locations': true,
   'get groups': true,
   'get billing portal': false,
-  'create stripe customer': false,
+  'get stripe customer': false,
   'get patient subscription status': false,
   'create stripe checkout session': false,
   'get provider': true
@@ -129,7 +129,7 @@ export const getZapEHRAPI = (
   videoChatListInvites: typeof videoChatListInvites;
   createZ3Object: typeof createZ3Object;
   getBillingPortalLink: typeof getBillingPortalLink;
-  createStripeCustomer: typeof createStripeCustomer;
+  getStripeCustomer: typeof getStripeCustomer;
   createStripeCheckoutSession: typeof createStripeCheckoutSession;
   getPatientSubscriptionStatus: typeof getPatientSubscriptionStatus;
 } => {
@@ -155,7 +155,7 @@ export const getZapEHRAPI = (
     getLocationsZambdaID,
     getGroupsZambdaID,
     getBillingPortalZambdaID,
-    createStripeCustomerZambdaID,
+    getStripeCustomerZambdaID,
     getPatientSubscriptionStatusZambdaID,
     createStripeCheckoutSessionZambdaID,
     getProviderZambdaID
@@ -183,7 +183,7 @@ export const getZapEHRAPI = (
     'video chat list invites': videoChatListInvitesZambdaID,
     'get presigned file url': getPresignedFileURLZambdaID,
     'get billing portal':getBillingPortalZambdaID,
-    'create stripe customer':createStripeCustomerZambdaID,
+    'get stripe customer':getStripeCustomerZambdaID,
     'get patient subscription status': getPatientSubscriptionStatusZambdaID,
     'create stripe checkout session': createStripeCheckoutSessionZambdaID,
     'get provider': getProviderZambdaID
@@ -321,8 +321,8 @@ export const getZapEHRAPI = (
     return await makeZapRequest('get billing portal', parameters, NotFoundApointmentErrorHandler);
   };
 
-  const createStripeCustomer = async (parameters: CreateStripeCustomerRequestParams): Promise<CreateStripeCustomerlResponse> => {
-    return await makeZapRequest('create stripe customer', parameters, NotFoundApointmentErrorHandler);
+  const getStripeCustomer = async (parameters: CreateStripeCustomerRequestParams): Promise<CreateStripeCustomerlResponse> => {
+    return await makeZapRequest('get stripe customer', parameters, NotFoundApointmentErrorHandler);
   };
 
   const createStripeCheckoutSession = async (parameters: CreateStripeCheckoutSessionRequestParams): Promise<CreateStripeCheckoutSessionResponse> => {
@@ -487,7 +487,7 @@ export const getZapEHRAPI = (
     getBillingPortalLink,
     getPatientSubscriptionStatus,
     createStripeCheckoutSession,
-    createStripeCustomer,
+    getStripeCustomer,
     getProvider,
     getConversationLink
   };
