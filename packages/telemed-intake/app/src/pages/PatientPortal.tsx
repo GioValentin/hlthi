@@ -6,11 +6,9 @@ import { otherColors } from '../IntakeThemeProvider';
 import { CustomContainer, useIntakeCommonStore } from '../features/common';
 import HomepageOption from '../features/homepage/HomepageOption';
 import { useZapEHRAPIClient } from '../utils';
-import { getSelectors,} from 'ottehr-utils';
 import { requestVisit, pastVisits, contactSupport,urgentCareVisit,medication,urgentCareUpdated } from '@theme/icons';
 import { useGetPatients, usePatientsStore } from 'src/features/patients';
 import { useGetAppointments } from 'src/features/appointments';
-import {useAccountInfoStore} from '../features/account-info';
 
 const PatientPortal = (): JSX.Element => {
   localStorage.removeItem('welcomePath');
@@ -27,14 +25,6 @@ const PatientPortal = (): JSX.Element => {
   const { data: patientsData, isFetching: isPatientsFetching } = useGetPatients(apiClient, (data) => {
     usePatientsStore.setState({ patients: data?.patients });
   });
-
-   const { accountInfo: currentAccountInfo } = getSelectors(useAccountInfoStore, [
-      'accountInfo',
-    ]);
-
-  const accountInfo = { ...currentAccountInfo, sub: undefined };
-
-  console.log(accountInfo);
   
   const hasPatients = Boolean(patientsData?.patients?.length);
 

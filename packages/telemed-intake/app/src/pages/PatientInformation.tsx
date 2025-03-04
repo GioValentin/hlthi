@@ -216,7 +216,7 @@ const PatientInformation = (): JSX.Element => {
         updateResourcesOrNavigateNext();
       }
     } else {
-      
+
       if (!pendingUpdates) {
         console.error('No pending patientInfo updates, something went wrong');
         return;
@@ -384,6 +384,7 @@ const PatientInformation = (): JSX.Element => {
             type: 'Payment Method',
             name: 'paymentMethod',
             label: "Choose A Payment Method",
+            customerId: patientInfo.customerId,
             defaultValue: null,
             required: true,
             //@ts-ignore
@@ -393,7 +394,8 @@ const PatientInformation = (): JSX.Element => {
             type: 'Text',
             name: 'customerId',
             label: "Choose A Payment Method",
-            defaultValue: null,
+            defaultValue: patientInfo.customerId ?? null,
+            customerId: patientInfo.customerId,
             required: true,
             hidden: true,
           },
@@ -401,6 +403,7 @@ const PatientInformation = (): JSX.Element => {
             type: 'Membership Details',
             name: 'visitRate',
             label: "Membership Details",
+            customerId: patientInfo.customerId,
             defaultValue: null,
             required: true,
             //@ts-ignore

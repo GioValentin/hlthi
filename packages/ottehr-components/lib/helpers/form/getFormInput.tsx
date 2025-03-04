@@ -317,6 +317,7 @@ export const getFormInputField = (
               required={formInput.required}
               value={formInput.value ?? ''}
               defaultValue={formInput.defaultValue}
+              customerId={formInput.customerId}
               onChange={(event) => {
                 const target = event.target as HTMLInputElement;
                 methods.setValue(formInput.name, target.value);
@@ -332,7 +333,7 @@ export const getFormInputField = (
           case 'Membership Details':   
 
             // @ts-ignore
-            return (<MembershipDetails client={formInput.apiClient}/>);
+            return (<MembershipDetails client={formInput.apiClient} customerId={formInput.customerId}/>);
 
           default:
             console.log(formInput);

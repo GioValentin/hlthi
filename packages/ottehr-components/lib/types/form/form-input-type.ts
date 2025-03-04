@@ -41,6 +41,7 @@ export type FormInputTypeField = {
   characterLimit?: number;
   description?: ReactElement;
   apiClient?: object
+  customerId?: string;
 } & TextFieldProps;
 
 export type FormInputTypeGroup = {

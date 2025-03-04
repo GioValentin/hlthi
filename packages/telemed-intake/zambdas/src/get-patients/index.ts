@@ -64,6 +64,11 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
           email = guardianContact?.telecom?.find((telecom) => telecom.system === 'email')?.value;
         }
       }
+
+      const billingAccountId = patientTemp.extension?.find(
+        (ext) => ext.url === `${PRIVATE_EXTENSION_BASE_URL}/billing-account-id`
+      )?.valueString;
+
       const patient: PatientInfo = {
         id: patientTemp.id,
         pointOfDiscovery: patientTemp.extension?.find(
@@ -78,7 +83,9 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
         email: email,
         emailUser: emailUser,
         newPatient: email == undefined ? true : false,
+        customerId: billingAccountId
       };
+      
       patientsInformation.push(patient);
     }
 

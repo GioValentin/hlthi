@@ -117,27 +117,6 @@ function App(): JSX.Element {
 
   }, [t]);
 
-  // const {isLoading} = useStripeCustomer();
-
-  // if(isLoading) {
-  //   return (
-  //     <Box sx={{ mb: 2 }}>
-  //     <Box
-  //       sx={{
-  //         height: 260,
-  //         border: `1px dashed #ccccc`,
-  //         borderRadius: 2,
-  //         display: 'flex',
-  //         justifyContent: 'center',
-  //         alignItems: 'center',
-  //       }}
-  //     >
-  //       <CircularProgress />
-  //     </Box>
-  //   </Box>
-  //   )
-  // }
-
   return (
     <QueryClientProvider client={queryClient}>
       <IntakeThemeProvider>

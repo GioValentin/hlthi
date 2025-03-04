@@ -12,7 +12,7 @@ import {
   useAccountInfoStore
 } from '../../features/account-info';
 import TagManager from "react-gtm-module";
-import { CustomContainer } from '../../features/common';
+import { CustomContainer, LoadingScreen } from '../../features/common';
 import { handleClosePastTimeErrorDialog, isSlotTimePassed, useZapEHRAPIClient } from '../../utils';
 import { decode } from 'html-entities';
 
@@ -150,6 +150,10 @@ const ConfirmPhoneNumber = (): JSX.Element => {
   //   setTimer(30);
   // };
 
+  if(isLoading) {
+    return <LoadingScreen/>
+  }
+
   return (
     <CustomContainer
       title={`Please Verify ${accountInfo.phone}`}
@@ -158,7 +162,6 @@ const ConfirmPhoneNumber = (): JSX.Element => {
       <>
         <PageForm
           formElements={formElements}
-          loading={isLoading}
           controlButtons={{
             submitLabel: t('general.button.continue')
           }}

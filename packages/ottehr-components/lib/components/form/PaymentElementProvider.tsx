@@ -35,6 +35,7 @@ type RadioInputProps = {
   showHelperTextIcon?: boolean;
   borderColor?: string;
   centerImages?: boolean;
+  customerId?: string;
   onChange: (event: SyntheticEvent) => void;
   radioStyling?: SxProps;
 } & RadioGroupProps;
@@ -43,7 +44,7 @@ const stripePromise = loadStripe(import.meta.env.VITE_APP_STRIPE_PUBLISHABLE_KEY
 
 
 export const PaymentElementProvider: React.FC<RadioInputProps> = (props) => {
-  const { client, name, onChange, required } = props;
+  const { client, name, onChange, required, customerId } = props;
   
   const [ clientSecret, setClientSecret] = useState<string | undefined>(undefined);
   const [ customerSessionSecret, setCustomerSessionSecret] = useState<string | undefined>(undefined);
@@ -54,11 +55,10 @@ export const PaymentElementProvider: React.FC<RadioInputProps> = (props) => {
 
   const { formState: { errors }, control } = useFormContext();
   const getCustomer = async () => {
-    if (!user?.sub) return; // Ensure user is available before making a request
 
     try {
       // @ts-ignore
-      const customer = await client.getStripeCustomer({ customerId: user.sub });
+      const customer = await client.getStripeCustomer({ customerId: customerId });
 
       setClientSecret(customer.setupIntent.client_secret);
       setCustomerSessionSecret(customer.session.client_secret);

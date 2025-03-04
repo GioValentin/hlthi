@@ -30,23 +30,8 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     }
 
     try {
-      let data = JSON.stringify({
-        "acct_id": customerId
-      });
       
-      let config = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: 'https://pay.hlthi.life/api/user',
-        headers: { 
-          'Content-Type': 'application/json'
-        },
-        data : data
-      };
-      
-      const hlthiApiResponse = await axios.request(config);
-  
-      const customer = await stripe.customers.retrieve(hlthiApiResponse.data.billing_account_id, {
+      const customer = await stripe.customers.retrieve(customerId, {
         expand: ['subscriptions'],
       });
   

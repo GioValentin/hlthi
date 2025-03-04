@@ -109,7 +109,8 @@ const inviteUser = async function(
   applicationId: string,
   accessToken: string,
   projectId: string,
-  account: Account
+  account: Account,
+  customerId: string
 ): Promise<string> {
   const defaultRole = await getPatientUserRoles(projectApiUrl, accessToken, projectId);
   if(account.firstName == undefined || account.phone == undefined) {
@@ -191,11 +192,13 @@ const inviteUser = async function(
       {
         url: "https://fhir.zapehr.com/r4/StructureDefinitions/point-of-discovery",
         valueString: "Friend/Family"
+      },
+      {
+        url: 'https://fhir.zapehr.com/r4/StructureDefinitions/billing-account-id',
+        valueString: customerId
       }
     ]
   };
-
-  console.log(applicationId);
 
   const invitedUserResponse = await fetch(`${projectApiUrl}/user/invite`, {
     method: 'POST',
@@ -258,19 +261,6 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
       subscription: {} as Stripe.Subscription
     }
 
-    const invitedUser = await inviteUser(
-      getSecret(SecretsKeys.PROJECT_API, secrets),
-      validatedParameters.account.email ? validatedParameters.account.email : 'noEmail',
-      getSecret(SecretsKeys.APPLICATION_ID, secrets),
-      zapehrToken,
-      getSecret(SecretsKeys.PROJECT_ID, secrets),
-      validatedParameters.account
-    );
-
-    if(!validatedParameters.account.phone) {
-      throw new Error("Missing phone");
-    }
-
     //@ts-ignore
     const customer = await stripe.customers.create({
       name: validatedParameters.account.firstName + ' ' + validatedParameters.account.lastName,
@@ -285,10 +275,30 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
         country: 'us'
       },
       metadata: {
+        "date_of_birth": validatedParameters.account.dateOfBirth
+      }
+    });
+
+    const invitedUser = await inviteUser(
+      getSecret(SecretsKeys.PROJECT_API, secrets),
+      validatedParameters.account.email ? validatedParameters.account.email : 'noEmail',
+      getSecret(SecretsKeys.APPLICATION_ID, secrets),
+      zapehrToken,
+      getSecret(SecretsKeys.PROJECT_ID, secrets),
+      validatedParameters.account,
+      customer.id
+    );
+
+    if(!validatedParameters.account.phone) {
+      throw new Error("Missing phone");
+    }
+
+    await stripe.customers.update(customer.id, {
+      metadata: {
         "patient_FHIR": invitedUser.profile,
-        "date_of_birth": validatedParameters.account.dateOfBirth,
         "ehr_user_id": invitedUser.id,
-        "sub": invitedUser.id
+        "sub": invitedUser.id,
+        "gender": validatedParameters.account.sex
       }
     });
 

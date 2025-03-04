@@ -31,16 +31,17 @@ type RadioInputProps = {
   onChange: (event: SyntheticEvent) => void;
   radioStyling?: SxProps;
   availablePlans?: Plans[];
+  customerId?: string;
 } & RadioGroupProps;
 
 export const MembershipDetails: React.FC<RadioInputProps> = (props) => {
-  const { client,availablePlans } = props;
+  const { client,availablePlans, customerId} = props;
   
   const [stripeLink, setStripeLink ] = useState<string | undefined>(undefined);
   const [plans, setPlans] = useState<string>('Free');
   const [planRates, setRatePlans] = useState<number>(129.99);
   const { setValue } = useFormContext();
-
+  
   const { user } = useAuth0();
   
   useEffect(() => {
@@ -48,11 +49,9 @@ export const MembershipDetails: React.FC<RadioInputProps> = (props) => {
     
     const getCustomer = async () => {
       
-      if (!user?.sub) return; // Ensure user is available before making a request
-  
       try {
         // @ts-ignore
-        const customer = await client.getStripeCustomer({ customerId: user.sub, sessionId: true });
+        const customer = await client.getStripeCustomer({ customerId: customerId, sessionId: true });
 
         try {
 
@@ -60,7 +59,6 @@ export const MembershipDetails: React.FC<RadioInputProps> = (props) => {
           
           setStripeLink(customer.portal.url);
 
-          setValue('customerId', customer.customer.id);
           // Check subscription statues
 
           if(customer.customer.subscriptions) {

@@ -18,12 +18,14 @@ export function validateCreateSMSVerificationParams(
   const {
     phone,
     code,
+    verifyServiceId
   } = JSON.parse(input.body);
 
   
   return {
     phone,
     code,
+    verifyServiceId,
     secrets: input.secrets,
   };
 }

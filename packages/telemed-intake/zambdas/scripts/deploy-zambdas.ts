@@ -95,6 +95,15 @@ const ZAMBDAS: { [name: string]: DeployZambda } = {
   'GET-PATIENT-SUBSCRIPTION-STATUS': {
     type: 'http_auth',
   },
+  'CHECK-SMS-VERIFICATION': {
+    type: 'http_open',
+  },
+  'CREATE-ACCOUNT': {
+    type: 'http_open',
+  },
+  'CREATE-SMS-VERIFICATION': {
+    type: 'http_open',
+  }
 };
 
 const updateZambdas = async (config: any): Promise<void> => {
