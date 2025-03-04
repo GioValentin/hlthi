@@ -16,6 +16,9 @@ export const useZapEHRAPIClient = (
   if (zambdaClient && !apiClient) {
     const client = getZapEHRAPI(
       {
+        createAccountZambdaID: import.meta.env.VITE_APP_CREATE_ACCOUNT_ZAMBDA_ID,
+        createSMSVerificationZambdaID: import.meta.env.VITE_APP_CREATE_SMS_VERIFICATION_ZAMBDA_ID,
+        checkSMSVerificationZambdaID: import.meta.env.VITE_APP_CHECK_SMS_VERIFICATION_ZAMBDA_ID,
         getPatientsZambdaID: import.meta.env.VITE_APP_GET_PATIENTS_ZAMBDA_ID,
         getProvidersZambdaID: import.meta.env.VITE_APP_GET_PROVIDERS_ZAMBDA_ID,
         getLocationsZambdaID: import.meta.env.VITE_APP_GET_LOCATIONS_ZAMBDA_ID,
@@ -66,6 +69,9 @@ export const useZapEHRAPIClientNoParams = (
   if (zambdaClient && !apiClient) {
     const client = getZapEHRAPI(
       {
+        createAccountZambdaID: import.meta.env.VITE_APP_CREATE_ACCOUNT_ZAMBDA_ID,
+        createSMSVerificationZambdaID: import.meta.env.VITE_APP_CREATE_SMS_VERIFICATION_ZAMBDA_ID,
+        checkSMSVerificationZambdaID: import.meta.env.VITE_APP_CHECK_SMS_VERIFICATION_ZAMBDA_ID,
         getPatientsZambdaID: import.meta.env.VITE_APP_GET_PATIENTS_ZAMBDA_ID,
         getProvidersZambdaID: import.meta.env.VITE_APP_GET_PROVIDERS_ZAMBDA_ID,
         getLocationsZambdaID: import.meta.env.VITE_APP_GET_LOCATIONS_ZAMBDA_ID,

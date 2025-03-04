@@ -3,21 +3,12 @@ import * as Sentry from '@sentry/react';
 export function setupSentry(
   options: Partial<Sentry.BrowserOptions> & {
     dsn: Exclude<Sentry.BrowserOptions['dsn'], undefined>;
-    environment: Exclude<Sentry.BrowserOptions['environment'], undefined>;
-    networkDetailAllowUrls?: string[];
+    //environment: Exclude<Sentry.BrowserOptions['environment'], undefined>;
+    //networkDetailAllowUrls?: string[];
   },
 ): void {
   Sentry.init({
-    integrations: [
-      new Sentry.BrowserTracing({
-        // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
-        // tracePropagationTargets: ['localhost', /^https:\/\/yourserver\.io\/api/],
-        tracePropagationTargets: ['localhost', ...(options.tracePropagationTargets || [])],
-      }),
-      new Sentry.Replay({
-        networkDetailAllowUrls: options.networkDetailAllowUrls ?? [],
-      }),
-    ],
+    integrations: [],
     // Performance Monitoring
     tracesSampleRate: 1.0, // Capture 100% of the transactions
     // Session Replay

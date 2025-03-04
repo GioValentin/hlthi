@@ -216,10 +216,12 @@ const PatientInformation = (): JSX.Element => {
         updateResourcesOrNavigateNext();
       }
     } else {
+      
       if (!pendingUpdates) {
         console.error('No pending patientInfo updates, something went wrong');
         return;
       }
+
       createAppointment.mutate(
         { apiClient, patientInfo: pendingUpdates },
         {

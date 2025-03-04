@@ -3,12 +3,20 @@ import { Button, Typography, Grid } from '@mui/material';
 import { useFormContext } from 'react-hook-form';
 import {PaymentElement,useStripe, useElements,} from '@stripe/react-stripe-js';
 
-export const PaymentMethodInput: React.FC = () => {
+interface PaymentMethodInputProps {
+  onPaymentMethodChange: (paymentMethod: string) => void;
+}
+
+export const PaymentMethodInput: React.FC<PaymentMethodInputProps> = ({ onPaymentMethodChange }) => {
   
   const {  setValue } = useFormContext();
   const [show, setShow] = useState(false);
   const stripe = useStripe();
   const elements = useElements();
+
+  const handleChange = (paymentMethod: string) => {
+    onPaymentMethodChange(paymentMethod);
+  };
 
   const handlePayment = async () => {
     if (!stripe || !elements) return; // Ensure Stripe.js is ready
@@ -23,6 +31,8 @@ export const PaymentMethodInput: React.FC = () => {
         console.error("Payment error:", result.error.message);
       } else {
         setValue('paymentMethod', result.setupIntent.payment_method);
+        //@ts-ignore
+        handleChange(result.setupIntent.payment_method);
       }
     } catch (error) {
       console.error("Unexpected error during payment:", error);

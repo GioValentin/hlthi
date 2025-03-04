@@ -205,6 +205,70 @@ functions:
       FHIR_API: ${file(./.env/${self:provider.stage}.json):FHIR_API}
       PROJECT_API: ${file(./.env/${self:provider.stage}.json):PROJECT_API}
       ENVIRONMENT: ${file(./.env/${self:provider.stage}.json):ENVIRONMENT}
+  create-sms-verification:
+    handler: src/account/create-sms-verification/index.index
+    events:
+      - http:
+          path: zambda/create-sms-verification/execute-public
+          method: POST
+    timeout: 25
+    environment:
+      TWILIO_ACCOUNT_SID: ${file(./.env/${self:provider.stage}.json):TWILIO_ACCOUNT_SID}
+      TWILIO_AUTH_TOKEN: ${file(./.env/${self:provider.stage}.json):TWILIO_AUTH_TOKEN}
+      TWILIO_VERIFICATION_SERVICE_SID: ${file(./.env/${self:provider.stage}.json):TWILIO_VERIFICATION_SERVICE_SID}
+      WEBSITE_URL: ${file(./.env/${self:provider.stage}.json):WEBSITE_URL}
+      AUTH0_ENDPOINT: ${file(./.env/${self:provider.stage}.json):AUTH0_ENDPOINT}
+      TELEMED_CLIENT_ID: ${file(./.env/${self:provider.stage}.json):TELEMED_CLIENT_ID}
+      TELEMED_CLIENT_SECRET: ${file(./.env/${self:provider.stage}.json):TELEMED_CLIENT_SECRET}
+      AUTH0_AUDIENCE: ${file(./.env/${self:provider.stage}.json):AUTH0_AUDIENCE}
+      ORGANIZATION_ID: ${file(./.env/${self:provider.stage}.json):ORGANIZATION_ID}
+      FHIR_API: ${file(./.env/${self:provider.stage}.json):FHIR_API}
+      PROJECT_API: ${file(./.env/${self:provider.stage}.json):PROJECT_API}
+      ENVIRONMENT: ${file(./.env/${self:provider.stage}.json):ENVIRONMENT}
+  check-sms-verification:
+    handler: src/account/check-sms-verification/index.index
+    events:
+      - http:
+          path: zambda/check-sms-verification/execute-public
+          method: POST
+    timeout: 25
+    environment:
+      TWILIO_ACCOUNT_SID: ${file(./.env/${self:provider.stage}.json):TWILIO_ACCOUNT_SID}
+      TWILIO_AUTH_TOKEN: ${file(./.env/${self:provider.stage}.json):TWILIO_AUTH_TOKEN}
+      TWILIO_VERIFICATION_SERVICE_SID: ${file(./.env/${self:provider.stage}.json):TWILIO_VERIFICATION_SERVICE_SID}
+      WEBSITE_URL: ${file(./.env/${self:provider.stage}.json):WEBSITE_URL}
+      AUTH0_ENDPOINT: ${file(./.env/${self:provider.stage}.json):AUTH0_ENDPOINT}
+      TELEMED_CLIENT_ID: ${file(./.env/${self:provider.stage}.json):TELEMED_CLIENT_ID}
+      TELEMED_CLIENT_SECRET: ${file(./.env/${self:provider.stage}.json):TELEMED_CLIENT_SECRET}
+      AUTH0_AUDIENCE: ${file(./.env/${self:provider.stage}.json):AUTH0_AUDIENCE}
+      ORGANIZATION_ID: ${file(./.env/${self:provider.stage}.json):ORGANIZATION_ID}
+      FHIR_API: ${file(./.env/${self:provider.stage}.json):FHIR_API}
+      PROJECT_API: ${file(./.env/${self:provider.stage}.json):PROJECT_API}
+      ENVIRONMENT: ${file(./.env/${self:provider.stage}.json):ENVIRONMENT}
+  create-account:
+    handler: src/account/create-account/index.index
+    events:
+      - http:
+          path: zambda/create-account/execute-public
+          method: POST
+    timeout: 25
+    environment:
+      APPLICATION_ID: ${file(./.env/${self:provider.stage}.json):APPLICATION_ID}
+      STRIPE_SECRET: ${file(./.env/${self:provider.stage}.json):STRIPE_SECRET} 
+      TWILIO_ACCOUNT_SID: ${file(./.env/${self:provider.stage}.json):TWILIO_ACCOUNT_SID}
+      TWILIO_AUTH_TOKEN: ${file(./.env/${self:provider.stage}.json):TWILIO_AUTH_TOKEN}
+      TWILIO_VERIFICATION_SERVICE_SID: ${file(./.env/${self:provider.stage}.json):TWILIO_VERIFICATION_SERVICE_SID}
+      WEBSITE_URL: ${file(./.env/${self:provider.stage}.json):WEBSITE_URL}
+      AUTH0_ENDPOINT: ${file(./.env/${self:provider.stage}.json):AUTH0_ENDPOINT}
+      TELEMED_CLIENT_ID: ${file(./.env/${self:provider.stage}.json):TELEMED_CLIENT_ID}
+      TELEMED_CLIENT_SECRET: ${file(./.env/${self:provider.stage}.json):TELEMED_CLIENT_SECRET}
+      AUTH0_AUDIENCE: ${file(./.env/${self:provider.stage}.json):AUTH0_AUDIENCE}
+      ORGANIZATION_ID: ${file(./.env/${self:provider.stage}.json):ORGANIZATION_ID}
+      FHIR_API: ${file(./.env/${self:provider.stage}.json):FHIR_API}
+      PROJECT_API: ${file(./.env/${self:provider.stage}.json):PROJECT_API}
+      PROJECT_ID: ${file(./.env/${self:provider.stage}.json):PROJECT_ID}
+      STRIPE_DEFAULT_PRICE_ID: ${file(./.env/${self:provider.stage}.json):STRIPE_DEFAULT_PRICE_ID}
+      ENVIRONMENT: ${file(./.env/${self:provider.stage}.json):ENVIRONMENT}
   get-wait-status:
     handler: src/get-wait-status/index.index
     events:

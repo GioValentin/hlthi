@@ -4,7 +4,7 @@ import Stripe from 'stripe';
 
 async function runCLI(): Promise<void> {
   
-  const stripe = new Stripe("");
+  const stripe = new Stripe("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");
   try {
    const configuration = await stripe.billingPortal.configurations.create({
       features: {
@@ -40,7 +40,7 @@ async function runCLI(): Promise<void> {
               product: "prod_RqOCXlSqUEk0Wz"
             },
             {
-              prices: ["price_1QwhPhIiL0oeTlYvJUN87CzE","price_1QwhPhIiL0oeTlYvP4FpYOq9"],
+              prices: ["price_1Qwip8IiL0oeTlYv0X6OBIkv","price_1QwhPhIiL0oeTlYvP4FpYOq9"],
               product: "prod_RqOC259ZFWJDwe"
             }
           ],

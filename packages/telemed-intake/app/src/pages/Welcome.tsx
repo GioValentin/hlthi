@@ -122,7 +122,10 @@ const Welcome = (): JSX.Element => {
       {isError && <Typography variant="body1">{t('welcome.scheduleError')}</Typography>}
       {!isFetching && schedule && schedule.available && ['in-person', 'telemedicine'].includes(visitService || '') && (
         <>
-          <Typography variant="body1">{t('welcome.message')}</Typography>
+          <Typography variant="body1">{t('welcome.message1')}</Typography>
+          
+          <Typography variant="body1">{t('welcome.message2')}</Typography>
+          <Typography variant="body1">{t('welcome.message3')}</Typography>
           <div dangerouslySetInnerHTML={{ __html: t('welcome.html') }} />
 
           {visitType === 'prebook' && <Schedule slotData={schedule.availableSlots} timezone={'America/New_York'} />}

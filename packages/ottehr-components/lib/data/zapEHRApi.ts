@@ -38,12 +38,19 @@ import {
   CreateStripeCheckoutSessionRequestParams,
   GetPatientSubscriptionStatusRequestParams,
   GetPatientSubscriptionStatusResponse,
-  JoinChatRoomResponse
+  JoinChatRoomResponse,
+  CreateAccountPhoneVerificationParams,
+  CreateAccountRequestParams,
+  CreateAccountResponse,
+  CreateAccountPhoneVerificationResponse
 } from 'ottehr-utils';
 import { ApiError, GetZapEHRAPIParams } from '../types/data';
 import { HealthcareService, Location, Practitioner } from 'fhir/r4';
 
 enum ZambdaNames {
+  'create account' = 'create account',
+  'create sms verification' = 'create sms verification',
+  'check sms verification' = 'check sms verification',
   'check in' = 'check in',
   'create appointment' = 'create appointment',
   'cancel telemed appointment' = 'cancel telemed appointment',
@@ -73,6 +80,9 @@ enum ZambdaNames {
 
 const zambdasPublicityMap: Record<keyof typeof ZambdaNames, boolean> = {
   'check in': true,
+  'create account': true,
+  'create sms verification': true,
+  'check sms verification': true,
   'create appointment': false,
   'cancel telemed appointment': false,
   'cancel in person appointment': false,
@@ -105,6 +115,9 @@ export const getZapEHRAPI = (
   params: GetZapEHRAPIParams,
   zambdaClient: ZambdaClient,
 ): {
+  createAccount: typeof createAccount;
+  createSMSVerification: typeof createSMSVerification;
+  checkSMSVerification: typeof checkSMSVerification;
   checkIn: typeof checkIn;
   createAppointment: typeof createAppointment;
   cancelTelemedAppointment: typeof cancelTelemedAppointment;
@@ -158,10 +171,16 @@ export const getZapEHRAPI = (
     getStripeCustomerZambdaID,
     getPatientSubscriptionStatusZambdaID,
     createStripeCheckoutSessionZambdaID,
-    getProviderZambdaID
+    getProviderZambdaID,
+    createAccountZambdaID,
+    createSMSVerificationZambdaID,
+    checkSMSVerificationZambdaID
   } = params;
 
   const zambdasToIdsMap: Record<keyof typeof ZambdaNames, string | undefined> = {
+    'create account': createAccountZambdaID,
+    'create sms verification': createSMSVerificationZambdaID,
+    'check sms verification': checkSMSVerificationZambdaID,
     'check in': checkInZambdaID,
     'create appointment': createAppointmentZambdaID,
     'cancel telemed appointment': cancelTelemedAppointmentZambdaID,
@@ -257,6 +276,18 @@ export const getZapEHRAPI = (
 
   const cancelInPersonAppointment = async (parameters: CancelAppointmentRequestParams): Promise<any> => {
     return await makeZapRequest('cancel in person appointment', parameters, NotFoundApointmentErrorHandler);
+  };
+
+  const createAccount = async (parameters: CreateAccountRequestParams): Promise<CreateAccountResponse> => {
+    return await makeZapRequest('create account', parameters, NotFoundApointmentErrorHandler);
+  };
+
+  const createSMSVerification = async (parameters: CreateAccountPhoneVerificationParams): Promise<CreateAccountPhoneVerificationResponse> => {
+    return await makeZapRequest('create sms verification', parameters, NotFoundApointmentErrorHandler);
+  };
+
+  const checkSMSVerification = async (parameters: CreateAccountPhoneVerificationParams): Promise<CreateAccountPhoneVerificationResponse> => {
+    return await makeZapRequest('check sms verification', parameters, NotFoundApointmentErrorHandler);
   };
 
   const updateAppointment = async (parameters: UpdateAppointmentRequestParams): Promise<UpdateAppointmentResponse> => {
@@ -463,6 +494,9 @@ export const getZapEHRAPI = (
   };
 
   return {
+    createAccount,
+    createSMSVerification,
+    checkSMSVerification,
     checkIn,
     createAppointment,
     cancelTelemedAppointment,

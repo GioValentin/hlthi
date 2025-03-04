@@ -1,6 +1,188 @@
 import { Address, ContactPoint, LocationHoursOfOperation } from 'fhir/r4';
 import { Secrets } from '../secrets';
 
+export interface FacilityGroup {
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  tel: string;
+  fax: string;
+  group: string;
+  npi: string;
+  taxId: string;
+}
+
+export type StateType = (typeof AllStates extends readonly (infer TElementType)[] ? TElementType : never)['value'];
+
+export interface VirtualLocationBody {
+  name: string;
+  code?: string;
+}
+
+export const AllStatesToVirtualLocationsData: {
+  [value in StateType]: VirtualLocationBody;
+} = {
+  AL: { name: 'Telemed Alabama' },
+  AK: {
+    name: 'Telemed Alaska',
+    code: 'AKTELE',
+  },
+  AZ: { name: 'Telemed Arizona' },
+  AR: { name: 'Telemed Arkansas' },
+  CA: {
+    name: 'Telemed California',
+    code: 'CATELE',
+  },
+  CO: { name: 'Telemed Colorado' },
+  CT: {
+    name: 'Telemed Connecticut',
+    code: 'CTTELE',
+  },
+  DE: {
+    name: 'Telemed Delaware',
+    code: 'DETELE',
+  },
+  DC: { name: 'Telemed District of Columbia' },
+  FL: {
+    name: 'Telemed Florida',
+    code: 'FLTELE',
+  },
+  GA: { name: 'Telemed Georgia' },
+  HI: { name: 'Telemed Hawaii' },
+  ID: { name: 'Telemed Idaho' },
+  IL: {
+    name: 'Telemed Illinois',
+    code: 'ILTELE',
+  },
+  IN: { name: 'Telemed Indiana' },
+  IA: { name: 'Telemed Iowa' },
+  KS: { name: 'Telemed Kansas' },
+  KY: { name: 'Telemed Kentucky' },
+  LA: { name: 'Telemed Louisiana' },
+  ME: { name: 'Telemed Maine' },
+  MD: {
+    name: 'Telemed Maryland',
+    code: 'MDTELE',
+  },
+  MA: {
+    name: 'Telemed Massachusetts',
+    code: 'MATELE',
+  },
+  MI: { name: 'Telemed Michigan' },
+  MN: { name: 'Telemed Minnesota' },
+  MS: { name: 'Telemed Mississippi' },
+  MO: { name: 'Telemed Missouri' },
+  MT: { name: 'Telemed Montana' },
+  NE: { name: 'Telemed Nebraska' },
+  NV: { name: 'Telemed Nevada' },
+  NH: { name: 'Telemed New Hampshire' },
+  NJ: {
+    name: 'Telemed New Jersey',
+    code: 'NJTELE',
+  },
+  NM: { name: 'Telemed New Mexico' },
+  NY: {
+    name: 'Telemed New York',
+    code: 'NYTELE',
+  },
+  NC: {
+    name: 'Telemed North Carolina',
+    code: 'NCTELE',
+  },
+  ND: { name: 'Telemed North Dakota' },
+  OH: { name: 'Telemed Ohio' },
+  OK: { name: 'Telemed Oklahoma' },
+  OR: { name: 'Telemed Oregon' },
+  PA: {
+    name: 'Telemed Pennsylvania',
+    code: 'PATELE',
+  },
+  RI: { name: 'Telemed Rhode Island' },
+  SC: { name: 'Telemed South Carolina' },
+  SD: { name: 'Telemed South Dakota' },
+  TN: {
+    name: 'Telemed Tennessee',
+    code: 'TNTELE',
+  },
+  TX: {
+    name: 'Telemed Texas',
+    code: 'TXTELE',
+  },
+  UT: { name: 'Telemed Utah' },
+  VT: { name: 'Telemed Vermont' },
+  VI: { name: 'Telemed Virgin Islands' },
+  VA: {
+    name: 'Telemed Virginia',
+    code: 'VATELE',
+  },
+  WA: { name: 'Telemed Washington' },
+  WV: { name: 'Telemed West Virginia' },
+  WI: { name: 'Telemed Wisconsin' },
+  WY: { name: 'Telemed Wyoming' },
+};
+
+export enum FhirAppointmentType {
+  walkin = 'walkin',
+  posttelemed = 'posttelemed',
+  prebook = 'prebook',
+  virtual = 'virtual',
+}
+
+// internal communication coding
+const INTERNAL_COMMUNICATION_SYSTEM = 'intra-communication';
+const ISSUE_REPORT_CODE = 'intake-issue-report';
+
+export const COMMUNICATION_ISSUE_REPORT_CODE = {
+  system: INTERNAL_COMMUNICATION_SYSTEM,
+  code: ISSUE_REPORT_CODE,
+};
+
+export interface FacilityInfo {
+  name: string;
+  address: string;
+  phone: string;
+}
+
+export const FacilitiesTelemed: FacilityInfo[] = [
+  { name: 'Telemed Alabama', address: 'Bayside, NY', phone: '' },
+  { name: 'Telemed Alaska', address: 'Anchorage, AK', phone: '907-222-5090' },
+  { name: 'Telemed Arizona', address: 'BAYSIDE, NY', phone: '' },
+  { name: 'Telemed Arkansas', address: 'BAYSIDE, NY', phone: '' },
+  { name: 'Telemed California', address: 'LOS ANGELES, CA', phone: '310-312-5437' },
+  { name: 'Telemed Colorado', address: 'BAYSIDE, NY', phone: '' },
+  { name: 'Telemed Connecticut', address: 'WEST HARTFORD, CT', phone: '860-232-5437' },
+  { name: 'Telemed District of Columbia', address: 'GREENBELT, MD', phone: '' },
+  { name: 'Telemed Delaware', address: 'NEWARK, DE', phone: '302-500-5437' },
+  { name: 'Telemed Florida', address: 'CORAL SPRINGS, FL', phone: '954-951-0008' },
+  { name: 'Telemed Georgia', address: 'BAYSIDE, NY', phone: '' },
+  { name: 'Telemed Hawaii', address: 'BAYSIDE, NY', phone: '' },
+  { name: 'Telemed Idaho', address: 'BAYSIDE, NY', phone: '' },
+  { name: 'Telemed Illinois', address: 'Naperville, IL', phone: '630-470-4878' },
+  { name: 'Telemed Indiana', address: 'BAYSIDE, NY', phone: '' },
+  { name: 'Telemed Iowa', address: 'BAYSIDE, NY', phone: '' },
+  { name: 'Telemed Maryland', address: 'GREENBELT, MD', phone: '301-982-5437' },
+  { name: 'Telemed Massachusetts', address: 'DEDHAM, MA', phone: '781-461-6767' },
+  { name: 'Telemed Michigan', address: 'BAYSIDE, NY', phone: '' },
+  { name: 'Telemed Minnesota', address: 'BAYSIDE, NY', phone: '' },
+  { name: 'Telemed Missouri', address: 'BAYSIDE, NY', phone: '' },
+  { name: 'Telemed New Hampshire', address: 'BAYSIDE, NY', phone: '' },
+  { name: 'Telemed New Jersey', address: 'LIVINGSTON, NJ', phone: '973-992-4767' },
+  { name: 'Telemed New York', address: 'BAYSIDE, NY', phone: '718-747-5437' },
+  { name: 'Telemed North Carolina', address: 'MORRISVILLE, NC', phone: '919-467-7425' },
+  { name: 'Telemed Ohio', address: 'BAYSIDE, NY', phone: '' },
+  { name: 'Telemed Pennsylvania', address: 'WAYNE, PA', phone: '267-730-6767' },
+  { name: 'Telemed Tennessee', address: 'MURFREESBORO, TN', phone: '' },
+  { name: 'Telemed Texas', address: 'THE COLONY, TX', phone: '214-488-5437' },
+  { name: 'Telemed Virginia', address: 'SPRINGFIELD, VA', phone: '703-644-5437' },
+];
+
+export interface InHouseMedicationInfo {
+  name: string;
+  NDC: string;
+  CPT: string;
+  adminCode: string;
+}
 export interface PatientBaseInfo {
   firstName?: string;
   id?: string;
@@ -86,6 +268,7 @@ export type FormItemType =
   | 'Photos'
   | 'Payment Method'
   | 'Membership Details'
+  | 'Radio With Details'
   | undefined;
 
 export type PromiseReturnType<T> = T extends Promise<infer R> ? R : never;

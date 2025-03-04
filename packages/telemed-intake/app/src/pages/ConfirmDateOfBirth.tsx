@@ -12,6 +12,7 @@ import {
   useCreateAppointmentMutation,
   useUpdateAppointmentMutation,
 } from '../features/appointments';
+import TagManager from "react-gtm-module";
 import { CustomContainer } from '../features/common';
 import { useGetPaperwork, usePaperworkStore } from '../features/paperwork';
 import { usePatientInfoStore } from '../features/patient-info';
@@ -162,6 +163,23 @@ const ConfirmDateOfBirth = (): JSX.Element => {
               patientInfo: newPatientInfo,
             }));
 
+            try {
+              
+              TagManager.dataLayer({
+                dataLayer: {
+                  event: "purchase",
+                  ecommerce: {
+                    transaction_id: response.appointmentId,
+                    //@ts-ignore
+                    value: response.paymentIntent.amount / 100,
+                    currency: "USD"
+                  }
+                }
+              });
+            } catch(e) {
+
+            }
+            
             // just for the navigateNext to have the latest state values
             void Promise.resolve().then(() => updateResourcesOrNavigateNext());
           },

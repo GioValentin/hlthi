@@ -127,6 +127,11 @@ async function performEffect(props: PerformEffectInputProps): Promise<APIGateway
   
   const stripe = new Stripe(getSecret(SecretsKeys.STRIPE_SECRET, input.secrets));
 
+
+  if( patient.customerId == undefined) {
+    throw new Error("Customer ID Required");
+  }
+
   // Get Customer 
   const paymentIntent = await stripe.paymentIntents.create({
     customer: patient.customerId,
@@ -159,7 +164,7 @@ async function performEffect(props: PerformEffectInputProps): Promise<APIGateway
 
   await createAuditEvent(AuditableZambdaEndpoints.appointmentCreate, fhirClient, input, patientId, secrets);
 
-  const response = { message, appointmentId };
+  const response = { message, appointmentId,paymentIntent };
   console.log(`fhirAppointment = ${JSON.stringify(response)}`, 'Telemed visit');
 
   try {

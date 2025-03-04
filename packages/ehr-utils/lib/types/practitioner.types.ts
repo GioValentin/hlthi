@@ -1,3 +1,5 @@
+import { StateType } from 'ottehr-utils';
+
 export type PractitionerQualificationCode =
   | 'MD'
   | 'PA'
@@ -280,4 +282,40 @@ export interface PractitionerLicense {
   state: string;
   code: PractitionerQualificationCode;
   active: boolean;
+}
+
+export interface PractitionerLicense {
+  state: StateType;
+  code: PractitionerQualificationCode;
+  active: boolean;
+}
+
+export enum ProviderNotificationMethod {
+  'phone' = 'Phone',
+  'computer' = 'Computer',
+  'phone and computer' = 'Phone and Computer',
+}
+
+export interface ProviderNotificationSettings {
+  method: ProviderNotificationMethod;
+  enabled: boolean;
+}
+
+export const PROVIDER_NOTIFICATIONS_SETTINGS_EXTENSION_URL =
+  'https://fhir.ottehr.com/r4/provider-notifications-settings';
+export const PROVIDER_NOTIFICATION_METHOD_URL = 'https://fhir.ottehr.com/r4/provider-notifications-method';
+export const PROVIDER_NOTIFICATIONS_ENABLED_URL = 'https://fhir.ottehr.com/r4/provider-notifications-enabled';
+
+export const PROVIDER_NOTIFICATION_TAG_SYSTEM = 'https://fhir.ottehr.com/r4/provider-notifications-tag';
+export enum AppointmentProviderNotificationTags {
+  patient_waiting = 'patient waiting',
+  unsigned_more_than_x_hours_1 = 'unsigned more than x hours 1',
+  unsigned_more_than_x_hours_2 = 'unsigned more than x hours 2',
+  unsigned_more_than_x_hours_3 = 'unsigned more than x hours 3',
+}
+
+export const PROVIDER_NOTIFICATION_TYPE_SYSTEM = 'https://fhir.ottehr.com/r4/provider-notifications-type';
+export enum AppointmentProviderNotificationTypes {
+  patient_waiting = 'patient-waiting',
+  unsigned_charts = 'unsigned-charts',
 }

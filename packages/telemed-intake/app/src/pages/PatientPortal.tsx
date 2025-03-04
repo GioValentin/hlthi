@@ -6,12 +6,15 @@ import { otherColors } from '../IntakeThemeProvider';
 import { CustomContainer, useIntakeCommonStore } from '../features/common';
 import HomepageOption from '../features/homepage/HomepageOption';
 import { useZapEHRAPIClient } from '../utils';
-import { requestVisit, pastVisits, contactSupport } from '@theme/icons';
+import { getSelectors,} from 'ottehr-utils';
+import { requestVisit, pastVisits, contactSupport,urgentCareVisit,medication,urgentCareUpdated } from '@theme/icons';
 import { useGetPatients, usePatientsStore } from 'src/features/patients';
 import { useGetAppointments } from 'src/features/appointments';
+import {useAccountInfoStore} from '../features/account-info';
 
 const PatientPortal = (): JSX.Element => {
   localStorage.removeItem('welcomePath');
+
   const apiClient = useZapEHRAPIClient();
   const { t } = useTranslation();
 
@@ -24,6 +27,14 @@ const PatientPortal = (): JSX.Element => {
   const { data: patientsData, isFetching: isPatientsFetching } = useGetPatients(apiClient, (data) => {
     usePatientsStore.setState({ patients: data?.patients });
   });
+
+   const { accountInfo: currentAccountInfo } = getSelectors(useAccountInfoStore, [
+      'accountInfo',
+    ]);
+
+  const accountInfo = { ...currentAccountInfo, sub: undefined };
+
+  console.log(accountInfo);
   
   const hasPatients = Boolean(patientsData?.patients?.length);
 
@@ -85,6 +96,27 @@ const PatientPortal = (): JSX.Element => {
             style={{ textDecoration: 'none', color: 'var(--text-primary)' }}
           >
             <HomepageOption title={t('patientPortal.requestVisit')} icon={requestVisit} />
+          </Link>
+
+          <Link
+            to={IntakeFlowPageRoute.ScheduleSelect.path}
+            style={{ textDecoration: 'none', color: 'var(--text-primary)' }}
+          >
+            <HomepageOption title='Start New Treatment' icon={urgentCareVisit} />
+          </Link>
+
+          <Link
+            to={IntakeFlowPageRoute.ScheduleSelect.path}
+            style={{ textDecoration: 'none', color: 'var(--text-primary)' }}
+          >
+            <HomepageOption title='Refill Medication' icon={medication} />
+          </Link>
+
+          <Link
+            to={IntakeFlowPageRoute.ScheduleSelect.path}
+            style={{ textDecoration: 'none', color: 'var(--text-primary)' }}
+          >
+            <HomepageOption title='Start Virtual Urgent Care' icon={urgentCareUpdated} />
           </Link>
 
           {hasPatients && (

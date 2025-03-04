@@ -6,10 +6,10 @@
             "invitation": "Invitation to Join a Visit - HLTHi telemedicine"
         },
         "sms": {
-            "confirmation": "You're confirmed! Thanks for choosing Ottehr! Your check-in time for {{firstName}} at {{locationName}} is on {{startTime}}. Please complete your paperwork in advance to save time at check-in. To complete paperwork visit: {{paperworkUrl}}.",
+            "confirmation": "You're confirmed! Thanks for choosing HLTHi! Your check-in time for {{firstName}} at {{locationName}} is on {{startTime}}. Please complete your paperwork in advance to save time at check-in. To complete paperwork visit: {{paperworkUrl}}.",
             "modify": "To modify/cancel your check-in, visit: {{checkInUrl}}",
-            "cancellation": "Sorry to have you go! Your appointment for {{firstName}} at {{locationName}} on {{startTime}} has been cancelled. To book again visit: {{locationUrl}}. Questions? Call 123-456-7890.",
-            "invitation": "You have been invited to join an Ottehr visit with {{patientName}}. Please click here: {{inviteUrl}}."
+            "cancellation": "Sorry to have you go! Your appointment for {{firstName}} at {{locationName}} on {{startTime}} has been cancelled. To book again visit: {{locationUrl}}. Questions? E-Mail patients@hlthi.life.",
+            "invitation": "You have been invited to join an HLTHi visit with {{patientName}}. Please click here: {{inviteUrl}}."
         }
     }
 }

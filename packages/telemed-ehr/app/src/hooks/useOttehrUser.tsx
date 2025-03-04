@@ -270,11 +270,10 @@ const useEnrollPractitionerInERX = () => {
     async (): Promise<void> => {
       try {
         const address: StreetAddress = {
-          street1: '1 Hollow Lane',
-          street2: 'Ste 301',
-          city: 'Lake Success',
-          postal_code: '11042',
-          state: 'NY',
+          street1: '685 W Lumsden Rd',
+          city: 'Brandon',
+          postal_code: '33511',
+          state: 'FL',
         };
         const payload: ERXEnrollmentProps = {
           providerId: profile?.id,

@@ -4,12 +4,13 @@ import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-d
 import { MixpanelContextProps, ScrollToTop, setupMixpanel, setupSentry } from 'ottehr-components';
 import { IntakeThemeProvider } from './IntakeThemeProvider';
 import { ProtectedRoute } from './features/auth';
-import { Box, CircularProgress } from '@mui/material';
+//import { Box, CircularProgress } from '@mui/material';
 import { ErrorFallbackScreen, LoadingScreen } from './features/common';
 import { useIOSAppSync } from './features/ios-communication/useIOSAppSync';
 import './lib/i18n';
 import AuthPage from './pages/AuthPage';
 import CreateAccount from './pages/CreateAccount';
+import ConfirmPhoneNumber from './pages/Registration/ConfirmPhoneNumber';
 import PatientPortal from './pages/PatientPortal';
 import { IOSPatientManageParticipantsPage } from './pages/IOS/IOSManageParticipantsPage';
 import { IOSPatientPhotosEditPage } from './pages/IOS/IOSPatientPhotosEditPage';
@@ -24,7 +25,7 @@ import SelectPatient from './pages/SelectPatient';
 import VideoChatPage from './pages/VideoChatPage';
 import ChatRoomPage from './pages/ChatRoomPage';
 import VisitDetails from './pages/VisitDetails';
-import SetupBilling from './pages/SetupBilling';
+import SetupBilling from './pages/Registration/SetupBilling';
 import WaitingRoom from './pages/WaitingRoom';
 import Welcome from './pages/Welcome';
 import ConfirmDateOfBirth from './pages/ConfirmDateOfBirth';
@@ -32,26 +33,24 @@ import ThankYou from './pages/ThankYou';
 import { useTranslation } from 'react-i18next';
 import ScheduleSelect from './pages/ScheduleSelect';
 import Version from './pages/Version';
-import {useStripeCustomer} from './utils';
+import TagManager from "react-gtm-module";
+
+const tagManagerArgs = {
+  gtmId: "GTM-T7KBRSC8", // Replace with your GTM ID
+};
+
+TagManager.initialize(tagManagerArgs);
 
 
-const isLowerEnvs =
-  import.meta.env.MODE === 'dev' ||
-  import.meta.env.MODE === 'staging' ||
-  import.meta.env.MODE === 'testing' ||
-  import.meta.env.MODE === 'training';
-
-const isLowerEnvsOrProd = isLowerEnvs || import.meta.env.MODE === 'production';
-
-if (isLowerEnvsOrProd) {
+//if (isLowerEnvsOrProd) {
   setupSentry({
-    dsn: import.meta.env.VITE_APP_SENTRY_DSN,
-    environment: import.meta.env.MODE,
-    networkDetailAllowUrls: isLowerEnvs
-      ? [import.meta.env.VITE_APP_FHIR_API_URL, import.meta.env.VITE_APP_PROJECT_API_URL]
-      : [],
+    dsn: "https://76defb25a25b004c1aa357f13fb5093b@o4508030553292800.ingest.us.sentry.io/4508888774541312",
+   // environment: import.meta.env.MODE,
+   // networkDetailAllowUrls: isLowerEnvs
+    //  ? [import.meta.env.VITE_APP_FHIR_API_URL, import.meta.env.VITE_APP_PROJECT_API_URL]
+    //  : [],
   });
-}
+//}
 
 const MIXPANEL_SETTINGS: MixpanelContextProps = {
   token: import.meta.env.VITE_APP_MIXPANEL_TOKEN,
@@ -69,7 +68,9 @@ const queryClient = new QueryClient({
 });
 
 export class IntakeFlowPageRoute {
-  static readonly SetupBilling = new IntakeFlowPageRoute('/setup-billing', <SetupBilling />);
+  static readonly ConfirmPhoneNumber = new IntakeFlowPageRoute('/auth/confirm-phone-number', <ConfirmPhoneNumber/>);
+  static readonly SetupBilling = new IntakeFlowPageRoute('/auth/setup-billing', <SetupBilling/>);
+
   static readonly PatientPortal = new IntakeFlowPageRoute('/patient-portal', <PatientPortal />);
   static readonly ScheduleSelect = new IntakeFlowPageRoute('/schedule-select', <ScheduleSelect />);
   static readonly SelectPatient = new IntakeFlowPageRoute('/select-patient', <SelectPatient />);
@@ -116,26 +117,26 @@ function App(): JSX.Element {
 
   }, [t]);
 
-  const {isLoading} = useStripeCustomer();
+  // const {isLoading} = useStripeCustomer();
 
-  if(isLoading) {
-    return (
-      <Box sx={{ mb: 2 }}>
-      <Box
-        sx={{
-          height: 260,
-          border: `1px dashed #ccccc`,
-          borderRadius: 2,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    </Box>
-    )
-  }
+  // if(isLoading) {
+  //   return (
+  //     <Box sx={{ mb: 2 }}>
+  //     <Box
+  //       sx={{
+  //         height: 260,
+  //         border: `1px dashed #ccccc`,
+  //         borderRadius: 2,
+  //         display: 'flex',
+  //         justifyContent: 'center',
+  //         alignItems: 'center',
+  //       }}
+  //     >
+  //       <CircularProgress />
+  //     </Box>
+  //   </Box>
+  //   )
+  // }
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -145,6 +146,7 @@ function App(): JSX.Element {
           <Routes>
             <Route path={IntakeFlowPageRoute.Version.path} element={IntakeFlowPageRoute.Version.page} />
             <Route path={IntakeFlowPageRoute.AuthPage.path} element={IntakeFlowPageRoute.AuthPage.page} />
+            <Route path={IntakeFlowPageRoute.ConfirmPhoneNumber.path} element={IntakeFlowPageRoute.ConfirmPhoneNumber.page} />
             <Route path={IntakeFlowPageRoute.Welcome.path} element={IntakeFlowPageRoute.Welcome.page} />
             <Route
               path={IntakeFlowPageRoute.InvitedWaitingRoom.path}

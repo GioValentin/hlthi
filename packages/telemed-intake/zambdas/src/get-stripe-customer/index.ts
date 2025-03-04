@@ -2,6 +2,7 @@ import { APIGatewayProxyResult } from 'aws-lambda';
 import { Secrets, ZambdaInput,getSecret,SecretsKeys } from 'ottehr-utils';
 import { validateRequestParameters } from './validateRequestParameters';
 import Stripe from 'stripe'
+import axios from 'axios';
 
 export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> => {
   try {
@@ -28,43 +29,32 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
       paymentMethods: {} as Stripe.ApiList<Stripe.PaymentMethod>
     }
 
-    const customers = await stripe.customers.search({
-      query: 'metadata[\'sub\']:\''+customerId+'\'',
-      limit: 1
-    });
-
-    // Check if a customer does not exists
-    if(customers.data.length == 0) 
-    {
-      // Create a Customer 
-      response.customer = await stripe.customers.create({
-        metadata: {
-          sub: customerId
-        }
+    try {
+      let data = JSON.stringify({
+        "acct_id": customerId
       });
-
-      try {
-        const subscription = await stripe.subscriptions.create({
-          customer: response.customer.id,
-          items: [
-            {
-              price: getSecret(SecretsKeys.STRIPE_DEFAULT_PRICE_ID, secrets),
-            },
-          ],
-        });
-      } catch(e) {
-        console.log(e);
-      }
       
-
-    } else {
-      response.customer = customers.data[0];
+      let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: 'https://pay.hlthi.life/api/user',
+        headers: { 
+          'Content-Type': 'application/json'
+        },
+        data : data
+      };
+      
+      const hlthiApiResponse = await axios.request(config);
+  
+      const customer = await stripe.customers.retrieve(hlthiApiResponse.data.billing_account_id, {
+        expand: ['subscriptions'],
+      });
+  
+      response.customer = customer as Stripe.Customer;
+    } catch(e) {
+      console.log(e);
     }
-
-    // @ts-ignore
-    response.customer = await stripe.customers.retrieve(response.customer.id, {
-      expand: ['subscriptions'],
-    }) ;
+    
 
     if(!sessionId) {
       const paymentMethods = await stripe.customers.listPaymentMethods(

@@ -8,6 +8,13 @@ import { useAuth0 } from '@auth0/auth0-react';
 
 import { RadioOption } from '../../types';
 
+export type Plans = {
+  label: string;
+  price_id: string;
+  price: number;
+  visit_rate: number;
+  product_id: string;
+}
 
 type RadioInputProps = {
   client: object; 
@@ -23,14 +30,15 @@ type RadioInputProps = {
   centerImages?: boolean;
   onChange: (event: SyntheticEvent) => void;
   radioStyling?: SxProps;
+  availablePlans?: Plans[];
 } & RadioGroupProps;
 
 export const MembershipDetails: React.FC<RadioInputProps> = (props) => {
-  const { client } = props;
+  const { client,availablePlans } = props;
   
   const [stripeLink, setStripeLink ] = useState<string | undefined>(undefined);
-  const [plans, setPlans] = useState<'Free' | 'Base' | 'Standard Care' | 'On-Demand' | undefined>('Free');
-  const [planRates, setRatePlans] = useState<129.99 | 39.99 | 29.99 | 69.99>(129.99);
+  const [plans, setPlans] = useState<string>('Free');
+  const [planRates, setRatePlans] = useState<number>(129.99);
   const { setValue } = useFormContext();
 
   const { user } = useAuth0();
@@ -71,28 +79,29 @@ export const MembershipDetails: React.FC<RadioInputProps> = (props) => {
 
                 if(items.data) {
 
+                  let foundPlan = null;
+
                   for(var pi = 0; pi < items.data.length; pi++) {
-                    switch(items.data[pi].plan.product) {
-                      case 'prod_RmKWO1FaDHxpTh': // Base
-                        setPlans('Base');
-                        setRatePlans(39.99);
-                        setValue('visitRate', 39.99 * 100);
-                        break;
-                      case 'prod_RqOCXlSqUEk0Wz': // Standard Care
-                        setPlans('Standard Care');
-                        setRatePlans(29.99);
-                        setValue('visitRate', 29.99 * 100);
-                        break;
-                      case 'prod_RqOC259ZFWJDwe': // On-Demand
-                        setPlans('On-Demand');
-                        setRatePlans(69.99);
-                        setValue('visitRate', 69.99 * 100);
-                        break;
-                      default:
-                        setPlans('Free');
-                        setRatePlans(129.99);
-                        setValue('visitRate', 129.99 * 100);
-                        break;
+
+                    if(availablePlans?.length) {
+
+                      foundPlan = availablePlans.find(item => item.product_id == items.data[pi].plan.product);
+
+                      if(foundPlan) {
+                        setPlans(foundPlan.label);
+                        setRatePlans(foundPlan.price);
+                        setValue('visitRate', foundPlan.visit_rate * 100);
+                      }
+
+                    }
+                    
+                  }
+
+                  if(!foundPlan) {
+                    if(availablePlans?.length) {
+                      setPlans(availablePlans[0].label);
+                      setRatePlans(availablePlans[0].price);
+                      setValue('visitRate', availablePlans[0].visit_rate * 100);
                     }
                   }
 
@@ -103,9 +112,11 @@ export const MembershipDetails: React.FC<RadioInputProps> = (props) => {
             }
 
           } else {
-            setPlans('Free');
-            setRatePlans(129.99);
-            setValue('visitRate', 129.99 * 100);
+            if(availablePlans?.length) {
+              setPlans(availablePlans[0].label);
+              setRatePlans(availablePlans[0].price);
+              setValue('visitRate', availablePlans[0].visit_rate * 100);
+            }
           }
                     
         } catch(e) {

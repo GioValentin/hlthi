@@ -70,13 +70,13 @@ const ZAMBDAS: { [name: string]: DeployZambda } = {
   'GET-EMPLOYEES': {
     type: 'http_auth',
   },
-  // 'NOTIFICATIONS-UPDATER': {
-  //   type: 'cron',
-  //   schedule: {
-  //     expression: 'cron(*/5 * * * ? *)', // every 3 minutes
-  //   },
-  //   environments: ['development', 'testing', 'staging', 'training'],
-  // },
+  'NOTIFICATIONS-UPDATER': {
+    type: 'cron',
+    schedule: {
+      expression: 'cron(*/5 * * * ? *)', // every 3 minutes
+    },
+    environments: ['development', 'testing', 'staging', 'training','production'],
+  },
   'SYNC-USER': {
     type: 'http_auth',
   },

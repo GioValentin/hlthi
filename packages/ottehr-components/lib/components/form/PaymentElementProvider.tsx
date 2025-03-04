@@ -39,7 +39,7 @@ type RadioInputProps = {
   radioStyling?: SxProps;
 } & RadioGroupProps;
 
-const stripePromise = loadStripe('pk_live_51OqyFSIiL0oeTlYveSLZu9qbn8NrFmwqNUJrI9mLup8oijJPQegColKq5D900QcVFLcywBIIQoZjBL96i9xhHkGh006PHF9o7j');
+const stripePromise = loadStripe(import.meta.env.VITE_APP_STRIPE_PUBLISHABLE_KEY);
 
 
 export const PaymentElementProvider: React.FC<RadioInputProps> = (props) => {
@@ -53,46 +53,51 @@ export const PaymentElementProvider: React.FC<RadioInputProps> = (props) => {
   const { user } = useAuth0();
 
   const { formState: { errors }, control } = useFormContext();
-  
-  useEffect(() => {
-    const getCustomer = async () => {
-      if (!user?.sub) return; // Ensure user is available before making a request
-  
+  const getCustomer = async () => {
+    if (!user?.sub) return; // Ensure user is available before making a request
+
+    try {
+      // @ts-ignore
+      const customer = await client.getStripeCustomer({ customerId: user.sub });
+
+      setClientSecret(customer.setupIntent.client_secret);
+      setCustomerSessionSecret(customer.session.client_secret);
+
       try {
-        // @ts-ignore
-        const customer = await client.getStripeCustomer({ customerId: user.sub });
-  
-        setClientSecret(customer.setupIntent.client_secret);
-        setCustomerSessionSecret(customer.session.client_secret);
 
-        try {
+        const list = [] as STRIPE_PAYMENT_METHOD[];
 
-          const list = [] as STRIPE_PAYMENT_METHOD[];
+        for(var i = 0; i < customer.paymentMethods.data.length; i++) {
+          const item = customer.paymentMethods.data[i];
 
-          for(var i = 0; i < customer.paymentMethods.data.length; i++) {
-            const item = customer.paymentMethods.data[i];
+          list.push({
+            id: item.id,
+            brand: item.card.brand,
+            acct: item.card.last4,
+            label: item.card.brand + ' - xxxx xxxx xxxx ' + item.card.last4
+          } as STRIPE_PAYMENT_METHOD)
+        }
 
-            list.push({
-              id: item.id,
-              brand: item.card.brand,
-              acct: item.card.last4,
-              label: item.card.brand + ' - xxxx xxxx xxxx ' + item.card.last4
-            } as STRIPE_PAYMENT_METHOD)
-          }
-
-          if(list.length > 0) {
-            setPaymentMethods(list)
-          }
-          
-        } catch(e) {
-
+        if(list.length > 0) {
+          setPaymentMethods(list)
         }
         
-      } catch (error) {
-        console.error("Error fetching Stripe customer:", error);
+      } catch(e) {
+
       }
-    };
-  
+      
+    } catch (error) {
+      console.error("Error fetching Stripe customer:", error);
+    }
+  };
+
+  //@ts-ignore
+  const handleUpdatedPaymentMethod = (paymentMethod: string) => {
+    getCustomer();
+  };
+
+  useEffect(() => {
+    
     getCustomer(); // Call the function inside useEffect
   }, [user?.sub]); // Dependency ensures it runs only when user.sub changes
 
@@ -154,7 +159,7 @@ useEffect(() => {
       {options.clientSecret != undefined && (
 
         <Elements stripe={stripePromise} options={options}>
-          <PaymentMethodInput />
+          <PaymentMethodInput onPaymentMethodChange={handleUpdatedPaymentMethod}/>
         </Elements>
 
       )}

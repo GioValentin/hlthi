@@ -4,9 +4,14 @@ import { Navigate } from 'react-router-dom';
 import { IntakeFlowPageRoute } from '../App';
 import { ErrorFallbackScreen, LoadingScreen } from '../features/common';
 
+import CreateAccount from './CreateAccount';
+
 const AuthPage: FC = () => {
   const { isAuthenticated, loginWithRedirect, isLoading, error } = useAuth0();
   const authRef = useRef<Promise<void> | null>(null);
+
+  
+
   if (error) {
     return <ErrorFallbackScreen />;
   }
@@ -17,10 +22,14 @@ const AuthPage: FC = () => {
 
   if (!isAuthenticated) {
     if (!authRef.current) {
-      authRef.current = loginWithRedirect();
+      // authRef.current = loginWithRedirect();
+
+      return <CreateAccount/>
     }
+    
     return <LoadingScreen />;
   }
+
   if (!localStorage.getItem('welcomePath')) {
     return <Navigate to={IntakeFlowPageRoute.PatientPortal.path} />;
   }

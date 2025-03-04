@@ -160,6 +160,7 @@
         "sex": "Patient's birth sex",
         "weight": "Patient's weight (lbs)",
         "email": "Email Address",
+        "plans": "Membership Plans",
         "emailOwner": "This email belongs to",
         "emailOwnerPatient": "Patient",
         "emailOwnerParent": "Parent/Guardian"
@@ -203,8 +204,8 @@
     "contactSupport": "Contact Support"
   },
   "selectSchedule": {
-    "title": "Select Visit Details",
-    "description": "Select a schedule to continue"
+    "title": "Select Location Details",
+    "description": "Select a state to continue"
   },
   "reviewPaperwork": {
     "title": "Review and submit",
@@ -250,7 +251,10 @@
     "scheduleNotAvailable": "The schedule \"{{slug}}\" is not available",
     "visitServiceNotAvailable": "The service \"{{visitService}}\" is not available",
     "scheduleError": "There was an error getting the schedule. Please refresh and if you still get errors contact us.",
-    "message": "To get started with your care, we just need a bit more information. Our quick intake process helps our providers better understand your needs, so you can get the right treatment—fast. Whether you’re a new or returning patient, please follow the next few steps. It won’t take long, and once completed, a licensed provider will review your information and connect with you shortly.",
+    "message1": "To get started with your care, we just need a bit more information. Our quick intake process helps our providers better understand your needs, so you can get the right treatment—fast.",
+    "message2": "Whether you’re a new or returning patient, please follow the next few steps.",
+    "message3": "It won’t take long, and once completed, a licensed provider will review your information and connect with you shortly.",
+   
     "html": "",
     "dateError": {
       "title": "Please select a date and time",

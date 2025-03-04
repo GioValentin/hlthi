@@ -102,6 +102,7 @@
     "stripe": "^17.4.0"
   },
   "dependencies": {
+    "@oystehr/sdk": "3.0.7",
     "@mui/icons-material": "^5.11.0",
     "@mui/lab": "^5.0.0-alpha.115",
     "@mui/material": "^5.14.18",

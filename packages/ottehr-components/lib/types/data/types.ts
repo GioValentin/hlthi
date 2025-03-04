@@ -32,4 +32,7 @@ export type GetZapEHRAPIParams = {
   getStripeCheckoutZambdaID?: string;
   getPatientSubscriptionStatusZambdaID?: string;
   getProviderZambdaID?: string;
+  createAccountZambdaID?: string;
+  createSMSVerificationZambdaID?: string;
+  checkSMSVerificationZambdaID?: string;
 };

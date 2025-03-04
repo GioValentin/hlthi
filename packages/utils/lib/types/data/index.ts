@@ -10,3 +10,4 @@ export * from './paperwork.types';
 export * from './telemed';
 export * from './zapehr-api.types.ts';
 export * from './payment';
+export * from './account';
