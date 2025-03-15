@@ -46,6 +46,7 @@
     "prepare": "husky"
   },
   "workspaces": [
+    "hlthi-packages/*",
     "packages/**/*",
     "apps/*"
   ],
