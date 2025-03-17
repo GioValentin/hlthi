@@ -28,6 +28,18 @@ export const PatientDetailsContainer: FC<PatientDetailsContainerProps> = ({ pati
 
   if (!patient) return null;
 
+  const howDidYouHearAboutUs = patient.extension?.find(
+    (e: { url: string }) => e.url === PATIENT_POINT_OF_DISCOVERY_URL
+  )?.valueString;
+
+  const sendMarketingMessages = patient.extension?.find(
+    (e: { url: string }) => e.url === PATIENT_SEND_MARKETING_URL
+  )?.valueBoolean;
+
+  const commonWellConsent = patient.extension?.find(
+    (e: { url: string }) => e.url === PATIENT_COMMON_WELL_CONSENT_URL
+  )?.valueBoolean;
+
   const previousNames = patient.name?.filter((name) => name.use === 'old').reverse() || [];
 
   const genderIdentityCurrentValue = watch(FormFields.genderIdentity.key);

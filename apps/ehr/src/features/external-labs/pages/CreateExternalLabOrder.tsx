@@ -104,8 +104,8 @@ export const CreateExternalLabOrder: React.FC<CreateExternalLabOrdersProps> = ()
     if (!coverage) return;
     const isSelfPay = !!coverage.type?.coding?.find((coding) => coding.system === SELF_PAY_CODING.system);
     if (isSelfPay) return 'Self Pay'; // todo check that this is implemented / or being implmented
-    const coveragePlanClass = coverage.class?.find(
-      (c) => c.type.coding?.find((code) => code.system === CODE_SYSTEM_COVERAGE_CLASS)
+    const coveragePlanClass = coverage.class?.find((c) =>
+      c.type.coding?.find((code) => code.system === CODE_SYSTEM_COVERAGE_CLASS)
     );
     return coveragePlanClass?.name;
   }, [coverage]);

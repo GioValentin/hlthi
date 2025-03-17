@@ -55,11 +55,10 @@ async function getTelemedLocations(oystehr: Oystehr): Promise<TelemedLocation[] 
     })
   ).unbundle();
 
-  const telemedLocations = resources.filter(
-    (location) =>
-      location.extension?.some(
-        (ext) => ext.url === `${PUBLIC_EXTENSION_BASE_URL}/location-form-pre-release` && ext.valueCoding?.code === 'vi'
-      )
+  const telemedLocations = resources.filter((location) =>
+    location.extension?.some(
+      (ext) => ext.url === `${PUBLIC_EXTENSION_BASE_URL}/location-form-pre-release` && ext.valueCoding?.code === 'vi'
+    )
   );
 
   return telemedLocations.map((location) => ({

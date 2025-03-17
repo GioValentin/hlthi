@@ -131,8 +131,9 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
 
     const inviteUrl = `${websiteUrl}/invited-waiting-room?appointment_id=${appointmentId}&token=${jwt}`;
 
-    const chosenName = patientResource.extension?.find((ext) => ext.url === FHIR_EXTENSION.Patient.chosenName.url)
-      ?.valueString;
+    const chosenName = patientResource.extension?.find(
+      (ext) => ext.url === FHIR_EXTENSION.Patient.chosenName.url
+    )?.valueString;
     const patientChosenName = chosenName || patientResource.name?.[0].given?.[0] || 'Patient';
 
     if (emailAddress) {

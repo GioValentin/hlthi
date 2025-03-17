@@ -23,15 +23,104 @@ export const ResponsibleInformationContainer: FC = () => {
   const localData = watch(LocalDependentFields);
   const selfSelected = watch(FormFields.relationship.key) === 'Self';
 
-  useEffect(() => {
-    if (selfSelected) {
-      for (let i = 0; i < localData.length; i++) {
-        if (patientData[i] && localData[i] !== patientData[i]) {
-          // setValue(LocalDependentFields[i], patientData[i]);
-        }
-      }
-    }
-  }, [localData, patientData, selfSelected, setValue]);
+  if (!patient) return null;
+
+  const contactIndex = patient.contact?.findIndex((contact) =>
+    contact.relationship?.some((rel) =>
+      rel.coding?.some((code) => code.system === 'http://terminology.hl7.org/CodeSystem/v2-0131' && code.code === 'BP')
+    )
+  );
+
+  const responsiblePartyIndex = patient?.contact ? (contactIndex === -1 ? patient.contact.length : contactIndex) : 0;
+
+  const responsiblePartyContact =
+    responsiblePartyIndex !== undefined ? patient?.contact?.[responsiblePartyIndex] : undefined;
+
+  const responsiblePartyFullNamePath = patientFieldPaths.responsiblePartyName.replace(
+    /contact\/\d+/,
+    `contact/${responsiblePartyIndex}`
+  );
+
+  const responsiblePartyFirstNamePath = patientFieldPaths.responsiblePartyFirstName.replace(
+    /contact\/\d+/,
+    `contact/${responsiblePartyIndex}`
+  );
+
+  const responsiblePartyLastNamePath = patientFieldPaths.responsiblePartyLastName.replace(
+    /contact\/\d+/,
+    `contact/${responsiblePartyIndex}`
+  );
+
+  const responsiblePartyRelationshipPath = patientFieldPaths.responsiblePartyRelationship.replace(
+    /contact\/\d+/,
+    `contact/${responsiblePartyIndex}`
+  );
+
+  const responsiblePartyBirthDatePath = patientFieldPaths.responsiblePartyBirthDate.replace(
+    /contact\/\d+/,
+    `contact/${responsiblePartyIndex}`
+  );
+
+  const responsiblePartyGenderPath = patientFieldPaths.responsiblePartyGender.replace(
+    /contact\/\d+/,
+    `contact/${responsiblePartyIndex}`
+  );
+
+  const relationship = responsiblePartyContact?.relationship?.find((rel) =>
+    rel.coding?.some((coding) => coding.system === 'http://hl7.org/fhir/relationship')
+  )?.coding?.[0].display;
+
+  const fullName =
+    responsiblePartyContact?.name?.family && responsiblePartyContact?.name?.given?.[0]
+      ? `${responsiblePartyContact.name.family}, ${responsiblePartyContact.name.given[0]}`
+      : '';
+
+  const birthDate = responsiblePartyContact?.extension?.[0].valueString;
+
+  const birthSex = responsiblePartyContact?.gender;
+
+  const phoneNumberIndex = responsiblePartyContact?.telecom
+    ? responsiblePartyContact?.telecom?.findIndex((telecom) => telecom.system === 'phone')
+    : -1;
+
+  const phone = responsiblePartyContact?.telecom?.[phoneNumberIndex]?.value;
+
+  const responsiblePartyPhonePath = patientFieldPaths.responsiblePartyPhone
+    .replace(/contact\/\d+/, `contact/${responsiblePartyIndex}`)
+    .replace(/telecom\/\d+/, `telecom/${phoneNumberIndex}`);
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const { name, value } = event.target;
+    const fieldType = name === responsiblePartyPhonePath ? 'phone' : undefined;
+    updatePatientField(name, value, undefined, fieldType);
+  };
+
+  const handleResponsiblePartyNameChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const value = e.target.value;
+
+    // Auto-format: If there's a space between words but no comma, add the comma
+    const formattedValue = value.includes(',')
+      ? value
+      : value.replace(/(\w+)\s+(\w+)/, (_, lastName, firstName) => `${lastName}, ${firstName}`);
+    // Update the input value with formatted version
+    setValue(patientFieldPaths.responsiblePartyName, formattedValue);
+    const [lastName = '', firstName = ''] = formattedValue.split(',').map((part) => part.trim());
+
+    // Update both name parts
+    handleChange({
+      target: {
+        name: responsiblePartyLastNamePath,
+        value: lastName,
+      },
+    } as any);
+
+    handleChange({
+      target: {
+        name: responsiblePartyFirstNamePath,
+        value: firstName,
+      },
+    } as any);
+  };
 
   return (
     <Section title="Responsible party information" dataTestId={dataTestIds.responsiblePartyInformationContainer.id}>

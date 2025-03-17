@@ -20,10 +20,41 @@ void (async () => {
 })();
 
 async function setupDeploy(): Promise<void> {
-  const infra = new OttehrInfraStack(app, `ottehr-infra-stack-${environment}`);
-  new OttehrDataStack(app, `ottehr-data-stack-${environment}`, {
-    patientPortalBucket: infra.patientPortalBucket,
-    ehrBucket: infra.ehrBucket,
+  await deploy();
+  const distributionsRequest = await getCloudFrontDistributions();
+  const intakeDistribution = `https://${
+    distributionsRequest.DistributionList?.Items?.find(
+      (distribution: any) => distribution.Comment === `ottehr-intake-${projectID}`
+    )?.DomainName
+  }`;
+  const ehrDistribution = `https://${
+    distributionsRequest.DistributionList?.Items?.find(
+      (distribution: any) => distribution.Comment === `ottehr-ehr-${projectID}`
+    )?.DomainName
+  }`;
+  await updateZapehr(intakeDistribution, ehrDistribution);
+}
+
+async function deploy(): Promise<void> {
+  const distributionsRequest = await getCloudFrontDistributions();
+  const intakeDistribution = distributionsRequest.DistributionList?.Items?.find(
+    (distribution: any) => distribution.Comment === `ottehr-intake-${projectID}`
+  );
+  const ehrDistribution = distributionsRequest.DistributionList?.Items?.find(
+    (distribution: any) => distribution.Comment === `ottehr-ehr-${projectID}`
+  );
+  await updateZambdas(environment, intakeDistribution, ehrDistribution);
+  new DeployTestStack(app, `DeployTestStack-${environment}`, {
+    /* If you don't specify 'env', this stack will be environment-agnostic.
+     * Account/Region-dependent features and context lookups will not work,
+     * but a single synthesized template can be deployed anywhere. */
+    /* Uncomment the next line to specialize this stack for the AWS Account
+     * and Region that are implied by the current CLI configuration. */
+    // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+    /* Uncomment the next line if you know exactly what Account and Region you
+     * want to deploy the stack to. */
+    // env: { account: '123456789012', region: 'us-east-1' },
+    /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
   });
 }
 

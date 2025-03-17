@@ -104,18 +104,18 @@ export function useExamObservations(param?: AllExamNames | AllExamNames[]): {
           return prev;
         }, {} as ExamRecord)
       : Object.prototype.hasOwnProperty.call(param, 'field')
-      ? { [(param as ExamObservationDTO).field]: prevState[(param as ExamObservationDTO).field as ExamNames] }
-      : (Object.keys(param as ExamRecord) as AllExamNames[]).reduce((prev, curr) => {
-          prev[curr] = prevState[curr as ExamNames];
-          return prev;
-        }, {} as ExamRecord);
+        ? { [(param as ExamObservationDTO).field]: prevState[(param as ExamObservationDTO).field as ExamNames] }
+        : (Object.keys(param as ExamRecord) as AllExamNames[]).reduce((prev, curr) => {
+            prev[curr] = prevState[curr as ExamNames];
+            return prev;
+          }, {} as ExamRecord);
 
     useExamObservationsStore.setState(
       Array.isArray(param)
         ? arrayToObject(param)
         : Object.prototype.hasOwnProperty.call(param, 'field')
-        ? { [(param as ExamObservationDTO).field]: param }
-        : (param as ExamRecord)
+          ? { [(param as ExamObservationDTO).field]: param }
+          : (param as ExamRecord)
     );
 
     if (noFetch) {
@@ -127,8 +127,8 @@ export function useExamObservations(param?: AllExamNames | AllExamNames[]): {
         examObservations: Array.isArray(param)
           ? param
           : Object.prototype.hasOwnProperty.call(param, 'field')
-          ? [param as ExamObservationDTO]
-          : objectToArray(param as ExamRecord),
+            ? [param as ExamObservationDTO]
+            : objectToArray(param as ExamRecord),
       },
       {
         onSuccess: (data) => {

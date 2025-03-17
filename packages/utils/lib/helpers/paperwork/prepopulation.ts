@@ -109,18 +109,14 @@ export const makePrepopulatedItemsForPatient = (input: PrepopulationInput): Ques
     }
   }
 
-  const responsibleParty = patient.contact?.find(
-    (contact) =>
-      contact.relationship?.some(
-        (rel) =>
-          rel.coding?.some(
-            (code) => code.system === 'http://terminology.hl7.org/CodeSystem/v2-0131' && code.code === 'BP'
-          )
-      )
+  const responsibleParty = patient.contact?.find((contact) =>
+    contact.relationship?.some((rel) =>
+      rel.coding?.some((code) => code.system === 'http://terminology.hl7.org/CodeSystem/v2-0131' && code.code === 'BP')
+    )
   );
 
-  const responsiblePartyRelationship = responsibleParty?.relationship?.find(
-    (rel) => rel.coding?.some((coding) => coding.system === 'http://hl7.org/fhir/relationship')
+  const responsiblePartyRelationship = responsibleParty?.relationship?.find((rel) =>
+    rel.coding?.some((coding) => coding.system === 'http://hl7.org/fhir/relationship')
   )?.coding?.[0].display;
 
   const responsiblePartyFirstName = responsibleParty?.name?.given?.[0];

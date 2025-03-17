@@ -33,8 +33,8 @@ export function TrackingBoardTabs(): ReactElement {
   const dateFilter = [ApptTelemedTab.ready, ApptTelemedTab.provider, ApptTelemedTab['not-signed']].includes(value)
     ? undefined
     : date
-    ? date.toISODate()!
-    : undefined;
+      ? date.toISODate()!
+      : undefined;
 
   const actualStatesFilter = selectedStates ? selectedStates : undefined;
   const { isFetching, isFetchedAfterMount } = useGetTelemedAppointments(

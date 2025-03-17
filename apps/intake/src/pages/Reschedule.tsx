@@ -61,10 +61,7 @@ const Reschedule = (): JSX.Element => {
         }
         setAppointment(appointment);
         const formattedStart =
-          DateTime.fromISO(appointment.start)
-            .setZone(location?.timezone)
-            .setLocale(i18n.language)
-            .toISO() || '';
+          DateTime.fromISO(appointment.start).setZone(location?.timezone).setLocale(i18n.language).toISO() || '';
         setSelectedSlot(formattedStart);
         const available = response.availableSlots;
         const sortedDatesArray = available.sort((a: string, b: string) => a.localeCompare(b));

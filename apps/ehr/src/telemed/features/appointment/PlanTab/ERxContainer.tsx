@@ -127,18 +127,15 @@ export const ERxContainer: FC = () => {
       },
     },
     onSuccess: (data) => {
-      const prescribedMedications = (data.prescribedMedications || []).reduce(
-        (prev, curr) => {
-          const index = prev.findIndex((medication) => medication.prescriptionId === curr.prescriptionId);
-          if (index === -1) {
-            prev.push(curr);
-          } else {
-            prev[index] = curr;
-          }
-          return prev;
-        },
-        chartData?.prescribedMedications || []
-      );
+      const prescribedMedications = (data.prescribedMedications || []).reduce((prev, curr) => {
+        const index = prev.findIndex((medication) => medication.prescriptionId === curr.prescriptionId);
+        if (index === -1) {
+          prev.push(curr);
+        } else {
+          prev[index] = curr;
+        }
+        return prev;
+      }, chartData?.prescribedMedications || []);
 
       if (prescribedMedications.filter((med) => !med.resourceId).length > 0) {
         setTimeout(refetch, 1000);
@@ -146,18 +143,15 @@ export const ERxContainer: FC = () => {
 
       setPartialChartData({
         prescribedMedications,
-        practitioners: (data.practitioners || []).reduce(
-          (prev, curr) => {
-            const index = prev.findIndex((practitioner) => practitioner.id === curr.id);
-            if (index === -1) {
-              prev.push(curr);
-            } else {
-              prev[index] = curr;
-            }
-            return prev;
-          },
-          chartData?.practitioners || []
-        ),
+        practitioners: (data.practitioners || []).reduce((prev, curr) => {
+          const index = prev.findIndex((practitioner) => practitioner.id === curr.id);
+          if (index === -1) {
+            prev.push(curr);
+          } else {
+            prev[index] = curr;
+          }
+          return prev;
+        }, chartData?.practitioners || []),
       });
     },
   });

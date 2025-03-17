@@ -33,15 +33,22 @@ export const SettingsContainer: FC = () => {
 
   if (!patient) return null;
 
-  const releaseOfInfo = patient?.extension?.find((e: { url: string }) => e.url === PATIENT_RELEASE_OF_INFO_URL)
-    ?.valueBoolean;
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const { name, value, type, checked } = event.target;
+    updatePatientField(name, type === 'checkbox' ? checked : value);
+  };
+
+  const releaseOfInfo = patient?.extension?.find(
+    (e: { url: string }) => e.url === PATIENT_RELEASE_OF_INFO_URL
+  )?.valueBoolean;
 
   const rxHistoryConsentStatus = patient?.extension?.find(
     (e: { url: string }) => e.url === PATIENT_RX_HISTORY_CONSENT_STATUS_URL
   )?.valueString;
 
-  const deceasedNote = patient?.extension?.find((e: { url: string }) => e.url === PATIENT_DECEASED_NOTE_URL)
-    ?.valueString;
+  const deceasedNote = patient?.extension?.find(
+    (e: { url: string }) => e.url === PATIENT_DECEASED_NOTE_URL
+  )?.valueString;
 
   const deceased = watch(patientFieldPaths.deceased);
   const deceasedDate = watch(patientFieldPaths.deceasedDate);

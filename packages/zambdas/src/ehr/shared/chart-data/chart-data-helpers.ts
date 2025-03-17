@@ -111,8 +111,8 @@ export function makeConditionResource(
     note: (data as FreeTextNoteDTO).text
       ? [{ text: (data as FreeTextNoteDTO).text || '' }]
       : (data as MedicalConditionDTO).note
-      ? [{ text: (data as MedicalConditionDTO).note || '' }]
-      : [],
+        ? [{ text: (data as MedicalConditionDTO).note || '' }]
+        : [],
     clinicalStatus:
       typeof (data as MedicalConditionDTO).current === 'boolean'
         ? {

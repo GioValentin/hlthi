@@ -200,9 +200,9 @@ export const AppointmentSidePanel: FC = () => {
             Allergies:{' '}
             {isChartDataLoading
               ? 'Loading...'
-              : allergies && allergies.length > 0
-              ? allergies.map((allergy) => allergy.name).join(', ')
-              : 'No known allergies'}
+              : allergies.length > 0
+                ? allergies.map((allergy) => allergy.name).join(', ')
+                : 'No known allergies'}
           </Typography>
 
           <Typography variant="body2">Location: {location.address?.state}</Typography>

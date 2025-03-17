@@ -61,9 +61,7 @@ const Review = (): JSX.Element => {
   const selectedSlotTimezoneAdjusted = useMemo(() => {
     const selectedAppointmentStart = appointmentSlot;
     if (selectedAppointmentStart && selectedLocation?.timezone) {
-      return DateTime.fromISO(selectedAppointmentStart)
-        .setZone(selectedLocation?.timezone)
-        .setLocale('en-us');
+      return DateTime.fromISO(selectedAppointmentStart).setZone(selectedLocation?.timezone).setLocale('en-us');
     }
 
     return undefined;
