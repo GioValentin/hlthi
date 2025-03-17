@@ -28,19 +28,19 @@ import {
   mapStatusToTelemed,
   TelemedAppointmentStatusEnum,
 } from 'utils';
-import { EditPatientDialog } from '../../../components/dialogs';
-import { adjustTopForBannerHeight } from '../../../constants';
+import { EditPatientDialog } from '@components/dialogs';
+import { adjustTopForBannerHeight } from '@constants/index';
 import ChatModal from '@features/chat/ChatModal';
-import { addSpacesAfterCommas } from '../../../helpers/formatString';
-import useEvolveUser from '../../../hooks/useEvolveUser';
-import { getSelectors } from '../../../shared/store/getSelectors';
-import CancelVisitDialog from '../../components/CancelVisitDialog';
-import InviteParticipant from '../../components/InviteParticipant';
-import { useGetAppointmentAccessibility } from '../../hooks';
-import { useAppointmentStore, useGetTelemedAppointmentWithSMSModel } from '../../state';
-import { getAppointmentStatusChip, getPatientName, quickTexts } from '../../utils';
-import { ERX } from './ERX';
-import { PastVisits } from './PastVisits';
+import { addSpacesAfterCommas } from '@helpers/formatString';
+import useEvolveUser from '@hooks/useEvolveUser';
+import { getSelectors } from '@shared/store/getSelectors';
+import CancelVisitDialog from '@telemed/components/CancelVisitDialog';
+import InviteParticipant from '@telemed/components/InviteParticipant';
+import { useChartDataArrayValue, useGetAppointmentAccessibility } from '@telemed/hooks';
+import { useAppointmentStore, useGetTelemedAppointmentWithSMSModel } from '@telemed/state';
+import { getAppointmentStatusChip, getPatientName, quickTexts } from '@telemed/utils';
+import { ERX } from '@telemed/features/appointment/ERX';
+import { PastVisits } from '@telemed/features/appointment/PastVisits';
 
 enum Gender {
   'male' = 'Male',
@@ -361,7 +361,9 @@ export const AppointmentSidePanel: FC = () => {
         {chatModalOpen && appointmentMessaging && (
           <ChatModal
             appointment={appointmentMessaging}
-            onClose={() => setChatModalOpen(false)}
+            onClose={() => {
+              setChatModalOpen(false);
+            }}
             onMarkAllRead={() => setHasUnread(false)}
             patient={patient}
             quickTexts={quickTexts}
