@@ -34,4 +34,4 @@ packages/intake/zambdas/.serverless
 **/ottehr-secrets/
 
 #Custom Package Ignore
-custom-packages/*
+custom-packages
