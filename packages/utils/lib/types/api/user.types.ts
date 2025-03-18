@@ -18,6 +18,7 @@ export enum RoleType {
   FrontDesk = 'Front Desk',
   Inactive = 'Inactive',
   Prescriber = 'Prescriber',
+  Patient = 'Patient',
   // Medical Assistant
 }
 

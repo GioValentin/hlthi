@@ -25,6 +25,8 @@ packages/intake/zambdas/.esbuild
 packages/ehr/zambdas/.esbuild
 packages/ehr/zambdas/.serverless
 packages/intake/zambdas/.serverless
+packages/zambdas/src/custom-ehr
+packages/zambdas/src/custom-patient
 
 # Sentry Config File
 .env.sentry-build-plugin
