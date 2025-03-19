@@ -63,6 +63,12 @@ export default (env: any): Record<string, any> => {
               }
             : undefined,
       },
+      resolve: {
+        alias: {
+          // Override `ui-package/ChatModal` to use `hlthi-ui-components/ChatModal`
+          './telemed/pages/Welcome': 'custom-ui-components/lib/pages/Welcome',
+        },
+      },
     })
   );
 };
