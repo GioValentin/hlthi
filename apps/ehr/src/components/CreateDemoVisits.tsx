@@ -142,7 +142,7 @@ const CreateDemoVisits = (): ReactElement => {
           type="submit"
           sx={{
             borderRadius: 10,
-            border: '1px solid #2169F5',
+            border: '1px solid #1f4638',
             display: 'flex',
             alignItems: 'center',
             gap: 0.5,

@@ -277,7 +277,7 @@ const PatientDocumentsExplorerPage: FC = () => {
               <Grid item xs={3}>
                 <Box
                   sx={{
-                    backgroundColor: '#F9FAFB',
+                    backgroundColor: '#F5F1EB',
                     borderRadius: 2,
                   }}
                 >

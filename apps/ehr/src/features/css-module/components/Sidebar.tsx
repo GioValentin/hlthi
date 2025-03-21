@@ -13,7 +13,7 @@ import { enqueueSnackbar } from 'notistack';
 import { dataTestIds } from '../../../constants/data-test-ids';
 const ArrowIcon = ({ direction }: { direction: 'left' | 'right' }): React.ReactElement => (
   <svg width="40" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="20" cy="20" r="20" fill="#2169F5" fillOpacity=".04" />
+    <circle cx="20" cy="20" r="20" fill="#1f4638" fillOpacity=".04" />
     <mask id="a" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="8" y="8" width="24" height="24">
       <path fill="#D9D9D9" d="M8 8h24v24H8z" />
     </mask>
@@ -24,7 +24,7 @@ const ArrowIcon = ({ direction }: { direction: 'left' | 'right' }): React.ReactE
             ? 'M24.175 21H12v-2h12.175l-5.6-5.6L20 12l8 8-8 8-1.425-1.4 5.6-5.6Z'
             : 'M15.825 21H28v-2H15.825l5.6-5.6L20 12l-8 8 8 8 1.425-1.4-5.6-5.6Z'
         }
-        fill="#2169F5"
+        fill="#1f4638"
       />
     </g>
   </svg>

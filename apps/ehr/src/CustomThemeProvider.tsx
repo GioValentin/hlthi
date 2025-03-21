@@ -4,12 +4,12 @@ import React from 'react';
 
 const palette = {
   background: {
-    default: '#F9FAFB',
+    default: '#F5F1EB',
     paper: '#FFFFFF',
   },
   primary: {
-    main: '#2169F5',
-    light: '#2169F5',
+    main: '#1f4638',
+    light: '#1f4638',
     dark: '#0F347C',
     contrast: '#FFFFFF',
   },
