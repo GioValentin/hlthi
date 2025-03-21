@@ -1,4 +1,4 @@
-export const IOSAppCookieName = 'OttehriOSApp';
+export const IOSAppCookieName = 'HLTHiiOSApp';
 
 export const otherColors = {
   appbarBackground: '#0A2143',
@@ -46,16 +46,16 @@ export const palette = {
     cancelled: '#D91B1B',
   },
   primary: {
-    main: '#0F347C',
-    contrast: '#FFFFFF',
-    contrastText: '#FFFFFF',
-    dark: '#0F347C',
-    light: '#1976D2',
+    main: '#1f4638',
+    contrast: '#F5F1EB',
+    contrastText: '#F5F1EB',
+    dark: '#1f4638',
+    light: '#4e8b73',
   },
   secondary: {
-    main: '#2169F5',
-    contrast: '#FFFFFF',
-    contrastText: '#FFFFFF',
+    main: '#3A6F5A',
+    contrast: '#F5F5F5',
+    contrastText: '#F5F5F5',
   },
   tertiary: {
     main: '#ECE4FB',
@@ -93,9 +93,9 @@ export const palette = {
     focus: 'rgba(0, 0, 0, 0.12)',
   },
   background: {
-    default: '#15376A',
-    paper: '#FFFFFF',
-    cancelled: '#FCBDBD',
+    default: '#0E2E22',
+    paper: '#F5F1EB',
+    cancelled: '#F5C1A5',
   },
   divider: '#C3C9D2',
 };
