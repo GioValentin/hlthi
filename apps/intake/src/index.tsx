@@ -19,13 +19,14 @@ const { VITE_APP_AUTH0_AUDIENCE, VITE_APP_AUTH_URL, VITE_APP_CLIENT_ID } = impor
 if (!VITE_APP_CLIENT_ID || !VITE_APP_AUTH0_AUDIENCE) {
   throw new Error('Client ID or audience not found');
 }
+
 root.render(
   <React.StrictMode>
     <Auth0Provider
       domain={VITE_APP_AUTH_URL}
       clientId={VITE_APP_CLIENT_ID}
       authorizationParams={{
-        connection: 'sms',
+        //connection: 'email',
         redirectUri: `${window.location.origin}/redirect`,
         audience: VITE_APP_AUTH0_AUDIENCE,
         scope: 'openid profile email offline_access',
