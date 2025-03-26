@@ -172,6 +172,54 @@
     "ANTHROPIC_API_KEY": {
       "name": "ANTHROPIC_API_KEY",
       "value": "#var/ANTHROPIC_API_KEY"
+    },
+    "TWILIO_ACCOUNT_SID": {
+      "name": "TWILIO_ACCOUNT_SID",
+      "value": "#var/TWILIO_ACCOUNT_SID"
+    },
+    "TWILIO_API_KEY": {
+      "name": "TWILIO_API_KEY",
+      "value": "#var/TWILIO_API_KEY"
+    },
+    "TWILIO_AUTH_TOKEN": {
+      "name": "TWILIO_AUTH_TOKEN",
+      "value": "#var/TWILIO_AUTH_TOKEN"
+    },
+    "TWILIO_ROLE_PRACTIONER": {
+      "name": "TWILIO_ROLE_PRACTIONER",
+      "value": "#var/TWILIO_ROLE_PRACTIONER"
+    },
+    "TWILIO_ROLE_PATIENT": {
+      "name": "TWILIO_ROLE_PATIENT",
+      "value": "#var/TWILIO_ROLE_PATIENT"
+    },
+    "TWILIO_API_SECRET": {
+      "name": "TWILIO_API_SECRET",
+      "value": "#var/TWILIO_API_SECRET"
+    },
+    "TWILIO_VERIFICATION_SERVICE_SID": {
+      "name": "TWILIO_VERIFICATION_SERVICE_SID",
+      "value": "#var/TWILIO_VERIFICATION_SERVICE_SID"
+    },
+    "HLTHI_FREE_PLAN_PRICE_ID": {
+      "name": "HLTHI_FREE_PLAN_PRICE_ID",
+      "value": "#var/HLTHI_FREE_PLAN_PRICE_ID"
+    },
+    "HLTHI_BASE_PLAN_PRICE_ID": {
+      "name": "HLTHI_BASE_PLAN_PRICE_ID",
+      "value": "#var/HLTHI_BASE_PLAN_PRICE_ID"
+    },
+    "HLTHI_ON_DEMAND_PRICE_ID": {
+      "name": "HLTHI_ON_DEMAND_PRICE_ID",
+      "value": "#var/HLTHI_ON_DEMAND_PRICE_ID"
+    },
+    "HLTHI_STANDARD_PRICE_ID": {
+      "name": "HLTHI_STANDARD_PRICE_ID",
+      "value": "#var/HLTHI_STANDARD_PRICE_ID"
+    },
+    "PATIENT_APPLICATION_ID": {
+      "name": "PATIENT_APPLICATION_ID",
+      "value": "#var/PATIENT_APPLICATION_ID"
     }
   },
   "zambdas": {
@@ -778,6 +826,55 @@
       "runtime": "nodejs20.x",
       "src": "src/patient/ai-interview/handle-answer/index",
       "zip": ".dist/zips/ai-interview-handle-answer.zip"
+    },
+    "ADMIN-CREATE-CONVERSATION": {
+      "name": "ADMIN-CREATE-CONVERSATION",
+      "type": "http_open",
+      "runtime": "nodejs20.x",
+      "src": "src/custom-ehr/conversation/create-conversation/index",
+      "zip": ".dist/zips/admin-create-conversation.zip"
+    },
+    "ADMIN-CONVERSATION-PARTICIPANT": {
+      "name": "ADMIN-CONVERSATION-PARTICIPANT",
+      "type": "http_auth",
+      "runtime": "nodejs20.x",
+      "src": "src/custom-ehr/conversation/add-participant/index",
+      "zip": ".dist/zips/conversation-add-participant.zip"
+    },
+    "INTAKE-ACCOUNT-CHECK-SMS-VERIFICATION": {
+      "name": "INTAKE-ACCOUNT-CHECK-SMS-VERIFICATION",
+      "type": "http_open",
+      "runtime": "nodejs20.x",
+      "src": "src/custom-patient/account/check-sms-verification/index",
+      "zip": ".dist/zips/check-sms-verification.zip"
+    },
+    "INTAKE-ACCOUNT-CREATE-SMS-VERIFICATION": {
+      "name": "INTAKE-ACCOUNT-CREATE-SMS-VERIFICATION",
+      "type": "http_open",
+      "runtime": "nodejs20.x",
+      "src": "src/custom-patient/account/create-sms-verification/index",
+      "zip": ".dist/zips/create-sms-verification.zip"
+    },
+    "INTAKE-CREATE-ACCOUNT": {
+      "name": "INTAKE-CREATE-ACCOUNT",
+      "type": "http_open",
+      "runtime": "nodejs20.x",
+      "src": "src/custom-patient/account/create-account/index",
+      "zip": ".dist/zips/intake-create-account.zip"
+    },
+    "INTAKE-GET-BILLING-ACCOUNT": {
+      "name": "INTAKE-GET-BILLING-ACCOUNT",
+      "type": "http_auth",
+      "runtime": "nodejs20.x",
+      "src": "src/custom-patient/billing/get-account/index",
+      "zip": ".dist/zips/intake-get-billing-account.zip"
+    },
+    "INTAKE-GET-BILLING-SETUP-INTENT": {
+      "name": "INTAKE-GET-BILLING-SETUP-INTENT",
+      "type": "http_open",
+      "runtime": "nodejs20.x",
+      "src": "src/custom-patient/billing/get-setup-intent/index",
+      "zip": ".dist/zips/intake-get-billing-setup-intent.zip"
     }
   },
   "fhirResources": {

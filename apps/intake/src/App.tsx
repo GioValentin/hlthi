@@ -47,6 +47,7 @@ import VideoChatPage from './telemed/pages/VideoChatPage';
 import WaitingRoom from './telemed/pages/WaitingRoom';
 import Welcome from './telemed/pages/Welcome';
 import AIInterview from './pages/AIInterview';
+import ChatBubble from './../../../custom-packages/ui-components/lib/plugins/conversation/ChatBubble';
 
 const {
   MODE: environment,
@@ -334,6 +335,7 @@ function App(): JSX.Element {
             <ScrollToTop />
             <ErrorAlert />
             <IOSMessagesHandler />
+            <ChatBubble />
             <Routes>
               <Route path={'/version'} element={<Version />} />;
               <Route path={'/redirect'} element={intakeFlowPageRoute.AuthPage.getPage()} />;
