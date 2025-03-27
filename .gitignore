@@ -28,3 +28,6 @@ packages/ui-components/dist/*
 **/vite.config.ts.timestamp-*.mjs
 **/ottehr-secrets/
 custom-packages
+
+**/custom-ehr
+**/custom-patient
