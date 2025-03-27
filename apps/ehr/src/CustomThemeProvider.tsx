@@ -4,12 +4,12 @@ import React from 'react';
 
 const palette = {
   background: {
-    default: '#F9FAFB',
+    default: '#F5F1EB',
     paper: '#FFFFFF',
   },
   primary: {
-    main: '#2169F5',
-    light: '#2169F5',
+    main: '#1f4638',
+    light: '#1f4638',
     dark: '#0F347C',
     contrast: '#FFFFFF',
   },
@@ -74,7 +74,7 @@ export const otherColors = {
   infoText: 'linear-gradient(0deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), linear-gradient(0deg, #0288D1, #0288D1)',
   insuranceChip: '#43A047',
   green700: '#388E3C',
-  lightBlue: '#E2F0FF',
+  lightBlue: '#F5F1EB',
   lightDivider: 'rgba(0, 0, 0, 0.12)',
   lightIconButton: '#EDE8FF',
   locationGeneralBlue: '#CFF5FF',

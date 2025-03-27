@@ -322,7 +322,7 @@ function AppointmentsBody(props: AppointmentsBodyProps): ReactElement {
               position: { xs: 'static', sm: 'sticky' },
               top: adjustTopForBannerHeight(80),
               zIndex: 1,
-              backgroundColor: '#F9FAFB',
+              backgroundColor: '#F5F1EB',
               alignItems: 'center',
               width: '100%',
             }}

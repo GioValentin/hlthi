@@ -18,6 +18,8 @@
     "test": {
       "dependsOn": ["build"],
       "inputs": [
+        "custom-packages/**/*.tsx",
+        "custom-packages/**/*.ts",
         "apps/**/*.tsx",
         "apps/**/*.ts",
         "packages/**/*.ts",

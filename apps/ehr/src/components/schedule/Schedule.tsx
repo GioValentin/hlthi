@@ -428,7 +428,7 @@ export default function Schedule({ item, setItem }: ScheduleProps): ReactElement
                     '&:first-of-type': {
                       borderTopLeftRadius: '8px',
                       borderBottomLeftRadius: '8px',
-                      borderLeft: '1px solid #2169F5',
+                      borderLeft: '1px solid #1f4638',
                     },
 
                     '&:last-child': {
@@ -444,17 +444,17 @@ export default function Schedule({ item, setItem }: ScheduleProps): ReactElement
                   <Tab
                     sx={{
                       textTransform: 'none',
-                      borderRight: '1px solid #2169F5',
-                      borderTop: '1px solid #2169F5',
-                      borderBottom: '1px solid #2169F5',
-                      color: '#2169F5',
+                      borderRight: '1px solid #1f4638',
+                      borderTop: '1px solid #1f4638',
+                      borderBottom: '1px solid #1f4638',
+                      color: '#1f4638',
                       width: 'fit-content',
                       height: '36px',
                       minHeight: '36px',
                       fontWeight: 700,
                       '&.Mui-selected': {
                         color: '#FFFFFF',
-                        background: '#2169F5',
+                        background: '#1f4638',
                       },
                     }}
                     label={capitalize(day)}

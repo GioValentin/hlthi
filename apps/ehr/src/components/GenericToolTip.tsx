@@ -18,7 +18,7 @@ export const GenericToolTip = styled(
         tooltip: {
           sx: {
             maxWidth: customWidth || 150,
-            backgroundColor: '#F9FAFB',
+            backgroundColor: '#F5F1EB',
             color: '#000000',
             border: '1px solid #dadde9',
           },
