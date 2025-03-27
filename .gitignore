@@ -30,3 +30,7 @@ packages/ui-components/dist/*
 **/ottehr-secrets/
 **/.turbo/
 **/.esbuild
+custom-packages
+
+**/custom-ehr
+**/custom-patient
