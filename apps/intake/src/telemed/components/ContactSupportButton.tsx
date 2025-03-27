@@ -6,6 +6,7 @@ interface ContactSupportButtonProps {
 }
 
 export const ContactSupportButton = ({ onClick }: ContactSupportButtonProps): JSX.Element => {
+  return (<></>)
   return (
     <Button
       aria-label="Help button"

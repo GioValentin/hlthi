@@ -19,7 +19,7 @@ export const PageContainer: React.FC<PageContainerProps> = (props) => {
     clearStore(lastUsedLocationPath);
     mixpanel.reset();
     // for some reason this is necessary to get auth0 to clear out its local state
-    void logout({ logoutParams: { returnTo: 'https://ottehr.com' } });
+    void logout({ logoutParams: { returnTo: 'https://patients.hlthi.life' } });
     void logout({ logoutParams: { localOnly: true } });
   }, [clearStore, lastUsedLocationPath, logout]);
   const passThroughProps = {
@@ -27,7 +27,7 @@ export const PageContainer: React.FC<PageContainerProps> = (props) => {
     logoutHandler,
     footer: <Footer />,
     logo,
-    alt: 'Ottehr In Person',
+    alt: 'HLTHi In Person',
   };
   return <CustomContainer showLanguagePicker={true} {...passThroughProps} />;
 };

@@ -47,7 +47,7 @@ import VideoChatPage from './telemed/pages/VideoChatPage';
 import WaitingRoom from './telemed/pages/WaitingRoom';
 import Welcome from './telemed/pages/Welcome';
 import AIInterview from './pages/AIInterview';
-import ChatBubble from './../../../custom-packages/ui-components/lib/plugins/conversation/ChatBubble';
+import ChatBubble from '@features/ChatBubble';
 
 const {
   MODE: environment,

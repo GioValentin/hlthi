@@ -6,6 +6,8 @@ interface QuestionMarkButtonProps {
 }
 
 export const QuestionMarkButton = ({ onClick }: QuestionMarkButtonProps): JSX.Element => {
+
+  return (<></>)
   return (
     <IconButton
       aria-label="Help button"

@@ -60,6 +60,7 @@
     "react-markdown": "^9.0.0",
     "ui-components": "*",
     "utils": "*",
-    "vitest": "^3.0.4"
+    "vitest": "^3.0.4",
+    "custom-ui-components": "file:../../custom-packages/ui-components/lib"
   }
 }
