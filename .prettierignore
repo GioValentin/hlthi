@@ -4,6 +4,8 @@
 !packages/**/*.jsx
 !apps/**/*.ts
 !apps/**/*.tsx
+!custom-packages/**/*.tsx
+!custom-packages/**/*.ts
 !apps/**/*.js
 !apps/**/*.jsx
 !/vite.config.ts
