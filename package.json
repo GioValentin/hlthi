@@ -46,6 +46,7 @@
     "prepare": "husky"
   },
   "workspaces": [
+    "custom-packages/**/*",
     "packages/**/*",
     "apps/*"
   ],
