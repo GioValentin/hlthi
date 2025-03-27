@@ -29,3 +29,4 @@ packages/ui-components/dist/*
 **/vite.config.ts.timestamp-*.mjs
 **/ottehr-secrets/
 **/.turbo/
+**/.esbuild
