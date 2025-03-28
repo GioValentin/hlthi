@@ -839,21 +839,21 @@
       "type": "http_auth",
       "runtime": "nodejs20.x",
       "src": "src/custom-ehr/conversation/add-participant/index",
-      "zip": ".dist/zips/conversation-add-participant.zip"
+      "zip": ".dist/zips/admin-conversation-participant.zip"
     },
     "INTAKE-ACCOUNT-CHECK-SMS-VERIFICATION": {
       "name": "INTAKE-ACCOUNT-CHECK-SMS-VERIFICATION",
       "type": "http_open",
       "runtime": "nodejs20.x",
       "src": "src/custom-patient/account/check-sms-verification/index",
-      "zip": ".dist/zips/check-sms-verification.zip"
+      "zip": ".dist/zips/intake-account-check-sms-verification.zip"
     },
     "INTAKE-ACCOUNT-CREATE-SMS-VERIFICATION": {
       "name": "INTAKE-ACCOUNT-CREATE-SMS-VERIFICATION",
       "type": "http_open",
       "runtime": "nodejs20.x",
       "src": "src/custom-patient/account/create-sms-verification/index",
-      "zip": ".dist/zips/create-sms-verification.zip"
+      "zip": ".dist/zips/intake-account-create-sms-verification.zip"
     },
     "INTAKE-CREATE-ACCOUNT": {
       "name": "INTAKE-CREATE-ACCOUNT",

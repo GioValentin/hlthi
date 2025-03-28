@@ -3,6 +3,7 @@
   "compilerOptions": {
     "noUnusedLocals": false,
     "noUnusedParameters": false,
+    "baseUrl": ".",
     "paths": {
       "@api/*": ["./src/api/*"],
       "@assets/*": ["./src/assets/*"],
@@ -19,8 +20,10 @@
       "@telemed/*": ["./src/telemed/*"],
       "@types/*": ["./src/types/*"],
       "@fonts/*": ["./src/fonts/*"],
-      "@lib/*": ["./src/lib/*"]
-    }
+      "@lib/*": ["./src/lib/*"],
+      "@features/ChatBubble": ["custom-ui-components/lib/plugins/ChatBubbleProvider"]
+    },
+    
   },
   "include": ["src"]
 }

@@ -22,7 +22,7 @@ void (async () => {
     if (patientPortalDistribution && ehrDistribution) {
       const patientPortalUrl = `https://${patientPortalDistribution.DomainName}`;
       const ehrUrl = `https://${ehrDistribution.DomainName}`;
-      console.log('colin', patientPortalUrl, ehrUrl);
+      console.log('Portals', patientPortalUrl, ehrUrl);
       const oystehr = new Oystehr({
         accessToken,
         projectId,

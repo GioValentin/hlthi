@@ -7,7 +7,6 @@ import { useZapEHRAPIClient } from '../../hooks/useOystehrAPIClient';
 import { useGetTelemedAppointments, useTrackingBoardStore } from '../../state';
 import { ApptTabToStatus } from '../../utils';
 import { TrackingBoardTable } from './TrackingBoardTable';
-import CreateDemoVisits from '../../../components/CreateDemoVisits';
 import { dataTestIds } from '../../../constants/data-test-ids';
 import { ApptTelemedTab } from 'utils';
 
@@ -93,7 +92,6 @@ export function TrackingBoardTabs(): ReactElement {
             <TrackingBoardTable tab={value} />
           </TabPanel>
         </Paper>
-        <CreateDemoVisits />
       </TabContext>
     </Box>
   );

@@ -22,7 +22,6 @@ import { dataTestIds } from '../constants/data-test-ids';
 import { useApiClients } from '../hooks/useAppClients';
 import PageContainer from '../layout/PageContainer';
 import { VisitType, VisitTypeToLabel } from '../types/types';
-import CreateDemoVisits from '../components/CreateDemoVisits';
 import { useDebounce } from '../telemed/hooks';
 
 type LoadingState = { status: 'loading' | 'initial'; id?: string | undefined } | { status: 'loaded'; id: string };
@@ -500,7 +499,6 @@ function AppointmentsBody(props: AppointmentsBodyProps): ReactElement {
               setEditingComment={setEditingComment}
             />
           </Box>
-          <CreateDemoVisits />
         </>
       </PageContainer>
     </form>

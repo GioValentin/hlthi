@@ -34,6 +34,7 @@ export const FormAutocomplete = <T extends FieldValues>({
     name={name}
     control={control}
     defaultValue={defaultValue as any}
+    //@ts-ignore
     rules={{
       required,
       validate: (value) => !value || options.some((option) => option.value === value),

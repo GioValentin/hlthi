@@ -25,6 +25,7 @@ export const FormTextField = <T extends FieldValues>({
     name={name}
     control={control}
     defaultValue={defaultValue as any}
+    //@ts-ignore
     rules={rules}
     render={({ field, fieldState: { error } }) => (
       <TextField
