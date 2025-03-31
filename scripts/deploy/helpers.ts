@@ -60,6 +60,8 @@ export async function updateEnvFiles(environment: string, patientPortalUrl: stri
   ehrEnvFile = ehrEnvFile.replace('http://localhost:3000/local', 'https://project-api.zapehr.com/v1');
   ehrEnvFile = ehrEnvFile.replace('http://localhost:4000/local', 'https://project-api.zapehr.com/v1');
   ehrEnvFile = ehrEnvFile.replace('VITE_APP_IS_LOCAL=true', 'VITE_APP_IS_LOCAL=false');
+  ehrEnvFile = ehrEnvFile.replace('VITE_APP_INTAKE_URL=http://localhost:3002', `VITE_APP_INTAKE_URL=${patientPortalUrl}`);
+  
   ehrEnvFile = ehrEnvFile.replace(
     'VITE_APP_OYSTEHR_APPLICATION_REDIRECT_URL=http://localhost:4002',
     `VITE_APP_OYSTEHR_APPLICATION_REDIRECT_URL=${ehrUrl}`

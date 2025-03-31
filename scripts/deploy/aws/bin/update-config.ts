@@ -9,6 +9,8 @@ const projectConfig: any = config;
 const environment = projectConfig.environment;
 const projectId = projectConfig.project_id;
 const accessToken = projectConfig.access_token;
+const ehrDomain = projectConfig.ehr_domain;
+const patientDomain = projectConfig.intake_domain;
 
 void (async () => {
   try {
@@ -27,7 +29,7 @@ void (async () => {
         accessToken,
         projectId,
       });
-      await updateEnvFiles(environment, patientPortalUrl, ehrUrl);
+      await updateEnvFiles(environment, patientDomain, ehrDomain);
       await updateZapehr(oystehr, patientPortalUrl, ehrUrl);
     }
   } catch (error) {
