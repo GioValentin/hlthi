@@ -6,6 +6,8 @@ import App from './App';
 import './index.css';
 import './lib/i18n';
 
+import TagManager from 'react-gtm-module';
+
 window.global ||= window; // https://stackoverflow.com/questions/72795666/how-to-fix-vite-build-parser-error-unexpected-token-in-third-party-dependenc
 
 // polyfill for fixing missing hasOwn Object property in some browsers
@@ -13,6 +15,12 @@ window.global ||= window; // https://stackoverflow.com/questions/72795666/how-to
 if (!Object.hasOwn) {
   hasOwn.shim();
 }
+
+const tagManagerArgs = {
+  gtmId: import.meta.env.VITE_APP_GTM_ID, // Replace with your GTM ID
+};
+
+TagManager.initialize(tagManagerArgs);
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 const { VITE_APP_AUTH0_AUDIENCE, VITE_APP_AUTH_URL, VITE_APP_CLIENT_ID } = import.meta.env;

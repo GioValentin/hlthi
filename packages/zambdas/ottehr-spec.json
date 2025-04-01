@@ -220,6 +220,10 @@
     "PATIENT_APPLICATION_ID": {
       "name": "PATIENT_APPLICATION_ID",
       "value": "#var/PATIENT_APPLICATION_ID"
+    },
+    "HLTHI_ENCOUNTER_PRODUCT_ID": {
+      "name": "PATIENT_APPLICATION_ID",
+      "value": "#var/PATIENT_APPLICATION_ID"
     }
   },
   "zambdas": {
@@ -875,6 +879,18 @@
       "runtime": "nodejs20.x",
       "src": "src/custom-patient/billing/get-setup-intent/index",
       "zip": ".dist/zips/intake-get-billing-setup-intent.zip"
+    },
+    "CUSTOM-HOOK-QUESTIONNAIRE-COMPLETED": {
+      "name": "CUSTOM-HOOK-QUESTIONNAIRE-COMPLETED",
+      "type": "subscription",
+      "runtime": "nodejs20.x",
+      "src": "src/custom-patient/questionnaire/hooks/questionnaire-completed/index",
+      "zip": ".dist/zips/custom-hook-questionnaire-completed.zip",
+      "subscription": {
+        "status":"completed",
+        "criteria":"QuestionnaireResponse?status=completed",
+        "event":"update"
+      }
     }
   },
   "fhirResources": {

@@ -32,7 +32,7 @@ void (async () => {
       await updateEnvFiles(environment, patientDomain, ehrDomain);
       //await updateBuildFiles('ehr');
       //await updateBuildFiles('intake');
-      await updateZapehr(oystehr, patientPortalUrl, ehrUrl);
+      await updateZapehr(oystehr, [patientPortalUrl,`https://${patientPortalDistribution.DomainName}`], [ehrUrl,`https://${ehrDistribution.DomainName}`]);
     }
   } catch (error) {
     console.error('Deployment failed:', error);

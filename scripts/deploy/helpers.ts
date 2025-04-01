@@ -7,7 +7,7 @@ import path from 'path';
 const projectConfig: any = config;
 const environment = projectConfig.environment;
 
-export async function updateZapehr(oystehr: Oystehr, patientPortalUrl: string, ehrUrl: string): Promise<void> {
+export async function updateZapehr(oystehr: Oystehr, patientPortalUrl: string[], ehrUrl: string[]): Promise<void> {
   const applications = await oystehr.application.list();
   const envPatientPortalFile = await fs.readFile(`${__dirname}/../../apps/intake/env/.env.${environment}`, 'utf8');
   const applicationPatientPortalClientID = envPatientPortalFile
@@ -18,13 +18,18 @@ export async function updateZapehr(oystehr: Oystehr, patientPortalUrl: string, e
     (application) => application.clientId === applicationPatientPortalClientID
   );
   if (patientPortalApplication) {
+    
     await oystehr.application.update({
       id: patientPortalApplication.id,
-      loginRedirectUri: patientPortalUrl,
-      allowedCallbackUrls: [patientPortalUrl, `${patientPortalUrl}/redirect`],
-      allowedLogoutUrls: [patientPortalUrl],
-      allowedCORSOriginsUrls: [patientPortalUrl],
-      allowedWebOriginsUrls: [patientPortalUrl],
+      loginRedirectUri: patientPortalUrl[0],
+      allowedCallbackUrls: [patientPortalUrl[0], `${patientPortalUrl[0]}/redirect`,patientPortalUrl[1], `${patientPortalUrl[1]}/redirect`],
+      allowedLogoutUrls: [patientPortalUrl[0], `${patientPortalUrl[0]}/redirect`,patientPortalUrl[1], `${patientPortalUrl[1]}/redirect`],
+      allowedCORSOriginsUrls: [patientPortalUrl[0],patientPortalUrl[1]],
+      allowedWebOriginsUrls: [patientPortalUrl[0],patientPortalUrl[1]],
+      loginWithEmailEnabled: true,
+      passwordlessSMS: false,
+      refreshTokenEnabled: true,
+      logoUri: 'https://cdn.prod.website-files.com/65abcf3c9867d80cb5c7372f/65abd75469c2257a1d66766f_svgexport-1.svg'
     });
     console.log('Updated patient portal application');
   }
@@ -38,11 +43,15 @@ export async function updateZapehr(oystehr: Oystehr, patientPortalUrl: string, e
   if (ehrApplication) {
     await oystehr.application.update({
       id: ehrApplication.id,
-      loginRedirectUri: ehrUrl,
-      allowedCallbackUrls: [ehrUrl],
-      allowedLogoutUrls: [ehrUrl],
-      allowedCORSOriginsUrls: [ehrUrl],
-      allowedWebOriginsUrls: [ehrUrl],
+      loginRedirectUri: ehrUrl[0],
+      allowedCallbackUrls: [ehrUrl[0],ehrUrl[1]],
+      allowedLogoutUrls: [ehrUrl[0],ehrUrl[1]],
+      allowedCORSOriginsUrls: [ehrUrl[0],ehrUrl[1]],
+      allowedWebOriginsUrls: [ehrUrl[0],ehrUrl[1]],
+      loginWithEmailEnabled: true,
+      passwordlessSMS: false,
+      refreshTokenEnabled: true,
+      logoUri: 'https://cdn.prod.website-files.com/65abcf3c9867d80cb5c7372f/65abd75469c2257a1d66766f_svgexport-1.svg'
     });
     console.log('Updated EHR application');
   }
