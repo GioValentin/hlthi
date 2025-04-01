@@ -1,13 +1,15 @@
-import fs from 'fs';
+
+import fs from 'fs/promises';
 import config from './deploy-config.json';
 import Oystehr from '@oystehr/sdk';
+import path from 'path';
 
 const projectConfig: any = config;
 const environment = projectConfig.environment;
 
 export async function updateZapehr(oystehr: Oystehr, patientPortalUrl: string, ehrUrl: string): Promise<void> {
   const applications = await oystehr.application.list();
-  const envPatientPortalFile = fs.readFileSync(`${__dirname}/../../apps/intake/env/.env.${environment}`, 'utf8');
+  const envPatientPortalFile = await fs.readFile(`${__dirname}/../../apps/intake/env/.env.${environment}`, 'utf8');
   const applicationPatientPortalClientID = envPatientPortalFile
     .split('\n')
     .find((item) => item.split('=')[0] === 'VITE_APP_CLIENT_ID')
@@ -27,7 +29,7 @@ export async function updateZapehr(oystehr: Oystehr, patientPortalUrl: string, e
     console.log('Updated patient portal application');
   }
 
-  const envEHRFile = fs.readFileSync(`${__dirname}/../../apps/ehr/env/.env.${environment}`, 'utf8');
+  const envEHRFile =  await fs.readFile(`${__dirname}/../../apps/ehr/env/.env.${environment}`, 'utf8');
   const applicationEHRClientID = envEHRFile
     .split('\n')
     .find((item) => item.split('=')[0] === 'VITE_APP_OYSTEHR_APPLICATION_CLIENT_ID')
@@ -48,7 +50,7 @@ export async function updateZapehr(oystehr: Oystehr, patientPortalUrl: string, e
 
 export async function updateEnvFiles(environment: string, patientPortalUrl: string, ehrUrl: string): Promise<void> {
   console.log(__dirname);
-  let patientPortalEnvFile = fs.readFileSync(`${__dirname}/../../apps/intake/env/.env.${environment}`, 'utf8');
+  let patientPortalEnvFile = await fs.readFile(`${__dirname}/../../apps/intake/env/.env.${environment}`, 'utf8');
   patientPortalEnvFile = patientPortalEnvFile.replace(/paperwork\//g, '');
   patientPortalEnvFile = patientPortalEnvFile.replace(
     'http://localhost:3000/local',
@@ -56,7 +58,7 @@ export async function updateEnvFiles(environment: string, patientPortalUrl: stri
   );
   patientPortalEnvFile = patientPortalEnvFile.replace('VITE_APP_IS_LOCAL=true', 'VITE_APP_IS_LOCAL=false');
 
-  let ehrEnvFile = fs.readFileSync(`${__dirname}/../../apps/ehr/env/.env.${environment}`, 'utf8');
+  let ehrEnvFile = await fs.readFile (`${__dirname}/../../apps/ehr/env/.env.${environment}`, 'utf8');
   ehrEnvFile = ehrEnvFile.replace('http://localhost:3000/local', 'https://project-api.zapehr.com/v1');
   ehrEnvFile = ehrEnvFile.replace('http://localhost:4000/local', 'https://project-api.zapehr.com/v1');
   ehrEnvFile = ehrEnvFile.replace('VITE_APP_IS_LOCAL=true', 'VITE_APP_IS_LOCAL=false');
@@ -68,6 +70,38 @@ export async function updateEnvFiles(environment: string, patientPortalUrl: stri
   );
   ehrEnvFile = ehrEnvFile.replace('VITE_APP_QRS_URL=http://localhost:3002', `VITE_APP_QRS_URL=${patientPortalUrl}`);
 
-  fs.writeFileSync(`${__dirname}/../../apps/intake/env/.env.${environment}`, patientPortalEnvFile);
-  fs.writeFileSync(`${__dirname}/../../apps/ehr/env/.env.${environment}`, ehrEnvFile);
+  await fs.writeFile(`${__dirname}/../../apps/intake/env/.env.${environment}`, patientPortalEnvFile);
+  await fs.writeFile(`${__dirname}/../../apps/ehr/env/.env.${environment}`, ehrEnvFile);
+}
+
+export async function updateBuildFiles(app: string): Promise<void> {
+  const buildDir = path.resolve(__dirname, `../../apps/${app}/build`);
+  console.log('Build directory:', buildDir);
+
+  try {
+    // Read the list of files in the build directory
+    const files = await fs.readdir(buildDir);
+
+    // Process each file
+    for (const file of files) {
+      const filePath = path.join(buildDir, file);
+      const stats = await fs.stat(filePath);
+
+      // Only update if it's a file (skip directories)
+      if (stats.isFile()) {
+        // Read file contents
+        let fileContent = await fs.readFile(filePath, 'utf8');
+
+        // Replace all occurrences of the target URL with the provided EHR URL
+        const updatedContent = fileContent.replace(/http:\/\/localhost:3000\/local/g, 'https://project-api.zapehr.com/v1');
+
+        // Write the updated content back to the file
+        await fs.writeFile(filePath, updatedContent, 'utf8');
+        console.log(`Updated file: ${filePath}`);
+      }
+    }
+  } catch (err) {
+    console.error('Error updating build files:', err);
+    throw err;
+  }
 }

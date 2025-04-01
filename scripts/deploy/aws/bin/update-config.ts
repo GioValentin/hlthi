@@ -2,7 +2,7 @@
 import config from '../../deploy-config.json';
 import { CloudFrontClient, ListDistributionsCommand, ListDistributionsCommandOutput } from '@aws-sdk/client-cloudfront';
 import { fromIni } from '@aws-sdk/credential-providers';
-import { updateEnvFiles, updateZapehr } from '../../helpers';
+import { updateEnvFiles, updateZapehr,updateBuildFiles } from '../../helpers';
 import Oystehr from '@oystehr/sdk';
 
 const projectConfig: any = config;
@@ -22,14 +22,16 @@ void (async () => {
       (distribution: any) => distribution.Comment === `ottehr-ehr-${projectId}`
     );
     if (patientPortalDistribution && ehrDistribution) {
-      const patientPortalUrl = `https://${patientPortalDistribution.DomainName}`;
-      const ehrUrl = `https://${ehrDistribution.DomainName}`;
+      const patientPortalUrl = patientDomain;
+      const ehrUrl = ehrDomain;
       console.log('Portals', patientPortalUrl, ehrUrl);
       const oystehr = new Oystehr({
         accessToken,
         projectId,
       });
       await updateEnvFiles(environment, patientDomain, ehrDomain);
+      //await updateBuildFiles('ehr');
+      //await updateBuildFiles('intake');
       await updateZapehr(oystehr, patientPortalUrl, ehrUrl);
     }
   } catch (error) {

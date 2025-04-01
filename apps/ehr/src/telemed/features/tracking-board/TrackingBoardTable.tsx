@@ -100,6 +100,8 @@ export function TrackingBoardTable({ tab }: AppointmentTableProps): ReactElement
     const createGroups = (): Record<string, TelemedAppointmentInformation[]> => {
       return filteredAppointments.reduce<Record<string, TelemedAppointmentInformation[]>>(
         (accumulator, appointment) => {
+          console.log(appointment);
+          
           if (appointment.location.state) {
             if (!accumulator[appointment.location.state]) {
               accumulator[appointment.location.state] = [];

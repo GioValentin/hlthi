@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as cloudfront_origins from 'aws-cdk-lib/aws-cloudfront-origins';
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 
 import config from '../../deploy-config.json';
 import { RemovalPolicy } from 'aws-cdk-lib';
@@ -38,9 +39,10 @@ export class OttehrInfraStack extends cdk.Stack {
       this,
       'patientPortal',
       this.patientPortalBucket,
-      projectIdentifier
+      projectIdentifier,
+      projectConfig.intake_domain
     );
-    this.ehrDistribution = setUpCloudFront(this, 'ehr', this.ehrBucket, projectIdentifier);
+    this.ehrDistribution = setUpCloudFront(this, 'ehr', this.ehrBucket, projectIdentifier, projectConfig.ehr_domain);
   }
 }
 
@@ -71,12 +73,22 @@ function setUpCloudFront(
   scope: Construct,
   website: 'patientPortal' | 'ehr',
   bucket: s3.Bucket,
-  projectId: string
+  projectId: string,
+  domainName: string
 ): cloudfront.Distribution {
+
+  // const certificate = acm.Certificate.fromCertificateArn(
+  //   scope,
+  //   '35e35201-b33a-4934-816d-0553322abf76',
+  //   'arn:aws:acm:us-east-1:905418388478:certificate/35e35201-b33a-4934-816d-0553322abf76'
+  // );
+
   return new cloudfront.Distribution(scope, `create-${website}-cloudfront-distribution`, {
     defaultBehavior: {
       origin: new cloudfront_origins.S3Origin(bucket),
     },
+    //domainNames: [domainName],
+    //certificate: certificate,
     comment: `ottehr-${website}-${projectId}`,
   });
 }
