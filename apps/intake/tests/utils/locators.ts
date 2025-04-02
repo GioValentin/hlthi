@@ -202,7 +202,7 @@ export class Locators {
       this.continueButton = page.getByText('Continue');
     }
     this.flowHeading = page.getByTestId(dataTestIds.flowPageTitle);
-    this.thankYouHeading = page.getByRole('heading', { name: 'Thank you for choosing Ottehr!' });
+    this.thankYouHeading = page.getByRole('heading', { name: 'Thank you for choosing HLTHi!' });
     this.startInPersonVisitButton = page.getByTestId(dataTestIds.startInPersonVisitButton);
     this.confirmWalkInButton = page.getByRole('button', { name: 'Confirm this walk-in time' });
     this.checkInHeading = page.getByRole('heading', { name: 'You are checked in!' });
@@ -213,7 +213,7 @@ export class Locators {
     this.editPaperwork = page.getByRole('button', { name: 'Edit paperwork' });
     this.backButton = page.getByTestId(dataTestIds.backButton);
     this.bookAgainButton = page.getByRole('button', { name: 'Book again' });
-    this.homeScreenHeading = page.getByRole('heading', { name: 'Welcome to Ottehr' });
+    this.homeScreenHeading = page.getByRole('heading', { name: 'Welcome to HLTHi' });
     this.numberErrorText = page.getByText('Phone number must be 10 digits in the format (xxx) xxx-xxxx');
     this.emailErrorText = page.getByText('Email is not valid');
     this.zipErrorText = page.getByText('ZIP Code must be 5 numbers');

@@ -10,7 +10,7 @@ export class Homepage extends CommonLocatorsHelper {
   }
 
   async verifyPage(): Promise<void> {
-    await this.page.waitForSelector('h1:has-text("Welcome to Ottehr")');
+    await this.page.waitForSelector('h1:has-text("Welcome to HLTHi")');
   }
 
   async verifyPastVisitsButton(): Promise<void> {

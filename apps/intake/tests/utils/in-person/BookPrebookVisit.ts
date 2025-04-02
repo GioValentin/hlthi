@@ -73,7 +73,7 @@ export class BookPrebookVisit {
     await this.page.getByRole('heading', { name: 'Review and submit' }).isVisible();
     await reserveButton.click();
     await this.page.waitForURL(/\/visit/);
-    await this.page.getByRole('heading', { name: 'Thank you for choosing Ottehr' }).isVisible({ timeout: 15000 });
+    await this.page.getByRole('heading', { name: 'Thank you for choosing HLTHi' }).isVisible({ timeout: 15000 });
     await this.page.getByRole('button', { name: 'Proceed to Paperwork' }).isVisible({ timeout: 15000 });
     const bookingURL = this.page.url();
     return { bookingURL, randomMonth, randomDay, randomYear, firstName, lastName, BirthSex, email, middleName };
@@ -106,7 +106,7 @@ export class BookPrebookVisit {
     await this.page.getByRole('heading', { name: 'Review and submit' }).isVisible();
     await reserveButton.click();
     await this.page.waitForURL(/\/visit/);
-    await this.page.getByRole('heading', { name: 'Thank you for choosing Ottehr' }).isVisible({ timeout: 15000 });
+    await this.page.getByRole('heading', { name: 'Thank you for choosing HLTHi' }).isVisible({ timeout: 15000 });
     await this.page.getByRole('button', { name: 'Proceed to Paperwork' }).isVisible({ timeout: 15000 });
     const bookingURL = this.page.url();
     return { bookingURL, randomMonth, randomDay, randomYear, firstName, lastName, BirthSex, email, middleName };
@@ -137,7 +137,7 @@ export class BookPrebookVisit {
     await this.page.getByRole('heading', { name: 'Review and submit' }).isVisible();
     await reserveButton.click();
     await this.page.waitForURL(/\/visit/);
-    await this.page.getByRole('heading', { name: 'Thank you for choosing Ottehr' }).isVisible({ timeout: 15000 });
+    await this.page.getByRole('heading', { name: 'Thank you for choosing HLTHi' }).isVisible({ timeout: 15000 });
     await this.page.getByRole('button', { name: 'Proceed to Paperwork' }).isVisible({ timeout: 15000 });
     const bookingURL = this.page.url();
     return { bookingURL, Month, Day, Year, firstName, lastName, BirthSex, email };

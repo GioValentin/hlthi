@@ -93,7 +93,7 @@ const Homepage = (): JSX.Element => {
   };
 
   return (
-    <CustomContainer title="Welcome to Ottehr" description="" isFirstPage={true}>
+    <CustomContainer title="Welcome to HLTHi" description="" isFirstPage={true}>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         {isAppointmentsFetching ? (
           <Skeleton
@@ -148,12 +148,12 @@ const Homepage = (): JSX.Element => {
               handleClick={handleScheduleVirtual}
               dataTestId={dataTestIds.scheduleVirtualVisitButton}
             />
-            <HomepageOption
+            {/* <HomepageOption
               title="Schedule an In-Person Visit"
               icon={<LocalHospitalOutlinedIcon />}
               handleClick={handleInPerson}
               dataTestId={dataTestIds.scheduleInPersonVisitButton}
-            />
+            /> */}
             <HomepageOption
               title="Start a Virtual Visit"
               icon={<VideoCameraFrontOutlinedIcon />}
@@ -161,12 +161,12 @@ const Homepage = (): JSX.Element => {
               dataTestId={dataTestIds.startVirtualVisitButton}
             />
 
-            <HomepageOption
+            {/* <HomepageOption
               title="Start an In-Person Visit"
               icon={<LocalHospitalOutlinedIcon />}
               handleClick={handleWalkIn}
               dataTestId={dataTestIds.startInPersonVisitButton}
-            />
+            /> */}
             <HomepageOption
               title="Past Visits"
               icon={pastVisits}

@@ -56,7 +56,7 @@ export class UIDesign {
     await expect(link).toHaveAttribute('href', 'https://www.example.com/survey');
     // await expect(page.getByRole('button', { name: '-minute survey' })).toBeVisible();
     await expect(this.page.getByRole('button', { name: 'Register another patient' })).toBeVisible();
-    await expect(this.page.getByRole('img', { name: 'Ottehr In Person' })).toBeVisible();
+    await expect(this.page.getByRole('img', { name: 'HLTHi In Person' })).toBeVisible();
     await expect(this.page.getByRole('button', { name: 'Logout' })).toBeVisible();
     await expect(this.page.getByLabel('Help button')).toBeVisible();
   }
@@ -71,7 +71,7 @@ export class UIDesign {
     await expect(link).toHaveAttribute('href', 'https://www.example.com/survey');
     // await expect(page.getByRole('button', { name: '-minute survey' })).toBeVisible();
     await expect(this.page.getByRole('button', { name: 'Register another patient' })).toBeVisible();
-    await expect(this.page.getByRole('img', { name: 'Ottehr In Person' })).toBeVisible();
+    await expect(this.page.getByRole('img', { name: 'HLTHi In Person' })).toBeVisible();
     await expect(this.page.getByRole('button', { name: 'Logout' })).toBeVisible();
     await expect(this.page.getByLabel('Help button')).toBeVisible();
   }

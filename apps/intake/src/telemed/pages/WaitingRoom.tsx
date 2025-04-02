@@ -81,7 +81,7 @@ const WaitingRoom = (): JSX.Element => {
     <CustomContainer
       title="Waiting room"
       img={ottehrLightBlue}
-      imgAlt="ottehr icon"
+      imgAlt="HLTHi icon"
       imgWidth={80}
       subtext="Please wait, call will start automatically. A provider expert will connect with you soon."
     >
@@ -131,7 +131,7 @@ const WaitingRoom = (): JSX.Element => {
               primaryText="Leave waiting room"
               secondaryText="We will notify you once the call starts"
             >
-              <img alt="ottehr icon" src={ottehrLightBlue} width={24} />
+              <img alt="HLTHi icon" src={ottehrLightBlue} width={24} />
             </StyledListItemWithButton>
 
             <StyledListItemWithButton
