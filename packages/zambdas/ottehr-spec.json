@@ -222,8 +222,12 @@
       "value": "#var/PATIENT_APPLICATION_ID"
     },
     "HLTHI_ENCOUNTER_PRODUCT_ID": {
-      "name": "PATIENT_APPLICATION_ID",
-      "value": "#var/PATIENT_APPLICATION_ID"
+      "name": "HLTHI_ENCOUNTER_PRODUCT_ID",
+      "value": "#var/HLTHI_ENCOUNTER_PRODUCT_ID"
+    },
+    "STRIPE_WEBHOOK_SECRET_KEY": {
+      "name": "STRIPE_WEBHOOK_SECRET_KEY",
+      "value": "#var/STRIPE_WEBHOOK_SECRET_KEY"
     }
   },
   "zambdas": {
@@ -889,14 +893,16 @@
       "subscription": {
         "status":"completed",
         "criteria":"QuestionnaireResponse?status=completed",
-        "event":"update"
-      },
-    "AI-INTERVIEW-PERSIST-CONSENT": {
-      "name": "AI-INTERVIEW-PERSIST-CONSENT",
-      "type": "http_auth",
+        "event":"update",
+        "reason": "Needs to generate invoice prior to appointment"
+      }
+    },
+    "CUSTOM-BILLING-STRIPE-WEBHOOK": {
+      "name": "CUSTOM-BILLING-STRIPE-WEBHOOK",
+      "type": "http_open",
       "runtime": "nodejs20.x",
-      "src": "src/patient/ai-interview/persist-consent/index",
-      "zip": ".dist/zips/ai-interview-persist-consent.zip"
+      "src": "src/custom-patient/billing/stripe-webhook/index",
+      "zip": ".dist/zips/custom-billing-stripe-webhook.zip"
     }
   },
   "fhirResources": {

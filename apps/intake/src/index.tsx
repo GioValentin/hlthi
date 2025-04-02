@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 import './lib/i18n';
-
+//@ts-ignore
 import TagManager from 'react-gtm-module';
 
 window.global ||= window; // https://stackoverflow.com/questions/72795666/how-to-fix-vite-build-parser-error-unexpected-token-in-third-party-dependenc
