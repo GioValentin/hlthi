@@ -56,7 +56,5 @@ popd
 
 # second cdk deploy uploads compiled apps
 pushd scripts/deploy/aws
-npn ts-node ./bin/clean-build.ts
-
 npx cdk deploy --require-approval=never "ottehr-data-stack-${environment}"
 popd
