@@ -164,7 +164,7 @@ export default function useEvolveUser(): EvolveUser | undefined {
       const lastLogin = profile.meta?.tag?.find((tag) => tag.system === 'last-login')?.code;
       return { userName, userInitials, lastLogin };
     }
-    return { userName: 'Ottehr team', userInitials: initialsFromName('Ottehr Team') };
+    return { userName: 'HTLHi team', userInitials: initialsFromName('HTLHi Team') };
   }, [profile]);
 
   return useMemo(() => {

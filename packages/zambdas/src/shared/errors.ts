@@ -38,7 +38,7 @@ export const sendErrors = async (
     to: email,
     from: {
       email: email,
-      name: 'Ottehr In Person',
+      name: 'HTLHi In Person',
     },
     replyTo: email,
     templateId: SENDGRID_ERROR_EMAIL_TEMPLATE_ID,
@@ -101,7 +101,7 @@ export const sendgridEmail = async (
     to: toEmail,
     from: {
       email: fromEmail,
-      name: 'Ottehr',
+      name: 'HTLHi',
     },
     replyTo: fromEmail,
     templateId: sendgridTemplateId,

@@ -291,7 +291,7 @@ const ThankYou = (): JSX.Element => {
           <Box style={{ background: '#FFF3E0', borderRadius: '8px', padding: '24px', display: 'flex' }}>
             <Box style={{ fontWeight: 600, fontSize: '18px' }}>
               <Typography variant="subtitle1" color="text.primary" style={{ paddingBottom: '16px', fontSize: '18px' }}>
-                Save your time and get ready for the visit with Ottehr AI Chat
+                Save your time and get ready for the visit with HLTHi AI Chat
               </Typography>
               <Button
                 type="button"
@@ -299,7 +299,7 @@ const ThankYou = (): JSX.Element => {
                 style={{ backgroundColor: '#F57C00' }}
                 onClick={() => setAiChatConsentModalOpen(true)}
               >
-                Try Ottehr AI chat
+                Try HLTHi AI chat
               </Button>
             </Box>
             <img src={ottehrAiLogo} style={{ width: '80px', marginLeft: '8px' }} />

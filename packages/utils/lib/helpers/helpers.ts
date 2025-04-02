@@ -237,7 +237,7 @@ export function getContactInformationAnswers({
     zip: DEMO_VISIT_ZIP,
   },
   email = 'test-email@test-domain-1237843298123.co',
-  phoneNumber = '(202) 733-9622',
+  phoneNumber = '(813) 723-1201',
 
   mobileOptIn = true,
 }: {

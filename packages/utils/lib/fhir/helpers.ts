@@ -432,10 +432,10 @@ export async function createConsentResource(
       ],
       policy: [
         {
-          uri: 'https://ottehr.com',
+          uri: 'https://patients.hlthi.life',
         },
         {
-          uri: 'https://ottehr.com',
+          uri: 'https://patients.hlthi.life',
         },
       ],
       sourceReference: {

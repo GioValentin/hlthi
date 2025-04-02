@@ -623,7 +623,7 @@ const Welcome: FC<{ context: BookAppointmentContext }> = ({ context }) => {
       subtext={locationLoading ? '' : subtext}
       isFirstPage
       img={ottehrLightBlue}
-      imgAlt="ottehr icon"
+      imgAlt="HLTHi icon"
       imgWidth={150}
       topOutsideCardComponent={
         visitTypeParam === VisitType.PreBook && officeOpen ? (
@@ -703,7 +703,7 @@ const Welcome: FC<{ context: BookAppointmentContext }> = ({ context }) => {
                 {t('welcome.errors.closed.description')}
               </Typography>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2.5 }}>
-                <Link to="https://ottehr.com" aria-label="Ottehr website" target="_blank">
+                <Link to="https://patients.hlthi.life" aria-label="HLTHi website" target="_blank">
                   <Button variant="contained" color="primary">
                     {t('welcome.goToWebsite')}
                   </Button>

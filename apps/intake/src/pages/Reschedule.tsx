@@ -145,7 +145,7 @@ const Reschedule = (): JSX.Element => {
             description: (
               <>
                 {t('modify.errors.unexpected.description')}{' '}
-                <Link to="https://ottehr.com/contact-us/" target="_blank">
+                <Link to="https://patients.htlhi.life/contact-us/" target="_blank">
                   {t('modify.errors.unexpected.link')}
                 </Link>
                 .

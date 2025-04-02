@@ -1,6 +1,6 @@
 import { ErrorDialogConfig, UnexpectedErrorDescription } from 'ui-components';
 
-export const OTTEHR_WEBSITE = 'https://ottehr.com/';
+export const OTTEHR_WEBSITE = 'https://patients.hlthi.life/';
 export const getParentAndPatientOption = (t: (key: string) => string): { value: string; label: string }[] => {
   return [
     {

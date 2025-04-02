@@ -22,7 +22,7 @@ export const getBillingProviderData = async (
   defaultBillingResource: BillingProviderResource
 ): Promise<BillingProviderDataObject | undefined> => {
   /*
-      In practice, the best FHIR modeling strategy for storing and querying up billing provider data is going to vary widely from one Ottehr user to the
+      In practice, the best FHIR modeling strategy for storing and querying up billing provider data is going to vary widely from one HTLHi user to the
       next.  In general, the provider data is likely to be derivable from the appointment id + the patient's insurance, so those details are taken as
       inputs here. 
       

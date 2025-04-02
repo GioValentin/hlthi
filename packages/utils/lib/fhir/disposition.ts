@@ -3,11 +3,11 @@ import { DispositionType } from '../types';
 const pcpLabel = 'Primary Care Physician';
 
 export const mapDispositionTypeToLabel: Record<DispositionType, string> = {
-  ip: 'Ottehr IP Transfer',
-  'ip-lab': 'Ottehr IP Lab',
+  ip: 'HTLHi IP Transfer',
+  'ip-lab': 'HTLHi IP Lab',
   pcp: pcpLabel,
   ed: 'ED Transfer',
-  'ip-oth': 'Non-Ottehr IP Transfer',
+  'ip-oth': 'Non-HTLHi IP Transfer',
   'pcp-no-type': pcpLabel,
   another: 'Transfer to Another Location',
   speciality: 'Speciality Transfer',

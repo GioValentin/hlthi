@@ -164,7 +164,7 @@ export const getDefaultExcuseFormValues = (params: {
     : `${params.patientName || '{Patient name}'},`;
 
   const headerNoteEnding = !params.isSchool && params.isTemplate ? 'They:' : 'They are:';
-  defaultFormValues.headerNote = `To whom it may concern:\n${headerNoteName} was treated by Ottehr on ${currentDate}. ${headerNoteEnding}`;
+  defaultFormValues.headerNote = `To whom it may concern:\n${headerNoteName} was treated by HTLHi on ${currentDate}. ${headerNoteEnding}`;
 
   if (params.isTemplate) {
     if (params.phoneNumber) {

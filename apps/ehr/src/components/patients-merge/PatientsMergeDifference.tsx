@@ -324,7 +324,7 @@ const rows: Row[] = [
     render: (patient) => patient.pcp || '-',
   },
   {
-    title: 'How did patient heard about Ottehr',
+    title: 'How did patient heard about HTLHi',
     field: 'pointOfDiscovery',
     render: (patient) => patient.pointOfDiscovery || '-',
   },

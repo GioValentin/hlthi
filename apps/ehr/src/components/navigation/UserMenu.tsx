@@ -24,7 +24,7 @@ export const UserMenu: FC = () => {
   const user = useEvolveUser();
   const userIsProvider = user?.hasRole([RoleType.Provider]);
 
-  const name = user?.profileResource && (getFullestAvailableName(user.profileResource, true) ?? 'Ottehr Team');
+  const name = user?.profileResource && (getFullestAvailableName(user.profileResource, true) ?? 'HTLHi Team');
   const suffix = user?.profileResource?.name?.[0]?.suffix?.[0];
 
   return (

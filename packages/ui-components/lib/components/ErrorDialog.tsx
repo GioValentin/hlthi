@@ -28,7 +28,7 @@ const UnexpectedErrorDescriptionComponent: FC = () => {
   return (
     <>
       {t('general.errors.unexpected.description')}{' '}
-      <Link to="https://ottehr.com" target="_blank">
+      <Link to="https://patients.hlthi.life" target="_blank">
         {t('general.errors.unexpected.link')}
       </Link>
       .

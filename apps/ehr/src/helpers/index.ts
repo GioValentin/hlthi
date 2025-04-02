@@ -160,7 +160,7 @@ export const patchAppointmentComment = async (
     resourceType: 'Appointment',
     id: appointment.id,
   });
-  const updateTag = getCriticalUpdateTagOp(fhirAppointment, user?.name || `Ottehr Team Member (${user?.id})`);
+  const updateTag = getCriticalUpdateTagOp(fhirAppointment, user?.name || `HTLHi Team Member (${user?.id})`);
   patchOperations.push(updateTag);
   console.log('patchOperations', patchOperations);
   const updatedAppointment = await oystehr.fhir.patch<Appointment>({

@@ -351,7 +351,7 @@ async function createExternalLabsResultsFormPdfBytes(data: LabResultsData): Prom
   // Main header
   addNewLine();
   drawSubHeaderLeft(`${data.patientLastName}, ${data.patientFirstName}, ${data.patientMiddleName}`);
-  drawSubHeaderRight(`Ottehr${data.locationName}`);
+  drawSubHeaderRight(`HTLHi${data.locationName}`);
   addNewLine();
   drawRegularTextLeft(
     `${data.patientDOB}, ${calculateAge(data.patientDOB)} Y, ${data.patientSex}, ID: ${data.patientId}`
