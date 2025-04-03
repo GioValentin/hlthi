@@ -200,7 +200,7 @@ test('Delete primary diagnosis', async () => {
   });
 });
 
-test('Medical Decision Making functionality', async () => {
+test('Plan / Medical Decision Making functionality', async () => {
   await page
     .getByTestId(dataTestIds.telemedEhrFlow.appointmentVisitTabs(TelemedAppointmentVisitTabs.assessment))
     .click();
@@ -210,7 +210,7 @@ test('Medical Decision Making functionality', async () => {
   await telemedAssessmentPage.expectMdmField({ text: '' });
 
   // Edit the text
-  const newText = 'Updated medical decision making text';
+  const newText = 'Updated Plan / Medical Decision Making text';
   await telemedAssessmentPage.fillMdmField(newText);
 
   // Verify text is updated

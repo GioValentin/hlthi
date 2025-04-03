@@ -216,7 +216,7 @@ async function performEffect(props: PerformEffectInput): Promise<APIGatewayProxy
 
   const relatedPerson = await getRelatedPersonForPatient(patient.id || '', oystehr);
   if (relatedPerson) {
-    const message = `Sorry to see you go. Questions? Call 202-555-1212 `;
+    const message = `Sorry to see you go. Questions? E-Mail patients@hlthi.life`;
 
     await sendSms(message, `RelatedPerson/${relatedPerson.id}`, oystehr);
   } else {

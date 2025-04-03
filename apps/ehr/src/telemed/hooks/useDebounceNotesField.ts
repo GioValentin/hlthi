@@ -21,7 +21,7 @@ const mapValueToLabel: Record<keyof ChartDataTextValueType, string> = {
   chiefComplaint: 'HPI note',
   ros: 'ROS note',
   proceduresNote: 'Surgical history note',
-  medicalDecision: 'Medical Decision Making note',
+  medicalDecision: 'Plan / Medical Decision Making note',
   addendumNote: 'Addendum note',
 };
 

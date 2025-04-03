@@ -57,7 +57,7 @@ export const MissingCard: FC = () => {
               onClick={navigateToTab}
               data-testid={dataTestIds.progressNotePage.medicalDecisionLink}
             >
-              Medical decision making
+              Plan / Medical Decision Making
             </Link>
           )}
           {!emCode && (

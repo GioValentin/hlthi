@@ -156,7 +156,7 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
         const pracitionersEmails = await getEmailsFromGroup(fhirGroup, oystehr);
         console.log('pracitionersEmails', pracitionersEmails);
 
-        const fromEmail = 'support@ottehr.com';
+        const fromEmail = 'patients@hlthi.life';
         const toEmail = pracitionersEmails || [fromEmail];
         const errorMessage = `Details: ${communication.payload?.[0].contentString} <br> Submitted By: ${submitterDetails} <br> Location: ${fhirLocation?.name} - ${fhirLocation?.address?.city}, ${fhirLocation?.address?.state} <br> Appointment Id: ${appointmentID} <br> Communication Fhir Resource: ${communication.id}`;
 

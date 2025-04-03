@@ -152,7 +152,7 @@ export const ReviewAndSignButton: FC<ReviewAndSignButtonProps> = ({ onSigned }) 
         <Box>
           <ConfirmationDialog
             title={`Review & Sign ${patientName}`}
-            description="Are you sure you have reviewed the patient chart, performed the examination, defined the diagnoses, medical decision making and E&M code and ready to sing this patient."
+            description="Are you sure you have reviewed the patient chart, performed the examination, defined the diagnoses, Plan / Medical Decision Making and E&M code and ready to sing this patient."
             response={handleSign}
             actionButtons={{
               proceed: {

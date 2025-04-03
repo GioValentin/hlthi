@@ -18,7 +18,7 @@ export const MedicalDecisionContainer: FC = () => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
       <Box sx={{ display: 'flex', gap: 1 }}>
-        <AssessmentTitle>Medical Decision Making</AssessmentTitle>
+        <AssessmentTitle>Plan / Medical Decision Making</AssessmentTitle>
         {(isUpdating || isLoading) && <CircularProgress size={16} />}
       </Box>
       {isReadOnly ? (

@@ -132,6 +132,9 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
           const status: TelemedAppointmentStatus | undefined = mapStatusToTelemed(encounter.status, appointment.status);
           if (!status) return;
 
+          console.log("What is the status of the appointment", status);
+          console.log("-- What are the communications for provider?", communications);
+          
           // getting communications that were postponed after practitioner will become not busy
           if (practitioner?.id && communications && !busyPractitionerIds.has(practitioner.id)) {
             const postponedCommunications = communications.filter(
@@ -144,6 +147,8 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
               const communicationPractitionerUri = communication.recipient![0].reference!;
               const practitioner = allPractitionersIdMap[communicationPractitionerUri];
               const notificationSettings = getProviderNotificationSettingsForPractitioner(practitioner);
+
+              console.log("---- Providers Notification Settings: " + JSON.stringify(notificationSettings));
               if (notificationSettings && notificationSettings.enabled) {
                 const newStatus = getCommunicationStatus(notificationSettings, busyPractitionerIds, practitioner);
                 updateCommunicationRequests.push(

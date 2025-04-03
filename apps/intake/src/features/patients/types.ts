@@ -20,6 +20,11 @@ export const ReasonForVisitOptions: string[] = [
   'Removal of sutures/stitches/staples',
   'Choked or swallowed something',
   'Allergic reaction to medication or food',
+  'Medication Refill',
+  'Mental Health',
+  'Anxiety',
+  'Medical Weightloss',
+  'Erectile Dysfunction',
   'Other',
 ];
 

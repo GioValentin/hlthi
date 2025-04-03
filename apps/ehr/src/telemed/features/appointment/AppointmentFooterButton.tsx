@@ -199,7 +199,7 @@ export const AppointmentFooterButton: FC = () => {
             response={onConnect}
             actionButtons={{
               proceed: {
-                text: 'Connect to Patient',
+                text: 'Start Video',
               },
               back: { text: 'Cancel' },
             }}
@@ -211,7 +211,7 @@ export const AppointmentFooterButton: FC = () => {
                 variant="contained"
                 data-testid={dataTestIds.telemedEhrFlow.footerButtonConnectToPatient}
               >
-                Connect to Patient
+                Start Video
               </FooterButton>
             )}
           </ConfirmationDialog>

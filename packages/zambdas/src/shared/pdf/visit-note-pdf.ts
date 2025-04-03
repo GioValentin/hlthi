@@ -542,7 +542,7 @@ async function createVisitNotePdfBytes(data: VisitNoteData, isInPersonAppointmen
   }
 
   if (data.medicalDecision) {
-    drawBlockHeader('Medical Decision Making');
+    drawBlockHeader('Plan / Medical Decision Making');
     regularText(data.medicalDecision);
     separateLine();
   }

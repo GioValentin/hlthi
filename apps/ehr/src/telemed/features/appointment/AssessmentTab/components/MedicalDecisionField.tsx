@@ -39,7 +39,7 @@ export const MedicalDecisionField: FC<MedicalDecisionFieldProps> = ({ loading, s
             onValueChange(e.target.value);
           }}
           size="small"
-          label="Medical Decision Making *"
+          label="Plan / Medical Decision Making *"
           fullWidth
           multiline
           disabled={loading}
