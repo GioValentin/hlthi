@@ -440,6 +440,11 @@
     }
   },
   "paperworkPages": {
+    "Medication Refill":"Medication Refill",
+    "Mental Health": "Mental Health",
+    "Anxiety":"Anxiety",
+    "Medical Weightloss":"Medical Weightloss",
+    "Erectile Dysfunction":"Erectile Dysfunction",
     "Email is not valid": "El correo electrónico no es válido",
     "validationError": "Error al validar el formulario",
     "Must be 18 years or older": "Debe tener 18 años o más.",

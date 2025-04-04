@@ -77,18 +77,20 @@ function setUpCloudFront(
   domainName: string
 ): cloudfront.Distribution {
 
-  // const certificate = acm.Certificate.fromCertificateArn(
-  //   scope,
-  //   '35e35201-b33a-4934-816d-0553322abf76',
-  //   'arn:aws:acm:us-east-1:905418388478:certificate/35e35201-b33a-4934-816d-0553322abf76'
-  // );
+  const certificate = acm.Certificate.fromCertificateArn(
+    scope,
+    `ProviderCertificate-${website}`,
+    'arn:aws:acm:us-east-1:905418388478:certificate/35e35201-b33a-4934-816d-0553322abf76'
+  );
 
   return new cloudfront.Distribution(scope, `create-${website}-cloudfront-distribution`, {
     defaultBehavior: {
       origin: new cloudfront_origins.S3Origin(bucket),
+      cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
+      viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
     },
-    //domainNames: [domainName],
-    //certificate: certificate,
-    comment: `ottehr-${website}-${projectId}`,
+    domainNames: [website == 'ehr' ? 'provider.hlthi.life' : 'patients.hlthi.life'], // e.g., 'provider.hlthi.life'
+    certificate,
+    comment: `ottehr-${website}-${projectId} - redeployed at ${new Date().toISOString()}`
   });
 }

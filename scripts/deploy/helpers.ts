@@ -77,6 +77,7 @@ export async function updateEnvFiles(environment: string, patientPortalUrl: stri
     'VITE_APP_OYSTEHR_APPLICATION_REDIRECT_URL=http://localhost:4002',
     `VITE_APP_OYSTEHR_APPLICATION_REDIRECT_URL=${ehrUrl}`
   );
+
   ehrEnvFile = ehrEnvFile.replace('VITE_APP_QRS_URL=http://localhost:3002', `VITE_APP_QRS_URL=${patientPortalUrl}`);
 
   await fs.writeFile(`${__dirname}/../../apps/intake/env/.env.${environment}`, patientPortalEnvFile);

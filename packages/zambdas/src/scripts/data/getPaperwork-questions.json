@@ -342,7 +342,7 @@
         },
         {
           "id": "mobile-opt-in",
-          "text": "Yes! I would like to receive helpful messages from Ottehr regarding patient education, events, and general information about our offices. Message frequency varies, and data rates may apply.",
+          "text": "Yes! I would like to receive helpful messages from HLTHi regarding patient education, events, and general information about our offices. Message frequency varies, and data rates may apply.",
           "type": "Checkbox",
           "multiline": false,
           "required": false

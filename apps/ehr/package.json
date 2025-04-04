@@ -60,7 +60,7 @@
     "@mui/x-data-grid-pro": "^6.3.0",
     "@mui/x-date-pickers-pro": "^6.3.0",
     "@oystehr/sdk": "3.0.7",
-    "@photonhealth/elements": "^0.12.3",
+    "@photonhealth/elements": "0.12.10",
     "@twilio/conversations": "^2.4.1",
     "amazon-chime-sdk-component-library-react": "^3.7.0",
     "amazon-chime-sdk-js": "^3.20.0",

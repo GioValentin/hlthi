@@ -39,22 +39,23 @@ if $first_setup; then
     popd
 fi
 
+# second cdk deploy uploads compiled apps
+pushd scripts/deploy/aws
+# update env files
+npx ts-node ./bin/update-config.ts
+
+npx cdk deploy --require-approval=never "ottehr-data-stack-${environment}"
+popd
+
 # first deploy creates infra
 pushd scripts/deploy/aws
 npx cdk deploy --require-approval=never "ottehr-infra-stack-${environment}"
-# update env files
-npx ts-node ./bin/update-config.ts
 popd
 
 # recompile apps with updated env files
-pushd apps/intake
-npm run build:env --env=$environment
-popd
-pushd apps/ehr
-npm run build:env --env=$environment
-popd
-
-# second cdk deploy uploads compiled apps
-pushd scripts/deploy/aws
-npx cdk deploy --require-approval=never "ottehr-data-stack-${environment}"
-popd
+# pushd apps/intake
+# npm run build:env --env=$environment
+# popd
+# pushd apps/ehr
+# npm run build:env --env=$environment
+# popd

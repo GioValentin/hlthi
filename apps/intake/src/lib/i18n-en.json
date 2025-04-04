@@ -438,6 +438,11 @@
     }
   },
   "paperworkPages": {
+    "Medication Refill":"Medication Refill",
+    "Mental Health": "Mental Health",
+    "Anxiety":"Anxiety",
+    "Medical Weightloss":"Medical Weightloss",
+    "Erectile Dysfunction":"Erectile Dysfunction",
     "Email is not valid": "Email is not valid",
     "Must be 18 years or older": "Must be 18 years or older",
     "acknowledgeTerms": "By proceeding with a visit, you acknowledge that you have reviewed and accept our [Privacy Policy] and [Terms and Conditions of Service]",

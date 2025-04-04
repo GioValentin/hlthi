@@ -106,7 +106,7 @@ function App(): ReactElement {
   const photonDisadledByEnv = import.meta.env.VITE_APP_CI_PHOTON_DISABLED === 'true';
   const photonEnabledForUser = currentUser?.hasRole([RoleType.Provider]) && currentUser.isPractitionerEnrolledInPhoton;
   const isE2EUser = currentUser?.email?.includes('e2euser');
-  const shouldUsePhoton = !photonDisadledByEnv && !isE2EUser && (photonEnabledForUser || wasEnrolledInphoton);
+  const shouldUsePhoton = !isE2EUser && (photonEnabledForUser || wasEnrolledInphoton);
 
   return (
     <CustomThemeProvider>
@@ -143,7 +143,7 @@ function App(): ReactElement {
                           org={import.meta.env.VITE_APP_PHOTON_ORG_ID}
                           dev-mode={import.meta.env.MODE === 'production' ? 'false' : 'true'}
                           auto-login="true"
-                          redirect-uri={window.location.origin}
+                          redirect-uri={`${window.location.origin}`}
                         >
                           <CSSRoutingLazy />
                         </photon-client>
@@ -168,7 +168,7 @@ function App(): ReactElement {
                             org={import.meta.env.VITE_APP_PHOTON_ORG_ID}
                             dev-mode={import.meta.env.MODE === 'production' ? 'false' : 'true'}
                             auto-login="true"
-                            redirect-uri={window.location.origin}
+                            redirect-uri={`${window.location.origin}`}
                           >
                             <Outlet />
                           </photon-client>
