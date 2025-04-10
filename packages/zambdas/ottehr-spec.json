@@ -228,6 +228,10 @@
     "STRIPE_WEBHOOK_SECRET_KEY": {
       "name": "STRIPE_WEBHOOK_SECRET_KEY",
       "value": "#var/STRIPE_WEBHOOK_SECRET_KEY"
+    },
+    "OPEN_AI_SECRET_KEY": {
+      "name": "OPEN_AI_SECRET_KEY",
+      "value": "#var/OPEN_AI_SECRET_KEY"
     }
   },
   "zambdas": {
@@ -903,6 +907,13 @@
       "runtime": "nodejs20.x",
       "src": "src/custom-patient/billing/stripe-webhook/index",
       "zip": ".dist/zips/custom-billing-stripe-webhook.zip"
+    },
+    "CUSTOM-CONVERSATION-WEBHOOK": {
+      "name": "CUSTOM-CONVERSATION-WEBHOOK",
+      "type": "http_open",
+      "runtime": "nodejs20.x",
+      "src": "src/custom-ehr/bot/conversations/index",
+      "zip": ".dist/zips/custom-conversation-webhook.zip"
     }
   },
   "fhirResources": {
