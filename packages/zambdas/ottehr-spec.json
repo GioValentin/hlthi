@@ -232,6 +232,10 @@
     "OPEN_AI_SECRET_KEY": {
       "name": "OPEN_AI_SECRET_KEY",
       "value": "#var/OPEN_AI_SECRET_KEY"
+    },
+    "STRIPE_BILLING_CONFIGURATION": {
+      "name": "STRIPE_BILLING_CONFIGURATION",
+      "value": "#var/STRIPE_BILLING_CONFIGURATION"
     }
   },
   "zambdas": {
