@@ -169,7 +169,7 @@ function App(): ReactElement {
                             id={import.meta.env.VITE_APP_PHOTON_CLIENT_ID}
                             org={import.meta.env.VITE_APP_PHOTON_ORG_ID}
                             dev-mode={import.meta.env.MODE === 'production' ? 'false' : 'true'}
-                            auto-login="true"
+                            auto-login="false"
                             redirect-uri={`${window.location.origin}`}
                           >
                             <Outlet />

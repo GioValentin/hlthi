@@ -88,10 +88,20 @@ export const DispositionCard: FC = () => {
     [debounce, mutate, setPartialChartData, withNote]
   );
 
+  const watchedValues = useWatch({
+    control: methods.control,
+    name: ['followUpIn', 'labService', 'reason','type','virusTest','note','nothingToEatOrDrink'], // add whatever you want
+  });
+
+  // useEffect(() => {
+  //   const subscription = watch(() => handleSubmit(onSubmit)());
+  //   return () => subscription.unsubscribe();
+  // }, [handleSubmit, onSubmit, watch]);
   useEffect(() => {
-    const subscription = watch(() => handleSubmit(onSubmit)());
-    return () => subscription.unsubscribe();
-  }, [handleSubmit, onSubmit, watch]);
+    debounce(() => {
+      handleSubmit(onSubmit)();
+    });
+  }, [JSON.stringify(watchedValues)]); // stringify ensures deep comparison
 
   const fields = dispositionFieldsPerType[currentType];
   const tabs: DispositionType[] = ['pcp-no-type', 'another', 'speciality'];
@@ -221,7 +231,7 @@ export const DispositionCard: FC = () => {
                   label="Follow up visit in"
                   size="small"
                   sx={{ minWidth: '200px', width: 'fit-content' }}
-                  value={value}
+                  value={value ?? ''}
                   onChange={onChange}
                 >
                   <MenuItem value={''}>
