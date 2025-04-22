@@ -22,7 +22,7 @@ export async function fetchWithOystAuth<T = any>(
       accept: 'application/json',
       'content-type': 'application/json',
       authorization: `Bearer ${authToken}`,
-      'x-zapehr-project-id': oyst_proj_id,
+      'x-oystehr-project-id': oyst_proj_id,
     },
     body: body ? JSON.stringify(body) : undefined,
   });

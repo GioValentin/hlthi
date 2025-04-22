@@ -49,7 +49,7 @@ const fetchPatients = async ({
       accept: 'application/json',
       'content-type': 'application/json',
       Authorization: `Bearer ${token}`,
-      'x-zapehr-project-id': projectId,
+      'x-oystehr-project-id': projectId,
     };
 
     const response = await fetch(searchUrl, {

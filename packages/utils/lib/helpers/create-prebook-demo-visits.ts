@@ -301,7 +301,7 @@ const processPrebookPaperwork = async (
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${authToken}`,
-        'x-zapehr-project-id': projectId,
+        'x-oystehr-project-id': projectId,
       },
       body: JSON.stringify(<SubmitPaperworkParameters>{
         answers: [],
@@ -470,7 +470,7 @@ export async function makeSequentialPaperworkPatches(
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${authToken}`,
-        'x-zapehr-project-id': projectId,
+        'x-oystehr-project-id': projectId,
       },
       body: JSON.stringify(<PatchPaperworkParameters>{
         answers: answer,

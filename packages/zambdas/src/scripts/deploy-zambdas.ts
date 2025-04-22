@@ -215,7 +215,7 @@ async function updateProjectZambda(
     method: 'post',
     headers: {
       Authorization: `Bearer ${auth0Token}`,
-      'x-zapehr-project-id': config.PROJECT_ID,
+      'x-oystehr-project-id': config.PROJECT_ID,
     },
   });
 

@@ -10,7 +10,7 @@ const apiUrl = import.meta.env.VITE_APP_PROJECT_API_URL;
 
 const baseHeaders = {
   'content-type': 'application/json',
-  'x-zapehr-project-id': import.meta.env.VITE_APP_PROJECT_ID,
+  'x-oystehr-project-id': import.meta.env.VITE_APP_PROJECT_ID,
 };
 
 export function useUCZambdaClient({ tokenless }: { tokenless: boolean }): ZambdaClient | null {
