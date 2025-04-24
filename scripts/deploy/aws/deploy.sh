@@ -48,13 +48,13 @@ npx ts-node ./bin/update-config.ts
 popd
 
 #recompile apps with updated env files
-pushd apps/intake
-npm run build:env --env=$environment
-popd
+# pushd apps/intake
+# npm run build:env --env=$environment
+# popd
 
-pushd apps/ehr
-npm run build:env --env=$environment
-popd
+# pushd apps/ehr
+# npm run build:env --env=$environment
+# popd
 
 # second cdk deploy uploads compiled apps
 pushd scripts/deploy/aws
