@@ -3,6 +3,7 @@ import {
   DispositionFollowUpType,
   DispositionType,
   NOTHING_TO_EAT_OR_DRINK_FIELD,
+  PROJECT_NAME,
   dispositionCheckboxOptions,
 } from 'utils';
 

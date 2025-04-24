@@ -20,6 +20,7 @@ import { RoundedButton } from '../RoundedButton';
 import { useGetPatientsForMerge } from './queries';
 import { ConfirmationDialog, ContainedPrimaryToggleButton } from '../../telemed';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
+import { PROJECT_NAME } from 'utils';
 
 type PatientFormValues = {
   birthGender?: 'male' | 'female' | 'other' | 'unknown';

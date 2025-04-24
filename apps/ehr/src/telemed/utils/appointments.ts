@@ -5,6 +5,7 @@ import {
   GetTelemedAppointmentsInput,
   mapStatusToTelemed,
   PATIENT_PHOTO_CODE,
+  PROJECT_NAME,
   RefreshableAppointmentData,
   ReviewAndSignData,
   TelemedAppointmentInformation,

@@ -48,6 +48,7 @@ import {
   HealthcareServiceWithLocationContext,
   PractitionerLicense,
   PractitionerQualificationCode,
+  PROJECT_WEBSITE,
   ServiceMode,
   VisitType,
 } from '../types';
@@ -435,10 +436,10 @@ export async function createConsentResource(
       ],
       policy: [
         {
-          uri: 'https://patients.hlthi.life',
+          uri: PROJECT_WEBSITE,
         },
         {
-          uri: 'https://patients.hlthi.life',
+          uri: PROJECT_WEBSITE,
         },
       ],
       sourceReference: {

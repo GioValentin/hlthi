@@ -12,7 +12,7 @@ import {
   useTheme,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { CommunicationDTO, InstructionType } from 'utils';
+import { CommunicationDTO, InstructionType, PROJECT_NAME } from 'utils';
 import { useDeletePatientInstruction, useGetPatientInstructions } from '../../../../state';
 import { ActionsList, DeleteIconButton } from '../../../../components';
 import { RoundedButton } from '../../../../../components/RoundedButton';

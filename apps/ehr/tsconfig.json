@@ -21,9 +21,10 @@
       "@types/*": ["./src/types/*"],
       "@fonts/*": ["./src/fonts/*"],
       "@lib/*": ["./src/lib/*"],
-      "@features/ChatBubble": ["custom-ui-components/lib/plugins/ChatBubbleProvider"]
-    },
-    
+      "@features/ChatBubble": ["custom-ui-components/lib/plugins/ChatBubbleProvider"],
+      "@theme/*": ["src/themes/ottehr/*"],
+      "@defaultTheme/*": ["src/themes/ottehr/*"]
+    }
   },
   "include": ["src"]
 }

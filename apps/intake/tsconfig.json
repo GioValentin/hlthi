@@ -6,6 +6,8 @@
     "baseUrl": ".",
     "paths": {
       "./telemed/pages/Welcome": ["../../../custom-packages/ui-components/lib/pages/Welcome"],
+      "@theme/*": ["src/themes/ottehr/*"],
+      "@defaultTheme/*": ["src/themes/ottehr/*"]
     }
   },
   "include": ["src","../../../custom-packages/ui-components/lib"]

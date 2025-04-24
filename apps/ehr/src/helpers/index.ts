@@ -3,7 +3,7 @@ import Oystehr from '@oystehr/sdk';
 import { Operation } from 'fast-json-patch';
 import { Appointment, Encounter, Location, Resource } from 'fhir/r4b';
 import { DateTime } from 'luxon';
-import { InPersonAppointmentInformation, getPatchBinary, getEncounterStatusHistoryUpdateOp } from 'utils';
+import { InPersonAppointmentInformation, getPatchBinary, getEncounterStatusHistoryUpdateOp, PROJECT_NAME } from 'utils';
 import { formatDateUsingSlashes, getTimezone } from './formatDateTime';
 import { CRITICAL_CHANGE_SYSTEM } from './activityLogsUtils';
 import { EvolveUser } from '../hooks/useEvolveUser';

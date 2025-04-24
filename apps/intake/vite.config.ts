@@ -67,7 +67,9 @@ export default (env: any): Record<string, any> => {
         alias: {
           // Override `ui-package/ChatModal` to use `hlthi-ui-components/ChatModal`
           './telemed/pages/Welcome': 'custom-ui-components/lib/pages/Welcome',
-          '@features/ChatBubble': 'custom-ui-components/lib/plugins/ChatBubbleProvider'
+          '@features/ChatBubble': 'custom-ui-components/lib/plugins/ChatBubbleProvider',
+          '@theme': path.resolve(__dirname, appEnv.THEME_PATH || '/src/themes/ottehr'),
+          '@defaultTheme': path.resolve(__dirname, '/src/themes/ottehr'),
         },
       },
     })
