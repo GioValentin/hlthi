@@ -1,11 +1,11 @@
 export const palette = {
   background: {
-    default: '#F9FAFB',
+    default: '#F5F1EB',
     paper: '#FFFFFF',
   },
   primary: {
-    main: '#2169F5',
-    light: '#2169F5',
+    main: '#1f4638',
+    light: '#1f4638',
     dark: '#0F347C',
     contrast: '#FFFFFF',
   },
@@ -42,7 +42,7 @@ export const palette = {
 };
 
 export const otherColors = {
-  apptHover: '#F4F6F8',
+  apptHover: '#FFCD75',
   blackTransparent: 'rgba(0, 0, 0, 0.5)',
   cardChip: '#7CB342',
   closeCross: '#773602CC',
