@@ -10,9 +10,10 @@ import {
   Organization,
   Appointment,
   Encounter,
+  DiagnosticReport,
+  Observation,
   FhirResource,
   DocumentReference,
-  DiagnosticReport,
   ActivityDefinition,
 } from 'fhir/r4b';
 import {
@@ -31,18 +32,29 @@ import {
 export type LabOrderResources = {
   serviceRequest: ServiceRequest;
   patient: Patient;
-  questionnaireResponse: QuestionnaireResponse;
+  questionnaireResponse?: QuestionnaireResponse;
   practitioner: Practitioner;
   task: Task;
   organization: Organization;
+  diagnosticReports: DiagnosticReport[];
   appointment: Appointment;
   encounter: Encounter;
+  observations: Observation[];
 };
 
 export async function getLabOrderResources(oystehr: Oystehr, serviceRequestID: string): Promise<LabOrderResources> {
   const serviceRequestTemp = (
     await oystehr.fhir.search<
-      ServiceRequest | QuestionnaireResponse | Patient | Practitioner | Task | Organization | Appointment | Encounter
+      | ServiceRequest
+      | QuestionnaireResponse
+      | Patient
+      | Practitioner
+      | Task
+      | Organization
+      | DiagnosticReport
+      | Appointment
+      | Encounter
+      | Observation
     >({
       resourceType: 'ServiceRequest',
       params: [
@@ -75,8 +87,16 @@ export async function getLabOrderResources(oystehr: Oystehr, serviceRequestID: s
           value: 'ServiceRequest:encounter',
         },
         {
+          name: '_revinclude',
+          value: 'DiagnosticReport:based-on',
+        },
+        {
           name: '_include:iterate',
           value: 'Encounter:appointment',
+        },
+        {
+          name: '_include:iterate',
+          value: 'DiagnosticReport:result',
         },
       ],
     })
@@ -99,11 +119,18 @@ export async function getLabOrderResources(oystehr: Oystehr, serviceRequestID: s
   const orgsTemp: Organization[] | undefined = serviceRequestTemp?.filter(
     (resourceTemp): resourceTemp is Organization => resourceTemp.resourceType === 'Organization'
   );
+  const diagnosticReportsTemp: DiagnosticReport[] | undefined = serviceRequestTemp?.filter(
+    (resourceTemp): resourceTemp is DiagnosticReport =>
+      resourceTemp.resourceType === 'DiagnosticReport' && isLabsDiagnosticReport(resourceTemp)
+  );
   const appointmentsTemp: Appointment[] | undefined = serviceRequestTemp?.filter(
     (resourceTemp): resourceTemp is Appointment => resourceTemp.resourceType === 'Appointment'
   );
   const encountersTemp: Encounter[] | undefined = serviceRequestTemp?.filter(
     (resourceTemp): resourceTemp is Encounter => resourceTemp.resourceType === 'Encounter'
+  );
+  const observationsTemp: Observation[] | undefined = serviceRequestTemp?.filter(
+    (resourceTemp): resourceTemp is Observation => resourceTemp.resourceType === 'Observation'
   );
 
   if (serviceRequestsTemp?.length !== 1) {
@@ -116,10 +143,6 @@ export async function getLabOrderResources(oystehr: Oystehr, serviceRequestID: s
 
   if (practitionersTemp?.length !== 1) {
     throw new Error('practitioner is not found');
-  }
-
-  if (questionnaireResponsesTemp?.length !== 1) {
-    throw new Error('questionnaire response is not found');
   }
 
   if (tasksTemp?.length !== 1) {
@@ -144,8 +167,10 @@ export async function getLabOrderResources(oystehr: Oystehr, serviceRequestID: s
   const questionnaireResponse = questionnaireResponsesTemp?.[0];
   const task = tasksTemp?.[0];
   const organization = orgsTemp?.[0];
+  const diagnosticReports = diagnosticReportsTemp;
   const appointment = appointmentsTemp?.[0];
   const encounter = encountersTemp?.[0];
+  const observations = observationsTemp;
 
   return {
     serviceRequest: serviceRequest,
@@ -154,8 +179,10 @@ export async function getLabOrderResources(oystehr: Oystehr, serviceRequestID: s
     questionnaireResponse: questionnaireResponse,
     task,
     organization,
+    diagnosticReports,
     appointment,
     encounter,
+    observations,
   };
 }
 
@@ -212,9 +239,7 @@ export const makeEncounterLabResult = async (
       }
     }
     if (resource.resourceType === 'DiagnosticReport') {
-      const isLabsDR = !!resource.category?.find(
-        (category) => category?.coding?.find((c) => c.system === OYSTEHR_LAB_DIAGNOSTIC_REPORT_CATEGORY.system)
-      );
+      const isLabsDR = isLabsDiagnosticReport(resource);
       if (isLabsDR) {
         diagnosticReportMap[`DiagnosticReport/${resource.id}`] = resource as DiagnosticReport;
       }
@@ -331,4 +356,15 @@ export const configLabRequestsForGetChartData = (encounterId: string): BatchInpu
     url: `/ServiceRequest?encounter=Encounter/${encounterId}&status=active&code=${OYSTEHR_LAB_OI_CODE_SYSTEM}|`,
   };
   return [docRefSearch, activeLabServiceRequestSearch];
+};
+
+const isLabsDiagnosticReport = (diagnosicReport: DiagnosticReport): boolean => {
+  return !!diagnosicReport.category?.find(
+    (cat) =>
+      cat?.coding?.find(
+        (c) =>
+          c.system === OYSTEHR_LAB_DIAGNOSTIC_REPORT_CATEGORY.system &&
+          c.code === OYSTEHR_LAB_DIAGNOSTIC_REPORT_CATEGORY.code
+      )
+  );
 };
