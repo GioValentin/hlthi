@@ -41,6 +41,7 @@ import {
 } from '../../../utils';
 import { useDispositionMultipleNotes } from './useDispositionMultipleNotes';
 import { RoundedButton } from '../../../../components/RoundedButton';
+import { dataTestIds } from '../../../../constants/data-test-ids';
 import { useChartData } from '../../../../features/css-module/hooks/useChartData';
 
 const ERROR_TEXT = 'Disposition data update was unsuccessful, please change some disposition field data to try again.';
@@ -49,11 +50,20 @@ export const DispositionCard: FC = () => {
   const { encounter, setPartialChartData } = getSelectors(useAppointmentStore, ['encounter', 'setPartialChartData']);
   const { isAppointmentReadOnly: isReadOnly } = useGetAppointmentAccessibility();
   const isResetting = useRef(false);
+  const latestRequestId = useRef(0);
 
   const methods = useForm<DispositionFormValues>({
     defaultValues: DEFAULT_DISPOSITION_VALUES,
   });
-  const { control, handleSubmit, watch, getValues, setValue, reset } = methods;
+  const {
+    control,
+    handleSubmit,
+    watch,
+    getValues,
+    setValue,
+    reset,
+    formState: { isDirty },
+  } = methods;
 
   const { chartData, isFetching: isChartDataLoading } = useChartData({
     encounterId: encounter.id || '',
@@ -61,6 +71,9 @@ export const DispositionCard: FC = () => {
     onSuccess: (data) => {
       setPartialChartData({ disposition: data?.disposition });
       isResetting.current = true;
+      if (data?.disposition?.note) {
+        setNoteCache(data.disposition.note);
+      }
       reset(data?.disposition ? mapDispositionToForm(data.disposition) : DEFAULT_DISPOSITION_VALUES);
       setCurrentType(data?.disposition?.type || DEFAULT_DISPOSITION_VALUES.type);
       isResetting.current = false;
@@ -77,25 +90,30 @@ export const DispositionCard: FC = () => {
 
   const onSubmit = useCallback(
     (values: DispositionFormValues): void => {
+      setIsError(false);
+      const requestId = ++latestRequestId.current;
       debounce(() => {
-        setIsError(false);
         mutate(
           { disposition: withNote(values) },
           {
             onSuccess: (data) => {
-              const disposition = data.chartData?.disposition;
-              if (disposition) {
-                setPartialChartData({ disposition });
-                isResetting.current = true;
-                reset(mapDispositionToForm(disposition));
-                isResetting.current = false;
+              if (requestId === latestRequestId.current) {
+                const disposition = data.chartData?.disposition;
+                if (disposition) {
+                  setPartialChartData({ disposition });
+                  isResetting.current = true;
+                  reset(mapDispositionToForm(disposition));
+                  isResetting.current = false;
+                }
               }
             },
             onError: () => {
-              enqueueSnackbar(ERROR_TEXT, {
-                variant: 'error',
-              });
-              setIsError(true);
+              if (requestId === latestRequestId.current) {
+                enqueueSnackbar(ERROR_TEXT, {
+                  variant: 'error',
+                });
+                setIsError(true);
+              }
             },
           }
         );
@@ -141,7 +159,7 @@ export const DispositionCard: FC = () => {
     <AccordionCard
       label="Disposition"
       headerItem={
-        isLoading ? (
+        isLoading || isDirty ? (
           <CircularProgress size="20px" />
         ) : isError ? (
           <Tooltip title={ERROR_TEXT}>
@@ -151,7 +169,10 @@ export const DispositionCard: FC = () => {
       }
     >
       <FormProvider {...methods}>
-        <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box
+          sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}
+          data-testid={dataTestIds.telemedEhrFlow.planTabDispositionContainer}
+        >
           <Controller
             name="type"
             control={control}
@@ -170,7 +191,11 @@ export const DispositionCard: FC = () => {
                 }}
               >
                 {tabs.map((tab) => (
-                  <ContainedPrimaryToggleButton key={tab} value={tab}>
+                  <ContainedPrimaryToggleButton
+                    key={tab}
+                    value={tab}
+                    data-testid={dataTestIds.telemedEhrFlow.planTabDispositionToggleButton(tab)}
+                  >
                     {mapDispositionTypeToLabel[tab]}
                   </ContainedPrimaryToggleButton>
                 ))}
@@ -260,6 +285,7 @@ export const DispositionCard: FC = () => {
                   select
                   disabled={isReadOnly}
                   label="Follow up visit in"
+                  data-testid={dataTestIds.telemedEhrFlow.planTabDispositionFollowUpDropdown}
                   size="small"
                   sx={{ minWidth: '200px', width: 'fit-content' }}
                   value={value ?? ''}
@@ -288,6 +314,7 @@ export const DispositionCard: FC = () => {
                   disabled={isReadOnly}
                   label="Reason for transfer"
                   placeholder="Select"
+                  data-testid={dataTestIds.telemedEhrFlow.planTabDispositionReasonForTransferDropdown}
                   size="small"
                   sx={{ minWidth: '200px', width: '50%' }}
                   value={value}
@@ -322,6 +349,7 @@ export const DispositionCard: FC = () => {
                   multiline
                   fullWidth
                   size="small"
+                  data-testid={dataTestIds.telemedEhrFlow.planTabDispositionNote}
                   value={value}
                   onChange={(...args) => {
                     setNoteCache(args[0].target.value);

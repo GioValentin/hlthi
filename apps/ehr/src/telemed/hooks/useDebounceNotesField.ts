@@ -6,13 +6,13 @@ import { enqueueSnackbar } from 'notistack';
 
 type ChartDataTextValueType = Pick<
   ChartDataFields,
-  'chiefComplaint' | 'ros' | 'proceduresNote' | 'medicalDecision' | 'addendumNote'
+  'chiefComplaint' | 'ros' | 'surgicalHistoryNote' | 'medicalDecision' | 'addendumNote'
 >;
 
 enum nameToTypeEnum {
   'chiefComplaint' = 'text',
   'ros' = 'text',
-  'proceduresNote' = 'text',
+  'surgicalHistoryNote' = 'text',
   'medicalDecision' = 'text',
   'addendumNote' = 'text',
 }
@@ -20,8 +20,8 @@ enum nameToTypeEnum {
 const mapValueToLabel: Record<keyof ChartDataTextValueType, string> = {
   chiefComplaint: 'HPI note',
   ros: 'ROS note',
-  proceduresNote: 'Surgical history note',
-  medicalDecision: 'Plan / Medical Decision Making note',
+  surgicalHistoryNote: 'Surgical history note',
+  medicalDecision: 'Medical Decision Making note',
   addendumNote: 'Addendum note',
 };
 
