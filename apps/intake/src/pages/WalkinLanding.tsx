@@ -50,7 +50,7 @@ export const WalkinLanding: FC = () => {
 
   return (
     <PageContainer
-      title={somethingIsLoadingInSomeWay ? 'Loading...' : 'Welcome to Ottehr'} // todo: get some copy for this
+      title={somethingIsLoadingInSomeWay ? 'Loading...' : 'Welcome to HLTHi'} // todo: get some copy for this
       subtitle={somethingIsLoadingInSomeWay ? '' : data?.scheduleOwnerName ?? ''}
       isFirstPage
       img={ottehrLightBlue}

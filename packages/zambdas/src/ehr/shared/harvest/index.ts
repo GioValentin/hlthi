@@ -329,7 +329,7 @@ export async function createConsentResources(input: CreateConsentResourcesInput)
     )?.valueCoding?.code === 'vi';
 
   const facilityName = isVirtualLocation
-    ? 'Ottehr Telemedicine'
+    ? 'HLTHi Telemedicine'
     : locationResource?.identifier?.find(
         (identifierTemp) => identifierTemp.system === `${FHIR_BASE_URL}/r4/facility-name`
       )?.value;

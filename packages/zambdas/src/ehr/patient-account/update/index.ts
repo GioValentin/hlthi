@@ -159,7 +159,7 @@ const writeAuditEvent = async (input: AuditEventInput, oystehr: Oystehr): Promis
       },
     ],
     source: {
-      site: 'Ottehr',
+      site: 'HLTHi',
       observer: {
         reference: providerProfileReference,
       },

@@ -236,6 +236,30 @@
     "STRIPE_BILLING_CONFIGURATION": {
       "name": "STRIPE_BILLING_CONFIGURATION",
       "value": "#var/STRIPE_BILLING_CONFIGURATION"
+    },
+    "PROVIDER_APPLICATION_ID": {
+      "name": "PROVIDER_APPLICATION_ID",
+      "value": "#var/PROVIDER_APPLICATION_ID"
+    },
+    "PROVIDER_ROLE_ID": {
+      "name": "PROVIDER_ROLE_ID",
+      "value": "#var/PROVIDER_ROLE_ID"
+    },
+    "PRESCRIBER_ROLE_ID": {
+      "name": "PRESCRIBER_ROLE_ID",
+      "value": "#var/PRESCRIBER_ROLE_ID"
+    },
+    "PROVIDER_PRICE": {
+      "name": "PROVIDER_PRICE",
+      "value": "#var/PROVIDER_PRICE"
+    },
+    "SIGN_NOW_ACCESS_TOKEN": {
+      "name": "SIGN_NOW_ACCESS_TOKEN",
+      "value": "#var/SIGN_NOW_ACCESS_TOKEN"
+    },
+    "SIGN_NOW_TEMPLATE_LIBRARY_DOCUMENT_ID": {
+      "name": "SIGN_NOW_TEMPLATE_LIBRARY_DOCUMENT_ID",
+      "value": "#var/SIGN_NOW_TEMPLATE_LIBRARY_DOCUMENT_ID"
     }
   },
   "zambdas": {
@@ -936,6 +960,19 @@
       "runtime": "nodejs20.x",
       "src": "src/custom-ehr/bot/conversations/index",
       "zip": ".dist/zips/custom-conversation-webhook.zip"
+    },
+    "CUSTOM-ONBOARD-PROVIDER": {
+      "name": "CUSTOM-ONBOARD-PROVIDER",
+      "type": "http_auth",
+      "runtime": "nodejs20.x",
+      "src": "src/custom-ehr/on-boarding/index",
+      "zip": ".dist/zips/custom-onboard-provider.zip",
+      "subscription": {
+        "status":"completed",
+        "criteria":"Practitioner",
+        "event":"create",
+        "reason": "Needs to upload files for onboarded provider"
+      }
     },
     "GET-LAB-ORDERS": {
       "name": "GET-LAB-ORDERS",
