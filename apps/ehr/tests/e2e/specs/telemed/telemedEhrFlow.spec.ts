@@ -75,17 +75,21 @@ test.describe('Tests checking data without mutating state', () => {
       testsUserStates
     );
 
-    await myPatientsTabAppointmentResources.setResources({
-      telemedLocationState: testsUserQualificationState,
-    });
-    await otherPatientsTabAppointmentResources.setResources({
-      telemedLocationState: randomState,
-    });
+    await Promise.all([
+      myPatientsTabAppointmentResources.setResources({
+        telemedLocationState: testsUserQualificationState,
+      }),
+      otherPatientsTabAppointmentResources.setResources({
+        telemedLocationState: randomState,
+      }),
+    ]);
   });
 
   test.afterAll(async () => {
-    await myPatientsTabAppointmentResources.cleanupResources();
-    await otherPatientsTabAppointmentResources.cleanupResources();
+    await Promise.all([
+      myPatientsTabAppointmentResources.cleanupResources(),
+      otherPatientsTabAppointmentResources.cleanupResources(),
+    ]);
   });
 
   test("Appointment should appear correctly in 'my patients' tab", async ({ page }) => {
@@ -150,12 +154,12 @@ test.describe('Tests interacting with appointment state', () => {
       });
       return [
         getContactInformationAnswers({
-          firstName: patientInfo.patient.firstName,
-          lastName: patientInfo.patient.lastName,
-          birthDate: isoToDateObject(patientInfo.patient.dateOfBirth || '') || undefined,
-          email: patientInfo.patient.email,
-          phoneNumber: patientInfo.patient.phoneNumber,
-          birthSex: patientInfo.patient.sex,
+          firstName: patientInfo.firstName,
+          lastName: patientInfo.lastName,
+          birthDate: isoToDateObject(patientInfo.dateOfBirth || '') || undefined,
+          email: patientInfo.email,
+          phoneNumber: patientInfo.phoneNumber,
+          birthSex: patientInfo.sex,
         }),
         getPatientDetailsStepAnswers({}),
         getMedicationsStepAnswers(),
