@@ -48,7 +48,6 @@ module.exports = {
       files: ['apps/intake/tests/**/*.ts', 'apps/ehr/tests/**/*.ts'],
       parserOptions: {
         tsconfigRootDir: __dirname,
-        project: ['./apps/intake/tsconfig.node.json', './apps/ehr/tsconfig.node.json'],
       },
       rules: {
         '@typescript-eslint/explicit-function-return-type': [
