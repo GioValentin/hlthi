@@ -5,6 +5,7 @@ import * as esbuild from 'esbuild';
 import { copy } from 'esbuild-plugin-copy';
 import fs from 'fs';
 import ottehrSpec from './ottehr-spec.json';
+import hlthiSpec from './hlthi-spec.json'
 
 // let plugins = [];
 
@@ -27,6 +28,12 @@ interface ZambdaSpec {
 
 const zambdasList = (): ZambdaSpec[] => {
   return Object.entries(ottehrSpec.zambdas).map(([_key, spec]) => {
+    return spec;
+  });
+};
+
+const lambdasList = (): ZambdaSpec[] => {
+  return Object.entries(hlthiSpec.zambdas).map(([_key, spec]) => {
     return spec;
   });
 };
@@ -101,6 +108,18 @@ const main = async (): Promise<void> => {
   await zip(zambdas);
   console.timeEnd('Zip time');
   console.log('Zambdas successfully bundled and zipped into .dist/zips');
+
+  // console.log('Starting to bundle and zip Lambdas...');
+  // const lambdas = lambdasList();
+  // console.log('Bundling...');
+  // console.time('Bundle time');
+  // await build(lambdas);
+  // console.timeEnd('Bundle time');
+  // console.log('Zipping...');
+  // console.time('Zip time');
+  // await zip(lambdas);
+  // console.timeEnd('Zip time');
+  // console.log('Zambdas successfully bundled and zipped into .dist/zips');
 };
 
 main().catch((error) => {

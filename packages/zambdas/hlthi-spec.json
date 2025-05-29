@@ -1,0 +1,13 @@
+{
+  "schema-version": "2025-03-19",
+  
+  "zambdas": {
+    "COMMUNICATION-TRIGGER": {
+      "name": "COMMUNICATION-TRIGGER",
+      "type": "http_auth",
+      "runtime": "nodejs20.x",
+      "src": "src/custom-ehr/communications/index",
+      "zip": ".dist/zips/communication-trigger.zip"
+    }
+  }
+}

@@ -361,6 +361,13 @@
       "src": "src/ehr/update-user/index",
       "zip": ".dist/zips/update-user.zip"
     },
+    "COMMUNICATION-TRIGGER": {
+      "name": "COMMUNICATION-TRIGGER",
+      "type": "http_open",
+      "runtime": "nodejs20.x",
+      "src": "src/custom-ehr/communications/index",
+      "zip": ".dist/zips/communication-trigger.zip"
+    },
     "INIT-TELEMED-SESSION": {
       "name": "INIT-TELEMED-SESSION",
       "type": "http_auth",
