@@ -144,12 +144,12 @@ const Homepage = (): JSX.Element => {
             {/*  <HomepageOption title="Request a Virtual Visit" icon={requestVisit} handleClick={handleRequestVisit} />*/}
             {/*)}*/}
 
-            <HomepageOption
+            {/* <HomepageOption
               title="Schedule a Virtual Visit"
               icon={<VideoCameraFrontOutlinedIcon />}
               handleClick={handleScheduleVirtual}
               dataTestId={dataTestIds.scheduleVirtualVisitButton}
-            />
+            /> */}
             {/* <HomepageOption
               title="Schedule an In-Person Visit"
               icon={<LocalHospitalOutlinedIcon />}

@@ -85,6 +85,6 @@ test.describe('Prebook In person visit - Paperwork submission flow with only req
   test('PRF-7 Submit paperwork', async () => {
     await commonLocatorsHelper.clickContinue();
     await expect(locator.flowHeading).toBeVisible();
-    await expect(locator.flowHeading).toHaveText('Thank you for choosing Ottehr!');
+    await expect(locator.flowHeading).toHaveText('Thank you for choosing HLHTi!');
   });
 });

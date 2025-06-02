@@ -77,7 +77,7 @@ test.describe('Check paperwork is prefilled for existing patient. Payment - card
     await locator.continueButton.click();
     await paperwork.checkCorrectPageOpens('Review and submit');
     await locator.reserveButton.click();
-    await paperwork.checkCorrectPageOpens('Thank you for choosing Ottehr!');
+    await paperwork.checkCorrectPageOpens('Thank you for choosing HLHTi!');
   });
   // TODO: Need to remove skip when https://github.com/masslight/ottehr/issues/1999 is fixed
   test.skip('IPPPS-1 Check Responsible party has prefilled values', async () => {

@@ -16,14 +16,33 @@ import { getFullestAvailableName, PROJECT_NAME, RoleType } from 'utils';
 import { ProviderNotifications } from '../../features';
 import useEvolveUser from '../../hooks/useEvolveUser';
 import { dataTestIds } from '../../constants/data-test-ids';
+import { Practitioner } from 'fhir/r4b';
+import { useApiClients } from '../../hooks/useAppClients';
 
 export const UserMenu: FC = () => {
   const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
   const user = useEvolveUser();
   const userIsProvider = user?.hasRole([RoleType.Provider]);
-
+  const { oystehrZambda } = useApiClients();
   const name = user?.profileResource && (getFullestAvailableName(user.profileResource, true) ?? 'HTLHi Team');
   const suffix = user?.profileResource?.name?.[0]?.suffix?.[0];
+
+  const goToStripe = async function (practitioner: Practitioner | undefined) {
+
+    const account = await oystehrZambda?.zambda.execute({
+      id: 'physician-accounting',
+      practitioner: practitioner
+    });
+
+    console.log(account);
+
+    if(account?.output?.url == undefined) {
+      throw new Error('Could not find URL');
+    }
+
+    window.open(account?.output?.url, '_blank');
+
+  }
 
   return (
     <>
@@ -54,6 +73,16 @@ export const UserMenu: FC = () => {
           </Box>
         </MenuItem>
         <Divider />
+        <Link to="#wallet" onClick={() => {
+          goToStripe(user?.profileResource);
+        }} style={{ textDecoration: 'none' }}>
+          <MenuItem>
+            <Typography variant="body1" color="primary" sx={{ fontWeight: 'bold' }}>
+              Wallet
+            </Typography>
+          </MenuItem>
+        </Link>
+
         <Link to="/logout" style={{ textDecoration: 'none' }}>
           <MenuItem>
             <Typography variant="body1" color="primary" sx={{ fontWeight: 'bold' }}>
@@ -61,6 +90,7 @@ export const UserMenu: FC = () => {
             </Typography>
           </MenuItem>
         </Link>
+        
       </Menu>
     </>
   );

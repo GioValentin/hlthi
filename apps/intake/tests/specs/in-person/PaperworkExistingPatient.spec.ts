@@ -65,7 +65,7 @@ test.describe('Check paperwork is prefilled for existing patient. Payment - insu
     await locator.continueButton.click();
     await paperwork.checkCorrectPageOpens('Review and submit');
     await locator.reserveButton.click();
-    await paperwork.checkCorrectPageOpens('Thank you for choosing Ottehr!');
+    await paperwork.checkCorrectPageOpens('Thank you for choosing HLHTi!');
   });
   test('IPPP-1 Check Contact information has prefilled values', async () => {
     await page.goto(`paperwork/${appointmentIds[1]}/contact-information`);

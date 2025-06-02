@@ -213,6 +213,10 @@
       "name": "HLTHI_ON_DEMAND_PRICE_ID",
       "value": "#var/HLTHI_ON_DEMAND_PRICE_ID"
     },
+    "AWS_DISPATCHER_URL": {
+      "name": "AWS_DISPATCHER_URL",
+      "value": "#var/AWS_DISPATCHER_URL"
+    },
     "HLTHI_STANDARD_PRICE_ID": {
       "name": "HLTHI_STANDARD_PRICE_ID",
       "value": "#var/HLTHI_STANDARD_PRICE_ID"
@@ -260,6 +264,10 @@
     "SIGN_NOW_TEMPLATE_LIBRARY_DOCUMENT_ID": {
       "name": "SIGN_NOW_TEMPLATE_LIBRARY_DOCUMENT_ID",
       "value": "#var/SIGN_NOW_TEMPLATE_LIBRARY_DOCUMENT_ID"
+    },
+    "TWILIO_CONVERSATION_SID": {
+      "name": "TWILIO_CONVERSATION_SID",
+      "value": "#var/TWILIO_CONVERSATION_SID"
     }
   },
   "zambdas": {

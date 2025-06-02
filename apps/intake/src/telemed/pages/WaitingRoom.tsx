@@ -134,14 +134,14 @@ const WaitingRoom = (): JSX.Element => {
               <img alt="HLTHi icon" src={ottehrLightBlue} width={24} />
             </StyledListItemWithButton>
 
-            <StyledListItemWithButton
+            {/* <StyledListItemWithButton
               onClick={() => setCancelVisitDialogOpen(true)}
               primaryText="Cancel visit"
               secondaryText="You will not be charged if you cancel the visit"
               noDivider
             >
               <CancelOutlinedIcon sx={{ color: otherColors.clearImage }} />
-            </StyledListItemWithButton>
+            </StyledListItemWithButton> */}
           </>
         )}
       </List>
