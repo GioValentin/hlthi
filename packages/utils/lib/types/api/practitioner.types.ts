@@ -1,3 +1,4 @@
+import { Practitioner } from 'fhir/r4b';
 import { StateType } from 'utils';
 
 export type PractitionerQualificationCode =
@@ -315,6 +316,10 @@ export const PROVIDER_NOTIFICATION_TYPE_SYSTEM = `${FHIR_BASE_URL}/r4/provider-n
 export enum AppointmentProviderNotificationTypes {
   patient_waiting = 'patient-waiting',
   unsigned_charts = 'unsigned-charts',
+}
+
+export interface GetPractitionerAccountingInputParams {
+  practitioner: Practitioner;
 }
 
 export const PHOTON_PRESCRIBER_SYSTEM_URL = 'http://api.zapehr.com/photon-prescriber-id';

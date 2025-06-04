@@ -83,7 +83,7 @@ const WaitingRoom = (): JSX.Element => {
       img={ottehrLightBlue}
       imgAlt="HLTHi icon"
       imgWidth={80}
-      subtext="Please wait, call will start automatically. A provider expert will connect with you soon."
+      subtext="Please wait, chat will start automatically. A provider expert will connect with you soon. (If the chat doesn't popup within 10 seconds please refresh the page.)"
     >
       <Box
         sx={{

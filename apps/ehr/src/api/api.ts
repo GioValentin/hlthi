@@ -39,6 +39,7 @@ import {
   LabelPdf,
   GetVisitLabelInput,
   InHouseLabDTO,
+  GetPractitionerAccountingInputParams,
 } from 'utils';
 import {
   CancelAppointmentParameters,
@@ -96,6 +97,7 @@ const HANDLE_IN_HOUSE_LAB_RESULTS = import.meta.env.VITE_APP_HANDLE_IN_HOUSE_LAB
 const DELETE_IN_HOUSE_LAB_ORDER = import.meta.env.VITE_APP_DELETE_IN_HOUSE_LAB_ORDER;
 const GET_LABEL_PDF_ZAMBDA_ID = import.meta.env.VITE_APP_GET_LABEL_PDF_ZAMBDA_ID;
 const GET_OR_CREATE_VISIT_LABEL_PDF_ZAMBDA_ID = import.meta.env.VITE_APP_GET_OR_CREATE_VISIT_LABEL_PDF_ZAMBDA_ID;
+const GET_PRACTICITIONER_ACCOUNTING = import.meta.env.VITE_APP_GET_CUSTOM_ACCOUTING_STRIPE;
 
 export const getUser = async (token: string): Promise<User> => {
   const oystehr = new Oystehr({
@@ -184,6 +186,22 @@ export const createAppointment = async (oystehr: Oystehr, parameters: CreateAppo
 
     const response = await oystehr.zambda.execute({
       id: CREATE_APPOINTMENT_ZAMBDA_ID,
+      ...parameters,
+    });
+    return chooseJson(response);
+  } catch (error: unknown) {
+    console.log(error);
+  }
+};
+
+export const getPractitionerAccounting = async (oystehr: Oystehr, parameters: GetPractitionerAccountingInputParams): Promise<any> => {
+  try {
+    if (GET_PRACTICITIONER_ACCOUNTING == null) {
+      throw new Error('Get Practitioner Accounting');
+    }
+
+    const response = await oystehr.zambda.execute({
+      id: GET_PRACTICITIONER_ACCOUNTING,
       ...parameters,
     });
     return chooseJson(response);

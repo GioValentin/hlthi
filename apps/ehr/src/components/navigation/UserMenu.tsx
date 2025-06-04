@@ -18,6 +18,7 @@ import useEvolveUser from '../../hooks/useEvolveUser';
 import { dataTestIds } from '../../constants/data-test-ids';
 import { Practitioner } from 'fhir/r4b';
 import { useApiClients } from '../../hooks/useAppClients';
+import { getPractitionerAccounting } from '../../api/api';
 
 export const UserMenu: FC = () => {
   const [anchorElement, setAnchorElement] = useState<HTMLElement | null>(null);
@@ -29,18 +30,15 @@ export const UserMenu: FC = () => {
 
   const goToStripe = async function (practitioner: Practitioner | undefined) {
 
-    const account = await oystehrZambda?.zambda.execute({
-      id: 'physician-accounting',
-      practitioner: practitioner
+    const account = await getPractitionerAccounting(oystehrZambda!,{
+      practitioner: practitioner!
     });
 
-    console.log(account);
-
-    if(account?.output?.url == undefined) {
+    if(account?.url == undefined) {
       throw new Error('Could not find URL');
     }
 
-    window.open(account?.output?.url, '_blank');
+    window.open(account?.url, '_blank');
 
   }
 

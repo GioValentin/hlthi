@@ -962,12 +962,32 @@
         "reason": "Needs to generate invoice prior to appointment"
       }
     },
+    "CUSTOM-PRACTITIONER-PAYOUT": {
+      "name": "CUSTOM-PRACTITIONER-PAYOUT",
+      "type": "subscription",
+      "runtime": "nodejs20.x",
+      "src": "src/custom-ehr/payouts/appointment/appointment-chart-data-prefilling/index",
+      "zip": ".dist/zips/custom-practitioner-payout.zip",
+      "subscription": {
+        "status":"fulfilled",
+        "criteria":"Appointment",
+        "event":"update",
+        "reason": "Needs to transfer funds to practitioner"
+      }
+    },
     "CUSTOM-BILLING-STRIPE-WEBHOOK": {
       "name": "CUSTOM-BILLING-STRIPE-WEBHOOK",
       "type": "http_open",
       "runtime": "nodejs20.x",
       "src": "src/custom-patient/billing/stripe-webhook/index",
       "zip": ".dist/zips/custom-billing-stripe-webhook.zip"
+    },
+     "CUSTOM-ACCOUNTING-STRIPE": {
+      "name": "CUSTOM-ACCOUNTING-STRIPE",
+      "type": "http_auth",
+      "runtime": "nodejs20.x",
+      "src": "src/custom-ehr/accounting/index",
+      "zip": ".dist/zips/custom-accounting-stripe.zip"
     },
     "CUSTOM-CONVERSATION-WEBHOOK": {
       "name": "CUSTOM-CONVERSATION-WEBHOOK",
