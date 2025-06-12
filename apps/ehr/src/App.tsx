@@ -6,6 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import { ReactElement, Suspense, lazy, useState } from 'react';
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { RoleType } from 'utils';
+import Reauth from './pages/Reauth';
 import { CustomThemeProvider } from './CustomThemeProvider';
 import { LoadingScreen } from './components/LoadingScreen';
 import Navbar from './components/navigation/Navbar';
@@ -133,6 +134,7 @@ function App(): ReactElement {
         )}
         <BrowserRouter>
           <Routes>
+            <Route path="/reauth/:account_id" element={<Reauth />} />
             <Route
               path="/in-person/:id/*"
               element={

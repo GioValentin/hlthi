@@ -483,6 +483,7 @@ async function getResourcePackagesAppointmentsMap(
       resourceType: 'Appointment',
       params: [
         { name: '_tag', value: OTTEHR_MODULE.TM },
+        { name: '_tag', value: 'https://api.hlthi.life/triage-status|ready' },
         {
           name: 'date',
           value: `ge${fromDate}`,

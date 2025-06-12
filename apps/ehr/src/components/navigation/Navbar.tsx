@@ -21,7 +21,7 @@ export type NavbarItems = {
 };
 
 const administratorNavbarItems: NavbarItems = {
-  'In Person': { urls: ['/visits', '/visit'] },
+  //'In Person': { urls: ['/visits', '/visit'] },
   Schedules: { urls: ['/schedules', '/schedule'] },
   Patients: { urls: ['/patients', '/patient'] },
   Employees: { urls: ['/employees', '/employee'] },
@@ -30,7 +30,7 @@ const administratorNavbarItems: NavbarItems = {
 };
 
 const managerNavbarItems: NavbarItems = {
-  'In Person': { urls: ['/visits', '/visit'] },
+  //'In Person': { urls: ['/visits', '/visit'] },
   Schedules: { urls: ['/schedules', '/schedule'] },
   Patients: { urls: ['/patients', '/patient'] },
   Employees: { urls: ['/employees', '/employee'] },
@@ -39,12 +39,12 @@ const managerNavbarItems: NavbarItems = {
 };
 
 const staffNavbarItems: NavbarItems = {
-  'In Person': { urls: ['/visits', '/visit'] },
+  //'In Person': { urls: ['/visits', '/visit'] },
   Patients: { urls: ['/patients', '/patient'] },
 };
 
 const providerNavbarItems: NavbarItems = {
-  'In Person': { urls: ['/visits', '/visit'] },
+  //'In Person': { urls: ['/visits', '/visit'] },
   Patients: { urls: ['/patients', '/patient'] },
   Telemedicine: { urls: ['/telemed/appointments', '/telemed', '/video-call'] },
 };

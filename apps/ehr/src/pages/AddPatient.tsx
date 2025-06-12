@@ -345,15 +345,15 @@ export default function AddPatient(): JSX.Element {
         <Grid item xs={5}>
           <CustomBreadcrumbs
             chain={[
-              { link: '/visits', children: 'In Person' },
-              { link: '#', children: 'Add Patient' },
+              { link: '/visits', children: 'Telemedicine' },
+              { link: '#', children: 'Create New Visit' },
             ]}
           />
 
           {/* page title */}
 
           <Typography variant="h3" marginTop={1} color={'primary.dark'}>
-            Add Patient
+            Find Patient
           </Typography>
 
           {/* form content */}
@@ -477,7 +477,7 @@ export default function AddPatient(): JSX.Element {
                           </Button>
                         </Box>
                       )}
-                      <Box sx={{ marginTop: 2 }}>
+                      {/* <Box sx={{ marginTop: 2 }}>
                         <Button
                           data-testid={dataTestIds.addPatientPage.patientNotFoundButton}
                           variant="contained"
@@ -494,7 +494,7 @@ export default function AddPatient(): JSX.Element {
                         >
                           Patient Not Found in QRS - Add Manually
                         </Button>
-                      </Box>
+                      </Box> */}
                     </Box>
                   </Dialog>
                   {searching && (
@@ -659,9 +659,9 @@ export default function AddPatient(): JSX.Element {
                             setVisitType(event.target.value as VisitType);
                           }}
                         >
-                          <MenuItem value={VisitType.WalkIn}>Walk-in In Person Visit</MenuItem>
-                          <MenuItem value={VisitType.PreBook}>Pre-booked In Person Visit</MenuItem>
-                          <MenuItem value={VisitType.PostTelemed}>Post Telemed Lab Only</MenuItem>
+                          {/* <MenuItem value={VisitType.WalkIn}>Walk-in Visit</MenuItem> */}
+                          <MenuItem value={VisitType.PreBook}>Future Visit</MenuItem>
+                          {/* <MenuItem value={VisitType.PostTelemed}>Post Telemed Lab Only</MenuItem> */}
                         </Select>
                       </FormControl>
                     </Box>

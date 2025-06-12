@@ -32,3 +32,5 @@ custom-packages
 
 **/custom-ehr
 **/custom-patient
+
+scripts/quest-test.ts

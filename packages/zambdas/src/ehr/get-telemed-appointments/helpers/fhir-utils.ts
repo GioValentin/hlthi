@@ -77,8 +77,6 @@ export const getAllResourcesFromFhir = async (
     ],
   };
 
-  console.log(22222221, fhirSearchParams);
-
   if (searchDate) {
     fhirSearchParams.params.push(
       {
