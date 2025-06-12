@@ -122,7 +122,7 @@ function App(): ReactElement {
   const photonDisadledByEnv = import.meta.env.VITE_APP_CI_PHOTON_DISABLED === 'true';
   const photonEnabledForUser = currentUser?.hasRole([RoleType.Provider]) && currentUser.isPractitionerEnrolledInPhoton;
   const isE2EUser = currentUser?.email?.includes('e2euser');
-  const shouldUsePhoton = !isE2EUser && (photonEnabledForUser || wasEnrolledInphoton);
+  const shouldUsePhoton = false; //!isE2EUser && (photonEnabledForUser || wasEnrolledInphoton);
 
   return (
     <CustomThemeProvider>
