@@ -18,7 +18,7 @@ import { DateTime } from 'luxon';
 import { FC, useCallback, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { MedicationDTO } from 'utils';
-import { otherColors } from '@theme/colors';
+import { otherColors } from '@ehrTheme/colors';
 import { getSelectors } from '../../../../../shared/store/getSelectors';
 import { useChartDataArrayValue, useGetAppointmentAccessibility } from '../../../../hooks';
 import { ExtractObjectType, useAppointmentStore, useGetMedicationsSearch } from '../../../../state';
@@ -74,7 +74,9 @@ export const CurrentMedicationsProviderColumn: FC = () => {
   const debouncedHandleInputChange = useCallback(
     debounce((data) => {
       console.log(data);
-      setDebouncedSearchTerm(data);
+      if (data.length > 2) {
+        setDebouncedSearchTerm(data);
+      }
     }, 800),
     []
   );
@@ -200,7 +202,7 @@ export const CurrentMedicationsProviderColumn: FC = () => {
                     disablePortal
                     disabled={isLoading || isChartDataLoading}
                     noOptionsText={
-                      debouncedSearchTerm && medSearchOptions.length === 0
+                      debouncedSearchTerm && debouncedSearchTerm.length > 2 && medSearchOptions.length === 0
                         ? 'Nothing found for this search criteria'
                         : 'Start typing to load results'
                     }
@@ -208,7 +210,6 @@ export const CurrentMedicationsProviderColumn: FC = () => {
                     onChange={(_e, data) => {
                       onChange(data);
                     }}
-                    filterOptions={(x) => x}
                     renderInput={(params) => (
                       <TextField
                         {...params}

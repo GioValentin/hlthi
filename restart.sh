@@ -5,3 +5,8 @@ cd ./packages/zambdas/src && ln -sf ../../../custom-packages/ehr/zambdas/src ./c
 cd ./packages/zambdas/src && ln -sf ../../../custom-packages/intake/zambdas/src ./custom-patient && cd ../../../
 
 npm run apps:start
+
+# rm -rf node_modules 
+# rm -rf apps/**/node_modules 
+# rm -rf packages/**/node_modules 
+# rm -rf custom-packages/**/node_modules

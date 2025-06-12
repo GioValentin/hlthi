@@ -19,7 +19,7 @@ module.exports = {
       './packages/**/tsconfig.node.json',
       './apps/**/tsconfig.node.json',
       './custom-packages/**/tsconfig.node.json',
-    ],
+    ]
   },
   plugins: ['@typescript-eslint'],
   root: true,
