@@ -180,3 +180,5 @@ async function sendAutomatedText(
     // should we alert slack in this instance ?
   }
 }
+
+export default index;

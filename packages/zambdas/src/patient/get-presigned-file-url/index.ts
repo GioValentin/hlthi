@@ -119,3 +119,5 @@ const makePresignedFileURL = async (
 
   return { presignedURL: presignedURLResponse.signedUrl, z3URL: fileURL };
 };
+
+export default index;

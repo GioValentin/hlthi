@@ -312,3 +312,5 @@ async function getM2MUserProfile(token: string, projectApiURL: string, telemedCl
     throw error;
   }
 }
+
+export default index;

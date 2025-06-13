@@ -85,3 +85,5 @@ const searchTerminology = async (
 
   return results;
 };
+
+export default index;

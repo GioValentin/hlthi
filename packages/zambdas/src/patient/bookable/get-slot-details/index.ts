@@ -166,3 +166,5 @@ const complexValidation = async (input: BasicInput, oystehr: Oystehr): Promise<E
     originalBookingUrl,
   };
 };
+
+export default index;

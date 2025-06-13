@@ -271,3 +271,5 @@ const validateClosureDates = (closureDates: string[], closure: Closure): string[
   }
   return closureDates;
 };
+
+export default index;

@@ -112,3 +112,5 @@ async function flagPaperworkInProgress(
 
   await createOrUpdateFlags('paperwork-in-progress', existingFlags, patientID, encounter.id, lastActive, oystehr, user);
 }
+
+export default index;

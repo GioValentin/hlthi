@@ -180,3 +180,5 @@ export const index = wrapHandler(async (input: ZambdaInput): Promise<APIGatewayP
     return topLevelCatch('sub-confirmation-messages', error, input.secrets, captureSentryException);
   }
 });
+
+export default index;

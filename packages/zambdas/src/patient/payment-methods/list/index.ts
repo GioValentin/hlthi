@@ -122,3 +122,5 @@ const filterExpired = (cardList: CreditCardInfo[]): CreditCardInfo[] => {
     return !isExpired(card.expMonth, card.expYear);
   });
 };
+
+export default index;

@@ -140,3 +140,5 @@ const validateRequestParameters = (input: ZambdaInput): Input => {
     patientId,
   };
 };
+
+export default index;

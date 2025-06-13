@@ -169,3 +169,5 @@ const complexValidation = async (input: UpdateScheduleBasicInput, oystehr: Oyste
     owner,
   };
 };
+
+export default index;

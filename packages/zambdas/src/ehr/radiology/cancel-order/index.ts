@@ -162,3 +162,5 @@ const updateServiceRequestToRevokedInAdvaPacs = async (
     throw new Error('Failed to update service request to revoked in AdvaPacs');
   }
 };
+
+export default index;

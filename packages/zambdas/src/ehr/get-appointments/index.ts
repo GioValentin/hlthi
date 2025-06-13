@@ -710,3 +710,5 @@ const makeAppointmentInformation = (
     waitingMinutes,
   };
 };
+
+export default index;

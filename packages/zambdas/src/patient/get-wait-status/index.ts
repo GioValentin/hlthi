@@ -195,3 +195,5 @@ const calculateLongestWaitingTime = (appointments: Appointment[]): number => {
 
   return longestTime;
 };
+
+export default index;

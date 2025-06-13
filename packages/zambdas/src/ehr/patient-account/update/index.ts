@@ -335,3 +335,5 @@ const complexValidation = async (input: BasicInput, oystehrM2M: Oystehr): Promis
     preserveOmittedCoverages,
   };
 };
+
+export default index;

@@ -140,3 +140,5 @@ const complexValidation = async (input: BasicInput, oystehr: Oystehr): Promise<E
     schedule,
   };
 };
+
+export default index;

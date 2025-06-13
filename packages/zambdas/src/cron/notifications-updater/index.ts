@@ -695,3 +695,5 @@ function getCommunicationStatus(
   }
   return status;
 }
+
+export default index;

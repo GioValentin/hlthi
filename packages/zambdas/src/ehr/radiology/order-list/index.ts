@@ -438,3 +438,5 @@ const parseEncounterId = (serviceRequest: ServiceRequest): string => {
   const NOT_FOUND = '';
   return serviceRequest.encounter?.reference?.split('/').pop() || NOT_FOUND;
 };
+
+export default index;

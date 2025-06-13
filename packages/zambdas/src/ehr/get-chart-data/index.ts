@@ -234,3 +234,5 @@ export async function getChartData(
     chartResources: chartDataResult.chartResources,
   };
 }
+
+export default index;

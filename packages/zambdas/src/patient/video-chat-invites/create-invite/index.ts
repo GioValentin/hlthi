@@ -301,3 +301,5 @@ function filterInvitedParticipantResources(participants: (RelatedPerson | Patien
 function filterPatientResources(participants: (RelatedPerson | Patient)[]): Patient[] {
   return <Patient[]>participants.filter((r) => r.resourceType === 'Patient');
 }
+
+export default index;

@@ -231,3 +231,5 @@ const validateRequestParameters = (input: ZambdaInput): ListPatientPaymentInput 
     encounterId,
   };
 };
+
+export default index;

@@ -252,3 +252,5 @@ function isWalkinOpen(input: CheckWalkinOpenInput): boolean {
     !officeHasClosureOverrideToday
   );
 }
+
+export default index;

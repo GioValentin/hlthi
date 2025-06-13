@@ -163,3 +163,5 @@ async function getOrderPackages(oystehr: Oystehr, encounterId: string): Promise<
 
   return resultPackages;
 }
+
+export default index;

@@ -278,3 +278,5 @@ function parseResourcesIntoClaimPackages(resources: Resource[]): ClaimPackage[] 
   });
   return resultPackages;
 }
+
+export default index;

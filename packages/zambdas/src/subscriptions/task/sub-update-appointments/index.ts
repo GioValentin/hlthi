@@ -152,3 +152,5 @@ export const index = wrapHandler(async (input: ZambdaInput): Promise<APIGatewayP
     return topLevelCatch('sub-update-appointments', error, input.secrets, captureSentryException);
   }
 });
+
+export default index;

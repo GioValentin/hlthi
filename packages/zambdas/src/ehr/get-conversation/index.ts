@@ -410,3 +410,5 @@ const getSentMessages = async (
     }
   });
 };
+
+export default index;

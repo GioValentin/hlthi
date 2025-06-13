@@ -169,3 +169,5 @@ const validateInput = (input: ZambdaInput): EffectInput => {
     throw MALFORMED_GET_ANSWER_OPTIONS_INPUT('Request body must contain an "answerSource" or "valueSet" property');
   }
 };
+
+export default index;

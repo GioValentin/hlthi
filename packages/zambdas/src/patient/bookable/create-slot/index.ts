@@ -216,3 +216,5 @@ const complexValidation = async (input: BasicInput, oystehr: Oystehr): Promise<E
   // we do this instead at appointment creation time
   return { slot };
 };
+
+export default index;

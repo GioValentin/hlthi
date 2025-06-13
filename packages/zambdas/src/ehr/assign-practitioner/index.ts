@@ -97,3 +97,5 @@ export const performEffect = async (
     } to encounter ${encounter.id}.`,
   };
 };
+
+export default index;

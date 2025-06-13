@@ -77,3 +77,5 @@ const makeZ3Url = (input: { secrets: Secrets | null; bucketName: string; patient
   )}/z3/${projectId}-${bucketName}/${patientID}/${Date.now()}-${fileType}.${fileFormat}`;
   return fileURL;
 };
+
+export default index;

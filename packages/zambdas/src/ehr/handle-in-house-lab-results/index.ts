@@ -528,3 +528,5 @@ const makeIrtTaskPatchRequest = (irtTask: Task, provenanceFullUrl: string): Batc
   };
   return irtTaskPatchRequest;
 };
+
+export default index;

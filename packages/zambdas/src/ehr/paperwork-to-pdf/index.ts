@@ -161,3 +161,5 @@ async function addDocumentReferenceToList(documentReference: DocumentReference, 
     ],
   });
 }
+
+export default index;

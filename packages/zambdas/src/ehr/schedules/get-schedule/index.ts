@@ -295,3 +295,5 @@ const getEffectInputFromOwner = async (
     scheduleActive: schedule ? schedule.active ?? true : true,
   };
 };
+
+export default index;

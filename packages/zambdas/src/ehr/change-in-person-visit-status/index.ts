@@ -89,3 +89,5 @@ export const performEffect = async (
     message: `updated in person visit status to ${updatedStatus}`,
   };
 };
+
+export default index;

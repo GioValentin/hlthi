@@ -231,3 +231,5 @@ const addCandidEncounterIdToEncounter = async (
     ],
   });
 };
+
+export default index;

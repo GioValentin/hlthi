@@ -479,3 +479,5 @@ const makeLocationSummary = (input: LocationSummaryInput): AppointmentSummary['l
     };
   }
 };
+
+export default index;

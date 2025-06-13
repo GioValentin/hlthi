@@ -335,3 +335,5 @@ export const performEffect = async (input: QRSubscriptionInput, oystehr: Oystehr
 
   return response;
 };
+
+export default index;

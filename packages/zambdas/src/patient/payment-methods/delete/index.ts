@@ -60,3 +60,5 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     return topLevelCatch('payment-methods-delete', error, input.secrets);
   }
 };
+
+export default index;

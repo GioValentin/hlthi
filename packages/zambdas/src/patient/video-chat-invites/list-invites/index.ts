@@ -97,3 +97,5 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     return lambdaResponse(500, { error: 'Internal error' });
   }
 };
+
+export default index;

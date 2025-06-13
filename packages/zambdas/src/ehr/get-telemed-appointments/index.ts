@@ -154,3 +154,5 @@ const extractCancellationReason = (appointment: Appointment): string | undefined
 
   return codingClause?.display;
 };
+
+export default index;

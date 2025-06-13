@@ -265,3 +265,5 @@ const writeAuditEvent = async (input: AuditEventInput, oystehr: Oystehr): Promis
   };
   return oystehr.fhir.create(auditEvent);
 };
+
+export default index;

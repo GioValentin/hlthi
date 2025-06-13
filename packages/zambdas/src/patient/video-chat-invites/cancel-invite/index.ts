@@ -129,3 +129,5 @@ function findParticipantByNumber(participants: RelatedPerson[], matchingNumber: 
     return number === matchingNumber;
   });
 }
+
+export default index;

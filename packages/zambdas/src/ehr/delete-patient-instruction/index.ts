@@ -46,3 +46,5 @@ async function checkIfBelongsToCurrentProvider(oystehr: Oystehr, resourceId: str
   ]);
   return resource.sender?.reference === myUser.profile;
 }
+
+export default index;

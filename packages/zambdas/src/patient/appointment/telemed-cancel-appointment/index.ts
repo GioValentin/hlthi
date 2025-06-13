@@ -230,3 +230,5 @@ async function performEffect(props: PerformEffectInput): Promise<APIGatewayProxy
     body: JSON.stringify(response),
   };
 }
+
+export default index;

@@ -171,3 +171,5 @@ const getCoverageName = (accounts: Account[], coverages: Coverage[]): string => 
   const coverageName = primaryInsuranceName ?? 'Self Pay';
   return coverageName;
 };
+
+export default index;

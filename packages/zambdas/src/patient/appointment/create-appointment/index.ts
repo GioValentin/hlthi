@@ -651,3 +651,5 @@ const extractResourcesFromBundle = (bundle: Bundle<Resource>): TransactionOutput
     questionnaireResponseId: questionnaireResponse.id || '',
   };
 };
+
+export default index;

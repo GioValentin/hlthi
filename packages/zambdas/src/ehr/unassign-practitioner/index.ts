@@ -102,3 +102,5 @@ export const performEffect = async (
     } from encounter ${encounter.id}.`,
   };
 };
+
+export default index;

@@ -534,3 +534,5 @@ const getAdditionalResources = async (
     location,
   };
 };
+
+export default index;

@@ -114,3 +114,5 @@ const execJoinVideoRoomRequest = async (
   const responseData = (await response.json()) as MeetingData;
   return responseData;
 };
+
+export default index;

@@ -252,3 +252,5 @@ async function getOrderResources(oystehr: Oystehr, orderId: string): Promise<Ord
     patient,
   };
 }
+
+export default index;

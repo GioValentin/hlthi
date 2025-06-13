@@ -239,3 +239,5 @@ async function checkin(
     requests: [appointmentPatchRequest, encounterPatchRequest, taskRequest],
   });
 }
+
+export default index;

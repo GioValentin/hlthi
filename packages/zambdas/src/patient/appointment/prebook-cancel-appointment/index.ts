@@ -327,3 +327,5 @@ const getCancellationDetails = async (
     throw new Error(`error getting cancellation email details: ${error}, ${JSON.stringify(error)}`);
   }
 };
+
+export default index;

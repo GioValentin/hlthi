@@ -641,34 +641,6 @@
       "src": "src/patient/get-appointment-details/index",
       "zip": ".dist/zips/get-appointment-details.zip"
     },
-    "PAYMENT-METHODS-LIST": {
-      "name": "PAYMENT-METHODS-LIST",
-      "type": "http_auth",
-      "runtime": "nodejs20.x",
-      "src": "src/patient/payment-methods/list/index",
-      "zip": ".dist/zips/payment-methods-list.zip"
-    },
-    "PAYMENT-METHODS-DELETE": {
-      "name": "PAYMENT-METHODS-DELETE",
-      "type": "http_auth",
-      "runtime": "nodejs20.x",
-      "src": "src/patient/payment-methods/delete/index",
-      "zip": ".dist/zips/payment-methods-delete.zip"
-    },
-    "PAYMENT-METHODS-SETUP": {
-      "name": "PAYMENT-METHODS-SETUP",
-      "type": "http_auth",
-      "runtime": "nodejs20.x",
-      "src": "src/patient/payment-methods/setup/index",
-      "zip": ".dist/zips/payment-methods-setup.zip"
-    },
-    "PAYMENT-METHODS-SET-DEFAULT": {
-      "name": "PAYMENT-METHODS-SET-DEFAULT",
-      "type": "http_auth",
-      "runtime": "nodejs20.x",
-      "src": "src/patient/payment-methods/set-default/index",
-      "zip": ".dist/zips/payment-methods-set-default.zip"
-    },
     "VIDEO-CHAT-INVITES-CANCEL": {
       "name": "VIDEO-CHAT-INVITES-CANCEL",
       "type": "http_auth",

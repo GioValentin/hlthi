@@ -177,3 +177,5 @@ function extractParticipantsRefsFromResources(bundleResources: FhirResource[]): 
 
   return participantSet.filter((participant) => participant && participant.match(/^Practitioner\//) !== null);
 }
+
+export default index;

@@ -48,8 +48,8 @@ const build = async (zambdas: ZambdaSpec[]): Promise<void> => {
         }),
         sentryEsbuildPlugin({
           authToken: process.env.SENTRY_AUTH_TOKEN,
-          org: 'zapehr',
-          project: 'ottehr-lambda',
+          org: 'hlthi',
+          project: 'intake-app',
           // debug: true,
         }),
       ],

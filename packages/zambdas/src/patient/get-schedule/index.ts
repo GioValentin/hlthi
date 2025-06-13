@@ -173,3 +173,5 @@ export function getNextOpeningDateTime(now: DateTime, schedule: Schedule): strin
   }
   return nextOpeningTime?.setZone('utc').toFormat('HH:mm MM-dd-yyyy z');
 }
+
+export default index;

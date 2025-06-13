@@ -212,3 +212,5 @@ function validateRequestParameters(input: ZambdaInput): GetBookableItemListParam
     serviceMode,
   };
 }
+
+export default index;

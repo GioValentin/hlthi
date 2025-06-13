@@ -350,3 +350,5 @@ const makePaymentNotice = (input: PaymentNoticeInput): PaymentNotice => {
   }
   return notice;
 };
+
+export default index;

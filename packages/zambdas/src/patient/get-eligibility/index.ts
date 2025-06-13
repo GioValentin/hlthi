@@ -246,3 +246,5 @@ const tagAppointmentWithEligibilityFailureReason = async ({
     ],
   });
 };
+
+export default index;

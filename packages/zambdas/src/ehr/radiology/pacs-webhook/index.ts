@@ -383,3 +383,5 @@ const createOurDiagnosticReport = async (
   const createResult = await oystehr.fhir.create<DiagnosticReport>(diagnosticReportToCreate);
   console.log('Created our DiagnosticReport: ', JSON.stringify(createResult, null, 2));
 };
+
+export default index;

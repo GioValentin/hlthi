@@ -106,3 +106,5 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     };
   }
 };
+
+export default index;

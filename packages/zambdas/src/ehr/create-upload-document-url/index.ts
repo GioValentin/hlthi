@@ -262,3 +262,5 @@ const resolveDocumentReferenceType = ({ folder }: { folder: List }): CodeableCon
   console.log(folder);
   return;
 };
+
+export default index;

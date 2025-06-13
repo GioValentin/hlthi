@@ -192,3 +192,5 @@ const changeStatus = async (
     requests: [appointmentPatch, encounterPatch, ...documentPatch],
   });
 };
+
+export default index;

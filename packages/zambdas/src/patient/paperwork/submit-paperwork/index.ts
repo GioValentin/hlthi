@@ -133,3 +133,5 @@ const performEffect = async (input: SubmitPaperworkEffectInput, oystehr: Oystehr
   }
   return patchedPaperwork;
 };
+
+export default index;

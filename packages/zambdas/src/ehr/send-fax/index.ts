@@ -84,3 +84,5 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     return topLevelCatch('send-fax', error, input.secrets, captureSentryException);
   }
 };
+
+export default index;

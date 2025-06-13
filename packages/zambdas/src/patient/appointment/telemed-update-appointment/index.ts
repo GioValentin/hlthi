@@ -258,3 +258,5 @@ const extractResourcesFromBundle = (
   console.log('successfully obtained resources from bundle');
   return { appointment, patient };
 };
+
+export default index;

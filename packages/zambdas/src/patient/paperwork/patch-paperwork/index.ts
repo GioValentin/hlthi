@@ -72,3 +72,5 @@ const performEffect = async (input: PatchPaperworkEffectInput, oystehr: Oystehr)
     operations,
   });
 };
+
+export default index;

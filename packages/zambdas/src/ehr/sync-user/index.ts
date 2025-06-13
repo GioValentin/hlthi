@@ -301,3 +301,5 @@ function updatePractitionerCredentials(
 async function updatePractitioner(oystehr: Oystehr, practitioner: Practitioner): Promise<Practitioner> {
   return await oystehr.fhir.update(practitioner);
 }
+
+export default index;

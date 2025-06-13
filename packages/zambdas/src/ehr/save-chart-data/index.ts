@@ -560,3 +560,5 @@ async function getUserPractitioner(oystehr: Oystehr, oystehrCurrentUser: Oystehr
     throw new Error(`Failed to get Practitioner: ${JSON.stringify(error)}`);
   }
 }
+
+export default index;

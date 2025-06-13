@@ -180,3 +180,5 @@ export const index = wrapHandler(async (input: ZambdaInput): Promise<APIGatewayP
     return topLevelCatch('sub-cancellation-email', error, input.secrets, captureSentryException);
   }
 });
+
+export default index;

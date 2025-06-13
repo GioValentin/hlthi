@@ -318,3 +318,5 @@ const handleSpecimenDateChangedEvent = async ({
 
   return updateTransactionRequest;
 };
+
+export default index;
