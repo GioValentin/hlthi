@@ -1,65 +1,64 @@
 import Oystehr, { User } from '@oystehr/sdk';
 import { Address, ContactPoint, LocationHoursOfOperation, Schedule, Slot } from 'fhir/r4b';
 import {
+  apiErrorToThrow,
+  CancelRadiologyOrderZambdaInput,
   chooseJson,
+  CollectInHouseLabSpecimenParameters,
   ConversationMessage,
-  SubmitLabOrderInput,
+  CreateAppointmentInputParams,
+  CreateInHouseLabOrderParameters,
+  CreateInHouseLabOrderResponse,
+  CreateLabOrderParameters,
+  CreateNursingOrderParameters,
+  CreateRadiologyZambdaOrderInput,
   CreateScheduleParams,
+  CreateSlotParams,
   CreateUserOutput,
   CreateUserParams,
+  DeleteInHouseLabOrderParameters,
+  DeleteLabOrderParams,
+  GetCreateInHouseLabOrderResourcesParameters,
+  GetCreateInHouseLabOrderResourcesResponse,
   GetEmployeesResponse,
+  GetInHouseOrdersParameters,
+  GetLabelPdfParameters,
+  GetLabOrdersParameters,
+  GetNursingOrdersInput,
+  GetRadiologyOrderListZambdaInput,
+  GetRadiologyOrderListZambdaOutput,
   GetScheduleParams,
   GetScheduleRequestParams,
   GetScheduleResponse,
   GetUserParams,
   GetUserResponse,
-  PaginatedResponse,
-  CreateLabOrderParameters,
+  GetVisitLabelInput,
+  HandleInHouseLabResultsParameters,
+  InHouseGetOrdersResponseDTO,
+  LabelPdf,
   ListScheduleOwnersParams,
   ListScheduleOwnersResponse,
-  ScheduleDTO,
-  UpdateScheduleParams,
-  CreateRadiologyZambdaOrderInput,
-  GetRadiologyOrderListZambdaInput,
-  GetRadiologyOrderListZambdaOutput,
-  GetLabOrdersParameters,
-  DeleteLabOrderParams,
-  SubmitLabOrderDTO,
-  CreateAppointmentInputParams,
-  UpdateLabOrderResourcesParameters,
-  CreateSlotParams,
-  apiErrorToThrow,
-  CancelRadiologyOrderZambdaInput,
+  NursingOrdersSearchBy,
+  PaginatedResponse,
   RadiologyLaunchViewerZambdaInput,
   RadiologyLaunchViewerZambdaOutput,
-  GetInHouseOrdersParameters,
-  CollectInHouseLabSpecimenParameters,
-  GetCreateInHouseLabOrderResourcesParameters,
-  HandleInHouseLabResultsParameters,
-  DeleteInHouseLabOrderParameters,
-  GetCreateInHouseLabOrderResourcesResponse,
-  CreateInHouseLabOrderParameters,
-  GetLabelPdfParameters,
-  LabelPdf,
-  GetVisitLabelInput,
-  GetPractitionerAccountingInputParams,
-  CreateInHouseLabOrderResponse,
-  InHouseGetOrdersResponseDTO,
-  GetNursingOrdersInput,
-  NursingOrdersSearchBy,
-  CreateNursingOrderParameters,
-  UpdateNursingOrderParameters
+  ScheduleDTO,
+  SubmitLabOrderDTO,
+  SubmitLabOrderInput,
+  UpdateLabOrderResourcesParameters,
+  UpdateNursingOrderParameters,
+  UpdateScheduleParams,
+  UpdateUserParams,
 } from 'utils';
 
 import {
+  AssignPractitionerParameters,
   CancelAppointmentParameters,
+  ChangeInPersonVisitStatusParameters,
   DeactivateUserParameters,
   GetAppointmentsParameters,
   SaveFollowupParameter,
-  AssignPractitionerParameters,
   UnassignPractitionerParameters,
-  ChangeInPersonVisitStatusParameters,
-  UpdateUserParameters,
 } from '../types/types';
 
 export interface PatchOperation {
@@ -205,7 +204,7 @@ export const createAppointment = async (oystehr: Oystehr, parameters: CreateAppo
   }
 };
 
-export const getPractitionerAccounting = async (oystehr: Oystehr, parameters: GetPractitionerAccountingInputParams): Promise<any> => {
+export const getPractitionerAccounting = async (oystehr: Oystehr, parameters: object): Promise<any> => {
   try {
     if (GET_PRACTICITIONER_ACCOUNTING == null) {
       throw new Error('Get Practitioner Accounting');
@@ -304,7 +303,7 @@ export const createUser = async (oystehr: Oystehr, parameters: CreateUserParams)
   }
 };
 
-export const updateUser = async (oystehr: Oystehr, parameters: UpdateUserParameters): Promise<any> => {
+export const updateUser = async (oystehr: Oystehr, parameters: UpdateUserParams): Promise<any> => {
   try {
     if (UPDATE_USER_ZAMBDA_ID == null) {
       throw new Error('update user environment variable could not be loaded');
