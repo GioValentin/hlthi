@@ -68,7 +68,7 @@ export default function LocationSelect({
           })
         ).unbundle();
         const locationsResults = searchResults.filter(
-          (loc) => loc.resourceType === 'Location' && !isLocationVirtual(loc)
+          (loc) => loc.resourceType === 'Location' //&& !isLocationVirtual(loc)
         );
         const mappedLocations: LocationWithWalkinSchedule[] = locationsResults.map((locationTemp) => {
           const location = locationTemp as LocationWithWalkinSchedule;
