@@ -58,6 +58,10 @@ export const ERX: FC<{
     return missingFields;
   }, [practitioner]);
 
+  if(Object.keys(encounter).length == 0) {
+    console.log("No encounter");
+  }
+
   // Step 1: Get patient vitals
   const heightSearchConfig = createVitalsSearchConfig(VitalFieldNames.VitalHeight, 'patient', 1);
   const weightSearchConfig = createVitalsSearchConfig(VitalFieldNames.VitalWeight, 'patient', 1);
@@ -154,6 +158,7 @@ export const ERX: FC<{
     isSuccess: isPractitionerConnected,
   } = useConnectPractitionerToToConfirmEnrollment({ patientId: patient?.id });
 
+  console.log(ssoLink);
   const {
     data: ssoLinkForEnrollment,
     isLoading: isConnectingPractitionerForConfirmation,

@@ -15,7 +15,7 @@ import { FEATURE_FLAGS } from '../constants/feature-flags';
 import { useGetPatient } from '../hooks/useGetPatient';
 import PageContainer from '../layout/PageContainer';
 import { PatientInHouseLabsTab } from 'src/components/PatientInHouseLabsTab';
-
+import {ErxButton} from '@components/patient/ErxButton'
 export default function PatientPage(): JSX.Element {
   const { id } = useParams();
   const location = useLocation();
@@ -101,6 +101,10 @@ export default function PatientPage(): JSX.Element {
               <RoundedButton sx={{ width: '100%' }} to={`/patient/${id}/docs`}>
                 Review Docs
               </RoundedButton>
+              <RoundedButton sx={{ width: '100%' }} to={`https://physician.quanum.questdiagnostics.com/home`} target='_BLANK'>
+                Lab Orders
+              </RoundedButton>
+              <ErxButton patient={id!}/>
             </Box>
           </Paper>
 
