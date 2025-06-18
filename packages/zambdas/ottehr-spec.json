@@ -881,6 +881,13 @@
       "src": "src/custom-ehr/conversation/create-conversation/index",
       "zip": ".dist/zips/admin-create-conversation.zip"
     },
+    "GET-CONNECTED-AUTH": {
+      "name": "GET-CONNECTED-AUTH",
+      "type": "http_open",
+      "runtime": "nodejs20.x",
+      "src": "src/custom-ehr/get-connected-auth/index",
+      "zip": ".dist/zips/get-connected-auth.zip"
+    },
     "ADMIN-CONVERSATION-PARTICIPANT": {
       "name": "ADMIN-CONVERSATION-PARTICIPANT",
       "type": "http_auth",

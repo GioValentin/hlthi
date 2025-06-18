@@ -15,7 +15,7 @@ export default function Reauth(): React.ReactElement {
     const fetchAccountLink = async () => {
       try {
         const response = await fetch(
-          "http://project-api.zapehr.com/v1/zambda/get-connected-auth/execute-public",
+          "https://project-api.zapehr.com/v1/zambda/get-connected-auth/execute-public",
           {
             method: "POST",
             headers: {
