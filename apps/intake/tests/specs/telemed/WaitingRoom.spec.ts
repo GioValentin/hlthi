@@ -1,5 +1,5 @@
+// cSpell:ignore WRMP
 import { BrowserContext, expect, Page, test } from '@playwright/test';
-import { cleanAppointment } from 'test-utils';
 import { chooseJson, CreateAppointmentResponse } from 'utils';
 import { Locators } from '../../utils/locators';
 import { Paperwork } from '../../utils/Paperwork';
@@ -20,9 +20,9 @@ test.beforeAll(async ({ browser }) => {
   page = await context.newPage();
   page.on('response', async (response) => {
     if (response.url().includes('/create-appointment/')) {
-      const { appointment } = chooseJson(await response.json()) as CreateAppointmentResponse;
-      if (appointment && !appointmentIds.includes(appointment)) {
-        appointmentIds.push(appointment);
+      const { appointmentId } = chooseJson(await response.json()) as CreateAppointmentResponse;
+      if (!appointmentIds.includes(appointmentId)) {
+        appointmentIds.push(appointmentId);
       }
     }
   });
@@ -31,15 +31,6 @@ test.beforeAll(async ({ browser }) => {
   paperworkTelemed = new PaperworkTelemed(page);
   locator = new Locators(page);
   await flowClass.startVisitFullFlow();
-});
-test.afterAll(async () => {
-  await page.close();
-  await context.close();
-  const env = process.env.ENV;
-  for (const appointment of appointmentIds) {
-    console.log(`Deleting ${appointment} on env: ${env}`);
-    await cleanAppointment(appointment, env!);
-  }
 });
 
 test.describe('Waiting room - Manage participants', () => {

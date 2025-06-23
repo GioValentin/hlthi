@@ -1,14 +1,15 @@
-import { APIGatewayProxyResult } from 'aws-lambda';
 import { BatchInputDeleteRequest } from '@oystehr/sdk';
-import { topLevelCatch, ZambdaInput } from '../../shared';
-import { checkOrCreateM2MClientToken, createOystehrClient } from '../../shared';
+import { wrapHandler } from '@sentry/aws-serverless';
+import { APIGatewayProxyResult } from 'aws-lambda';
+import { DeleteLabOrderZambdaOutput } from 'utils';
+import { checkOrCreateM2MClientToken, createOystehrClient, topLevelCatch, ZambdaInput } from '../../shared';
+import { getLabOrderRelatedResources, makeDeleteResourceRequest } from './helpers';
 import { validateRequestParameters } from './validateRequestParameters';
-import { makeDeleteResourceRequest, getLabOrderRelatedResources } from './helpers';
 
 // Lifting up value to outside of the handler allows it to stay in memory across warm lambda invocations
 let m2mtoken: string;
 
-export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> => {
+export const index = wrapHandler(async (input: ZambdaInput): Promise<APIGatewayProxyResult> => {
   try {
     console.group('validateRequestParameters');
     const validatedParameters = validateRequestParameters(input);
@@ -61,17 +62,11 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
       });
     }
 
+    const response: DeleteLabOrderZambdaOutput = {};
+
     return {
       statusCode: 200,
-      body: JSON.stringify({
-        message: `Successfully deleted external lab order resources`,
-        deletedResources: {
-          serviceRequest,
-          questionnaireResponse,
-          task,
-          labConditions,
-        },
-      }),
+      body: JSON.stringify(response),
     };
   } catch (error: any) {
     await topLevelCatch('delete-lab-order', error, input.secrets);
@@ -81,4 +76,4 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
       body: JSON.stringify({ message: `Error deleting external lab order: ${error.message || error}` }),
     };
   }
-};
+});
