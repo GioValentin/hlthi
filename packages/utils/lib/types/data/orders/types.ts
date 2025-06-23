@@ -14,6 +14,7 @@ export type NursingOrdersSearchBy = { field: 'serviceRequestId'; value: string }
 
 export type GetNursingOrdersInput = {
   encounterId: string;
+  searchBy?: NursingOrdersSearchBy;
 };
 
 export interface NursingOrder {
@@ -34,3 +35,15 @@ export type NursingOrderHistoryRow = {
   performer: string;
   date: string;
 };
+
+export interface OrderToolTipConfig {
+  icon: JSX.Element;
+  title: string;
+  tableUrl: string;
+  orders: {
+    serviceRequestId: string;
+    testItemName: string;
+    detailPageUrl: string;
+    statusChip: JSX.Element;
+  }[];
+}

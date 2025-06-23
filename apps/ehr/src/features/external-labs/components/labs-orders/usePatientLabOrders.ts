@@ -4,7 +4,7 @@ import {
   LabOrderDTO,
   DEFAULT_LABS_ITEMS_PER_PAGE,
   GetLabOrdersParameters,
-  DeleteLabOrderParams,
+  DeleteLabOrderZambdaInput,
   LabOrdersSearchBy,
   TaskReviewedParameters,
   SpecimenDateChangedParameters,
@@ -34,7 +34,7 @@ interface UsePatientLabOrdersResult<SearchBy extends LabOrdersSearchBy> {
   visitDateFilter: DateTime | null;
   fetchLabOrders: (params: GetLabOrdersParameters) => Promise<void>;
   showPagination: boolean;
-  deleteLabOrder: (params: DeleteLabOrderParams) => Promise<boolean>;
+  deleteLabOrder: (params: DeleteLabOrderZambdaInput) => Promise<boolean>;
   showDeleteLabOrderDialog: ({
     serviceRequestId,
     testItemName,
@@ -95,6 +95,14 @@ export const usePatientLabOrders = <SearchBy extends LabOrdersSearchBy>(
     async (searchParams: GetLabOrdersParameters): Promise<void> => {
       if (!oystehrZambda) {
         console.error('oystehrZambda is not defined');
+        return;
+      }
+
+      if (
+        !searchParams.searchBy.value ||
+        (Array.isArray(searchParams.searchBy.value) && searchParams.searchBy.value.length === 0)
+      ) {
+        // search params are not ready yet, that's ok probably
         return;
       }
 
@@ -169,7 +177,7 @@ export const usePatientLabOrders = <SearchBy extends LabOrdersSearchBy>(
   }, [fetchLabOrders, page, memoizedSearchBy]);
 
   const handleDeleteLabOrder = useCallback(
-    async ({ serviceRequestId }: DeleteLabOrderParams): Promise<boolean> => {
+    async ({ serviceRequestId }: DeleteLabOrderZambdaInput): Promise<boolean> => {
       if (!serviceRequestId) {
         console.error('Cannot delete lab order: Missing service request ID');
         setError(new Error('Missing service request ID'));
@@ -186,7 +194,7 @@ export const usePatientLabOrders = <SearchBy extends LabOrdersSearchBy>(
       setError(null);
 
       try {
-        const deleteParams: DeleteLabOrderParams = {
+        const deleteParams: DeleteLabOrderZambdaInput = {
           serviceRequestId,
         };
 

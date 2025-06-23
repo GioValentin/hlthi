@@ -19,14 +19,12 @@ import {
   SavePatientInstructionInput,
   SyncUserResponse,
   getZapEHRApiHelpers,
-  NotFoundApointmentErrorHandler,
+  NotFoundAppointmentErrorHandler,
   GetMedicationOrdersResponse,
   GetMedicationOrdersInput,
   UpdateMedicationOrderInput,
   AssignPractitionerInput,
   AssignPractitionerResponse,
-  UnassignPractitionerInput,
-  UnassignPractitionerResponse,
   SignAppointmentInput,
   SignAppointmentResponse,
   ChangeInPersonVisitStatusInput,
@@ -38,6 +36,8 @@ import {
   SendFaxZambdaInput,
   GetCreateLabOrderResources,
   LabOrderResourcesRes,
+  UnassignPractitionerZambdaInput,
+  UnassignPractitionerZambdaOutput,
 } from 'utils';
 import { GetAppointmentsRequestParams } from '../utils';
 import { GetOystehrTelemedAPIParams } from './types';
@@ -188,7 +188,7 @@ export const getOystehrTelemedAPI = (
   const getTelemedAppointments = async (
     parameters: GetAppointmentsRequestParams
   ): Promise<GetTelemedAppointmentsResponseEhr> => {
-    return await makeZapRequest('get telemed appointments', parameters, NotFoundApointmentErrorHandler);
+    return await makeZapRequest('get telemed appointments', parameters, NotFoundAppointmentErrorHandler);
   };
 
   const initTelemedSession = async (
@@ -221,15 +221,13 @@ export const getOystehrTelemedAPI = (
     return await makeZapRequest('change in person visit status', parameters);
   };
 
-  const assignPractitioner = async (
-    parameters: Omit<AssignPractitionerInput, 'secrets'>
-  ): Promise<AssignPractitionerResponse> => {
+  const assignPractitioner = async (parameters: AssignPractitionerInput): Promise<AssignPractitionerResponse> => {
     return await makeZapRequest('assign practitioner', parameters);
   };
 
   const unassignPractitioner = async (
-    parameters: Omit<UnassignPractitionerInput, 'secrets'>
-  ): Promise<UnassignPractitionerResponse> => {
+    parameters: UnassignPractitionerZambdaInput
+  ): Promise<UnassignPractitionerZambdaOutput> => {
     return await makeZapRequest('unassign practitioner', parameters);
   };
 

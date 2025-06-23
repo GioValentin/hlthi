@@ -16,7 +16,7 @@ import {
 import { DateTime } from 'luxon';
 import { enqueueSnackbar } from 'notistack';
 import { useEffect } from 'react';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation, useQuery, UseQueryResult } from 'react-query';
 import {
   APIError,
   ChartDataFields,
@@ -157,7 +157,6 @@ export const useGetTelemedAppointmentPeriodicRefresh = (
 
 export type VisitResources = Appointment | DocumentReference | Encounter | Location | Patient | QuestionnaireResponse;
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const useGetAppointment = (
   {
     appointmentId,
@@ -165,7 +164,7 @@ export const useGetAppointment = (
     appointmentId: string | undefined;
   },
   onSuccess: (data: VisitResources[]) => void
-) => {
+): UseQueryResult<VisitResources[], unknown> => {
   const { oystehr } = useApiClients();
   const query = useQuery(
     ['telemed-appointment', { appointmentId }],
@@ -674,7 +673,7 @@ export const useSyncERXPatient = ({
         console.log(`Start syncing patient with erx patient ${patient.id}`);
         try {
           await oystehr.erx.syncPatient({ patientId: patient.id! });
-          console.log('Successfuly synced erx patient');
+          console.log('Successfully synced erx patient');
           return;
         } catch (err) {
           console.error('Error during syncing erx patient: ', err);
@@ -709,7 +708,7 @@ export const useConnectPractitionerToERX = ({ patientId }: { patientId?: string 
             params.patientId = patientId;
           }
           const resp = await oystehr.erx.connectPractitioner(params);
-          console.log('Successfuly connected practitioner to erx');
+          console.log('Successfully connected practitioner to erx');
           return resp.ssoLink;
         } catch (err) {
           console.error('Error during connecting practitioner to erx: ', err);
@@ -736,7 +735,7 @@ export const useEnrollPractitionerToERX = ({ onError }: { onError?: (err: any) =
         try {
           const params: ErxEnrollPractitionerParams = { practitionerId };
           await oystehr.erx.enrollPractitioner(params);
-          console.log('Successfuly enrolled practitioner to erx');
+          console.log('Successfully enrolled practitioner to erx');
           return;
         } catch (err: any) {
           if (err && err.code === '4006') {
@@ -773,7 +772,7 @@ export const useCheckPractitionerEnrollment = ({ enabled }: { enabled: boolean }
           const resp = await oystehr.erx.checkPractitionerEnrollment({
             practitionerId: user?.profileResource?.id,
           });
-          console.log('Successfuly checked practitioner enrollment');
+          console.log('Successfully checked practitioner enrollment');
           return resp;
         } catch (err) {
           console.error('Error during checking practitioner enrollment: ', err);

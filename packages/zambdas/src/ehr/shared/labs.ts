@@ -18,9 +18,9 @@ import {
   Specimen,
 } from 'fhir/r4b';
 import {
-  EncounterLabResult,
-  LabOrderResult,
-  LabOrderResultPDFConfig,
+  EncounterExternalLabResult,
+  ExternalLabOrderResult,
+  ExternalLabOrderResultConfig,
   OYSTEHR_LAB_ORDER_PLACER_ID_SYSTEM,
   OYSTEHR_LAB_OI_CODE_SYSTEM,
   LAB_RESULT_DOC_REF_CODING_CODE,
@@ -28,6 +28,14 @@ import {
   getPresignedURL,
   LAB_DR_TYPE_TAG,
   nameLabTest,
+  IN_HOUSE_TEST_CODE_SYSTEM,
+  EncounterInHouseLabResult,
+  LabType,
+  InHouseLabResult,
+  IN_HOUSE_DIAGNOSTIC_REPORT_CATEGORY_CONFIG,
+  LabOrderPDF,
+  LabResultPDF,
+  LAB_ORDER_DOC_REF_CODING_CODE,
 } from 'utils';
 
 export type LabOrderResources = {
@@ -138,7 +146,12 @@ export async function getExternalLabOrderResources(
 
   const diagnosticReportsTemp: DiagnosticReport[] | undefined = serviceRequestTemp?.filter(
     (resourceTemp): resourceTemp is DiagnosticReport =>
-      resourceTemp.resourceType === 'DiagnosticReport' && isLabsDiagnosticReport(resourceTemp)
+      resourceTemp.resourceType === 'DiagnosticReport' &&
+      diagnosticReportIncludesCategory(
+        resourceTemp,
+        OYSTEHR_LAB_DIAGNOSTIC_REPORT_CATEGORY.system,
+        OYSTEHR_LAB_DIAGNOSTIC_REPORT_CATEGORY.code
+      )
   );
 
   const appointmentsTemp: Appointment[] | undefined = serviceRequestTemp?.filter(
@@ -242,13 +255,17 @@ export const getPrimaryInsurance = (account: Account, coverages: Coverage[]): Co
   return;
 };
 
-export const makeEncounterLabResult = async (
+export const makeEncounterLabResults = async (
   resources: FhirResource[],
   m2mtoken: string
-): Promise<EncounterLabResult> => {
+): Promise<{
+  externalLabResultConfig: EncounterExternalLabResult;
+  inHouseLabResultConfig: EncounterInHouseLabResult;
+}> => {
   const documentReferences: DocumentReference[] = [];
-  const activeServiceRequests: ServiceRequest[] = [];
-  const serviceRequestMap: Record<string, ServiceRequest> = {};
+  const activeExternalLabServiceRequests: ServiceRequest[] = [];
+  const activeInHouseLabServiceRequests: ServiceRequest[] = [];
+  const serviceRequestMap: Record<string, { resource: ServiceRequest; type: LabType }> = {};
   const diagnosticReportMap: Record<string, DiagnosticReport> = {};
 
   resources.forEach((resource) => {
@@ -257,22 +274,39 @@ export const makeEncounterLabResult = async (
       if (isLabsDocRef) documentReferences.push(resource as DocumentReference);
     }
     if (resource.resourceType === 'ServiceRequest') {
-      const isLabServiceRequest = !!resource.code?.coding?.find((c) => c.system === OYSTEHR_LAB_OI_CODE_SYSTEM);
-      if (isLabServiceRequest) {
-        serviceRequestMap[`ServiceRequest/${resource.id}`] = resource as ServiceRequest;
-        if (resource.status === 'active') activeServiceRequests.push(resource);
+      const isExternalLabServiceRequest = !!resource.code?.coding?.find((c) => c.system === OYSTEHR_LAB_OI_CODE_SYSTEM);
+      const isInHouseLabServiceRequest = !!resource.code?.coding?.find((c) => c.system === IN_HOUSE_TEST_CODE_SYSTEM);
+      if (isExternalLabServiceRequest || isInHouseLabServiceRequest) {
+        serviceRequestMap[`ServiceRequest/${resource.id}`] = {
+          resource: resource as ServiceRequest,
+          type: isExternalLabServiceRequest ? LabType.external : LabType.inhouse,
+        };
+        if (resource.status === 'active') {
+          if (isExternalLabServiceRequest) activeExternalLabServiceRequests.push(resource);
+          if (isInHouseLabServiceRequest) activeInHouseLabServiceRequests.push(resource);
+        }
       }
     }
     if (resource.resourceType === 'DiagnosticReport') {
-      const isLabsDR = isLabsDiagnosticReport(resource);
-      if (isLabsDR) {
+      const isExternalLabsDR = diagnosticReportIncludesCategory(
+        resource,
+        OYSTEHR_LAB_DIAGNOSTIC_REPORT_CATEGORY.system,
+        OYSTEHR_LAB_DIAGNOSTIC_REPORT_CATEGORY.code
+      );
+      const isInHouseLabsDR = diagnosticReportIncludesCategory(
+        resource,
+        IN_HOUSE_DIAGNOSTIC_REPORT_CATEGORY_CONFIG.system,
+        IN_HOUSE_DIAGNOSTIC_REPORT_CATEGORY_CONFIG.code
+      );
+      if (isExternalLabsDR || isInHouseLabsDR) {
         diagnosticReportMap[`DiagnosticReport/${resource.id}`] = resource as DiagnosticReport;
       }
     }
   });
 
-  const labOrderResults: LabOrderResult[] = [];
-  const reflexOrderResults: LabOrderResultPDFConfig[] = [];
+  const externalLabOrderResults: ExternalLabOrderResult[] = [];
+  const inHouseLabOrderResults: InHouseLabResult[] = [];
+  const reflexOrderResults: ExternalLabOrderResultConfig[] = [];
 
   for (const docRef of documentReferences) {
     const diagnosticReportRef = docRef.context?.related?.find(
@@ -280,30 +314,46 @@ export const makeEncounterLabResult = async (
     )?.reference;
     if (diagnosticReportRef) {
       const relatedDR: DiagnosticReport | undefined = diagnosticReportMap[diagnosticReportRef];
-      const isReflex = relatedDR?.meta?.tag?.find(
-        (t) => t.system === LAB_DR_TYPE_TAG.system && t.display === LAB_DR_TYPE_TAG.display.reflex
-      );
       const serviceRequestRef = relatedDR?.basedOn?.find((based) => based.reference?.startsWith('ServiceRequest'))
         ?.reference;
       if (serviceRequestRef) {
-        const relatedSR = serviceRequestMap[serviceRequestRef];
-        const orderNumber = relatedSR.identifier?.find((id) => id.system === OYSTEHR_LAB_ORDER_PLACER_ID_SYSTEM)?.value;
-        const activityDef = relatedSR.contained?.find(
-          (resource) => resource.resourceType === 'ActivityDefinition'
-        ) as ActivityDefinition;
-        const testName = activityDef?.code?.coding?.find((c) => c.system === OYSTEHR_LAB_OI_CODE_SYSTEM)?.display;
-        const labName = activityDef?.publisher;
-        let formattedName = nameLabTest(testName, labName, false);
-        if (isReflex) {
-          const reflexTestName = relatedDR?.code.coding?.[0].display || 'Name missing';
-          formattedName = nameLabTest(reflexTestName, labName, true);
-        }
+        const relatedSRDetail = serviceRequestMap[serviceRequestRef];
+        if (relatedSRDetail.type === LabType.external) {
+          const sr = relatedSRDetail.resource;
+          const isReflex = relatedDR?.meta?.tag?.find(
+            (t) => t.system === LAB_DR_TYPE_TAG.system && t.display === LAB_DR_TYPE_TAG.display.reflex
+          );
+          const orderNumber = sr.identifier?.find((id) => id.system === OYSTEHR_LAB_ORDER_PLACER_ID_SYSTEM)?.value;
+          const activityDef = sr.contained?.find(
+            (resource) => resource.resourceType === 'ActivityDefinition'
+          ) as ActivityDefinition;
+          const testName = activityDef?.code?.coding?.find((c) => c.system === OYSTEHR_LAB_OI_CODE_SYSTEM)?.display;
+          const labName = activityDef?.publisher;
+          let formattedName = nameLabTest(testName, labName, false);
+          if (isReflex) {
+            const reflexTestName = relatedDR?.code.coding?.[0].display || 'Name missing';
+            formattedName = nameLabTest(reflexTestName, labName, true);
+          }
 
-        const resultsConfigs = await getLabOrderResultPDFConfig(docRef, formattedName, m2mtoken, orderNumber);
-        if (isReflex) {
-          reflexOrderResults.push(...resultsConfigs);
-        } else {
-          labOrderResults.push(...resultsConfigs);
+          const { externalResultConfigs } = await getLabOrderResultPDFConfig(docRef, formattedName, m2mtoken, {
+            type: LabType.external,
+            orderNumber,
+          });
+          if (isReflex) {
+            reflexOrderResults.push(...externalResultConfigs);
+          } else {
+            externalLabOrderResults.push(...externalResultConfigs);
+          }
+        } else if (relatedSRDetail.type === LabType.inhouse) {
+          const sr = relatedSRDetail.resource;
+          const testName = sr.code?.text;
+          const { inHouseResultConfigs } = await getLabOrderResultPDFConfig(
+            docRef,
+            testName || 'missing test details',
+            m2mtoken,
+            { type: LabType.inhouse }
+          );
+          inHouseLabOrderResults.push(...inHouseResultConfigs);
         }
       } else {
         // todo what to do here for unsolicited results
@@ -311,22 +361,19 @@ export const makeEncounterLabResult = async (
         console.log('no serviceRequestRef for', docRef.id);
       }
     } else {
-      console.log('no diagnosticReportRef for', docRef.id);
       // something has gone awry during the document reference creation if there is no diagnostic report linked
       // so this shouldnt happen but if it does we will still surface the report
-      const formattedName = 'Lab order result pdf - missing details';
-      const resultsConfigs = await getLabOrderResultPDFConfig(docRef, formattedName, m2mtoken);
-      labOrderResults.push(...resultsConfigs);
+      console.log('no diagnosticReportRef for', docRef.id);
     }
   }
 
   // map reflex tests to their original ordered test
   reflexOrderResults.forEach((reflexRes) => {
-    const ogOrderResIdx = labOrderResults.findIndex(
+    const ogOrderResIdx = externalLabOrderResults.findIndex(
       (res) => res?.orderNumber && res.orderNumber === reflexRes.orderNumber
     );
     if (ogOrderResIdx !== -1) {
-      const ogOrderRes = labOrderResults[ogOrderResIdx];
+      const ogOrderRes = externalLabOrderResults[ogOrderResIdx];
       if (!ogOrderRes.reflexResults) {
         ogOrderRes.reflexResults = [reflexRes];
       } else {
@@ -335,36 +382,60 @@ export const makeEncounterLabResult = async (
     }
   });
 
-  const resultsPending = activeServiceRequests.length > 0;
+  const externalResultsPending = activeExternalLabServiceRequests.length > 0;
+  const inHouseResultsPending = activeInHouseLabServiceRequests.length > 0;
 
-  const result: EncounterLabResult = {
-    resultsPending,
-    labOrderResults,
+  const externalLabResultConfig: EncounterExternalLabResult = {
+    resultsPending: externalResultsPending,
+    labOrderResults: externalLabOrderResults,
   };
-  return result;
+
+  const inHouseLabResultConfig: EncounterInHouseLabResult = {
+    resultsPending: inHouseResultsPending,
+    labOrderResults: inHouseLabOrderResults,
+  };
+  return { externalLabResultConfig, inHouseLabResultConfig };
 };
 
 const getLabOrderResultPDFConfig = async (
   docRef: DocumentReference,
   formattedName: string,
   m2mtoken: string,
-  orderNumber?: string
-): Promise<LabOrderResultPDFConfig[]> => {
-  const results: LabOrderResultPDFConfig[] = [];
+  resultDetails:
+    | {
+        type: LabType.external;
+        orderNumber?: string;
+      }
+    | {
+        type: LabType.inhouse;
+        simpleResultValue?: string; // todo not implemented, displaying this is a post mvp feature
+      }
+): Promise<{ externalResultConfigs: ExternalLabOrderResultConfig[]; inHouseResultConfigs: InHouseLabResult[] }> => {
+  const externalResults: ExternalLabOrderResultConfig[] = [];
+  const inHouseResults: InHouseLabResult[] = [];
   for (const content of docRef.content) {
     const z3Url = content.attachment.url;
     if (z3Url) {
       const url = await getPresignedURL(z3Url, m2mtoken);
-      const labResult: LabOrderResultPDFConfig = {
-        name: formattedName,
-        url,
-        orderNumber,
-      };
-      results.push(labResult);
+      if (resultDetails.type === LabType.external) {
+        const labResult: ExternalLabOrderResultConfig = {
+          name: formattedName,
+          url,
+          orderNumber: resultDetails?.orderNumber,
+        };
+        externalResults.push(labResult);
+      } else if (resultDetails.type === LabType.inhouse) {
+        const labResult: InHouseLabResult = {
+          name: formattedName,
+          url,
+          simpleResultValue: resultDetails?.simpleResultValue,
+        };
+        inHouseResults.push(labResult);
+      }
     }
   }
 
-  return results;
+  return { externalResultConfigs: externalResults, inHouseResultConfigs: inHouseResults };
 };
 
 export const configLabRequestsForGetChartData = (encounterId: string): BatchInputGetRequest[] => {
@@ -378,18 +449,82 @@ export const configLabRequestsForGetChartData = (encounterId: string): BatchInpu
   // but we validate against actually signing the progress note if there are any pending
   const activeLabServiceRequestSearch: BatchInputGetRequest = {
     method: 'GET',
-    url: `/ServiceRequest?encounter=Encounter/${encounterId}&status=active&code=${OYSTEHR_LAB_OI_CODE_SYSTEM}|`,
+    url: `/ServiceRequest?encounter=Encounter/${encounterId}&status=active&code=${OYSTEHR_LAB_OI_CODE_SYSTEM}|,${IN_HOUSE_TEST_CODE_SYSTEM}|`,
   };
   return [docRefSearch, activeLabServiceRequestSearch];
 };
 
-const isLabsDiagnosticReport = (diagnosicReport: DiagnosticReport): boolean => {
-  return !!diagnosicReport.category?.find(
-    (cat) =>
-      cat?.coding?.find(
-        (c) =>
-          c.system === OYSTEHR_LAB_DIAGNOSTIC_REPORT_CATEGORY.system &&
-          c.code === OYSTEHR_LAB_DIAGNOSTIC_REPORT_CATEGORY.code
-      )
-  );
+const diagnosticReportIncludesCategory = (diagnosicReport: DiagnosticReport, system: string, code: string): boolean => {
+  return !!diagnosicReport.category?.find((cat) => cat?.coding?.find((c) => c.system === system && c.code === code));
+};
+
+const getDocRefRelatedId = (
+  docRef: DocumentReference,
+  relatedResourceType: FhirResource['resourceType']
+): string | undefined => {
+  const reference = docRef.context?.related?.find((rel) => rel.reference?.startsWith(`${relatedResourceType}/`))
+    ?.reference;
+  return reference?.split('/')[1];
+};
+
+type fetchLabOrderPDFRes = { resultPDFs: LabResultPDF[]; orderPDF: LabOrderPDF | undefined };
+export const fetchLabOrderPDFsPresignedUrls = async (
+  documentReferences: DocumentReference[],
+  m2mtoken: string
+): Promise<fetchLabOrderPDFRes | undefined> => {
+  if (!documentReferences.length) {
+    return;
+  }
+  const pdfPromises: Promise<LabResultPDF | LabOrderPDF | null>[] = [];
+
+  for (const docRef of documentReferences) {
+    const diagnosticReportId = getDocRefRelatedId(docRef, 'DiagnosticReport');
+    const serviceRequestId = getDocRefRelatedId(docRef, 'ServiceRequest');
+    const isLabOrderDoc = docRef.type?.coding?.find(
+      (code) => code.system === LAB_ORDER_DOC_REF_CODING_CODE.system && code.code === LAB_ORDER_DOC_REF_CODING_CODE.code
+    );
+    const docRefId = docRef.id;
+
+    for (const content of docRef.content) {
+      const z3Url = content.attachment?.url;
+      if (z3Url) {
+        pdfPromises.push(
+          getPresignedURL(z3Url, m2mtoken)
+            .then((presignedURL) => {
+              if (diagnosticReportId) {
+                return { presignedURL, diagnosticReportId } as LabResultPDF;
+              } else if (serviceRequestId && isLabOrderDoc) {
+                return { presignedURL, serviceRequestId, docRefId } as LabOrderPDF;
+              }
+              return null;
+            })
+            .catch((error) => {
+              console.error(`Failed to get presigned URL for document ${docRef.id}:`, error);
+              return null;
+            })
+        );
+      }
+    }
+  }
+
+  const pdfs = await Promise.allSettled(pdfPromises);
+
+  const { resultPDFs, orderPDF } = pdfs
+    .filter(
+      (result): result is PromiseFulfilledResult<LabResultPDF | LabOrderPDF> =>
+        result.status === 'fulfilled' && result.value !== null
+    )
+    .reduce(
+      (acc: fetchLabOrderPDFRes, result) => {
+        if ('diagnosticReportId' in result.value) {
+          acc.resultPDFs.push(result.value);
+        } else if ('serviceRequestId' in result.value) {
+          acc.orderPDF = result.value;
+        }
+        return acc;
+      },
+      { resultPDFs: [], orderPDF: undefined }
+    );
+
+  return { resultPDFs, orderPDF };
 };
