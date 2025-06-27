@@ -1,4 +1,4 @@
-import Oystehr, { User } from '@oystehr/sdk';
+import Oystehr, { FhirPatchParams, User } from '@oystehr/sdk';
 import { wrapHandler } from '@sentry/aws-serverless';
 import { APIGatewayProxyResult } from 'aws-lambda';
 import { Appointment, ContactPoint, Encounter, Patient, RelatedPerson } from 'fhir/r4b';
@@ -149,7 +149,8 @@ export const index = wrapHandler(async (input: ZambdaInput): Promise<APIGatewayP
         const message = `You have been invited to join a telemedicine visit with ${patientChosenName}. Please click ${inviteUrl} to join.`;
         console.log(`Sms data: recipient: ${relatedPersonRef}; verifiedPhoneNumber: ${phone};`);
 
-        await sendSms(message, relatedPersonRef, oystehr);
+        const ENVIRONMENT = getSecret(SecretsKeys.ENVIRONMENT, secrets);
+        await sendSms(message, relatedPersonRef, oystehr, ENVIRONMENT);
       }
     }
 
@@ -240,7 +241,7 @@ async function addParticipantToEncounterIfNeeded(
         },
       });
 
-      const patch = {
+      const patch: FhirPatchParams<Encounter> = {
         resourceType: 'Encounter',
         id: encounter.id ?? '',
         operations: [

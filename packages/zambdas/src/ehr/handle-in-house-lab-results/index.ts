@@ -1,59 +1,62 @@
-import { APIGatewayProxyResult } from 'aws-lambda';
 import Oystehr, { BatchInputPatchRequest, BatchInputPostRequest, BatchInputRequest } from '@oystehr/sdk';
+import { APIGatewayProxyResult } from 'aws-lambda';
+import { randomUUID } from 'crypto';
+import { Operation } from 'fast-json-patch';
 import {
-  ZambdaInput,
-  topLevelCatch,
+  ActivityDefinition,
+  CodeableConcept,
+  DiagnosticReport,
+  Encounter,
+  FhirResource,
+  Location,
+  Observation,
+  ObservationDefinition,
+  Patient,
+  Practitioner,
+  Provenance,
+  Quantity,
+  Reference,
+  Schedule,
+  ServiceRequest,
+  Specimen,
+  Task,
+  ValueSet,
+} from 'fhir/r4b';
+import { DateTime } from 'luxon';
+import {
+  ABNORMAL_OBSERVATION_INTERPRETATION,
+  extractAbnormalValueSetValues,
+  extractQuantityRange,
+  getFullestAvailableName,
+  getSecret,
+  HandleInHouseLabResultsZambdaOutput,
+  IN_HOUSE_DIAGNOSTIC_REPORT_CATEGORY_CONFIG,
+  IN_HOUSE_LAB_OD_NULL_OPTION_CONFIG,
+  IN_HOUSE_LAB_TASK,
+  IN_HOUSE_OBS_DEF_ID_SYSTEM,
+  INDETERMINATE_OBSERVATION_INTERPRETATION,
+  LabComponentValueSetConfig,
+  NORMAL_OBSERVATION_INTERPRETATION,
+  PROVENANCE_ACTIVITY_CODING_ENTITY,
+  ResultEntryInput,
+  SecretsKeys,
+} from 'utils';
+import {
   checkOrCreateM2MClientToken,
   createOystehrClient,
   getMyPractitionerId,
+  topLevelCatch,
+  ZambdaInput,
 } from '../../shared';
-import { validateRequestParameters } from './validateRequestParameters';
-import {
-  IN_HOUSE_LAB_TASK,
-  ResultEntryInput,
-  extractQuantityRange,
-  ABNORMAL_OBSERVATION_INTERPRETATION,
-  NORMAL_OBSERVATION_INTERPRETATION,
-  INDETERMINATE_OBSERVATION_INTERPRETATION,
-  extractAbnormalValueSetValues,
-  IN_HOUSE_DIAGNOSTIC_REPORT_CATEGORY_CONFIG,
-  IN_HOUSE_LAB_OD_NULL_OPTION_CONFIG,
-  PROVENANCE_ACTIVITY_CODING_ENTITY,
-  IN_HOUSE_OBS_DEF_ID_SYSTEM,
-  getFullestAvailableName,
-  LabComponentValueSetConfig,
-  HandleInHouseLabResultsZambdaOutput,
-} from 'utils';
-import {
-  ServiceRequest,
-  Task,
-  Specimen,
-  DiagnosticReport,
-  Observation,
-  ActivityDefinition,
-  Reference,
-  ObservationDefinition,
-  Quantity,
-  CodeableConcept,
-  FhirResource,
-  Provenance,
-  ValueSet,
-  Encounter,
-  Practitioner,
-  Patient,
-  Location,
-} from 'fhir/r4b';
-import { randomUUID } from 'crypto';
-import { DateTime } from 'luxon';
-import { Operation } from 'fast-json-patch';
+import { createInHouseLabResultPDF } from '../../shared/pdf/labs-results-form-pdf';
 import {
   getAttendingPractionerId,
-  getUrlAndVersionForADFromServiceRequest,
   getServiceRequestsRelatedViaRepeat,
+  getUrlAndVersionForADFromServiceRequest,
 } from '../shared/inhouse-labs';
-import { createInHouseLabResultPDF } from '../../shared/pdf/labs-results-form-pdf';
+import { validateRequestParameters } from './validateRequestParameters';
 
-let m2mtoken: string;
+let m2mToken: string;
 
 export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> => {
   try {
@@ -63,10 +66,10 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     console.log('validateRequestParameters success');
 
     console.log('Getting token');
-    m2mtoken = await checkOrCreateM2MClientToken(m2mtoken, secrets);
-    console.log('token', m2mtoken);
+    m2mToken = await checkOrCreateM2MClientToken(m2mToken, secrets);
+    console.log('token', m2mToken);
 
-    const oystehr = createOystehrClient(m2mtoken, secrets);
+    const oystehr = createOystehrClient(m2mToken, secrets);
     const oystehrCurrentUser = createOystehrClient(userToken, secrets);
     const curUserPractitionerId = await getMyPractitionerId(oystehrCurrentUser);
 
@@ -79,6 +82,7 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
       activityDefinition,
       currentUserPractitioner,
       attendingPractitioner,
+      schedule,
       location,
       serviceRequestsRelatedViaRepeat,
     } = await getInHouseLabResultResources(serviceRequestId, curUserPractitionerId, oystehr);
@@ -137,13 +141,14 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
         encounter,
         patient,
         location,
+        schedule,
         attendingPractitioner,
         attendingPractitionerName,
         updatedInputResultTask,
         observations,
         diagnosticReport,
         secrets,
-        m2mtoken,
+        m2mToken,
         activityDefinition,
         serviceRequestsRelatedViaRepeat,
         specimen
@@ -161,7 +166,8 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     };
   } catch (error: any) {
     console.error('Error handling in-house lab results:', error);
-    await topLevelCatch('handle-in-house-lab-results', error, input.secrets);
+    const ENVIRONMENT = getSecret(SecretsKeys.ENVIRONMENT, input.secrets);
+    await topLevelCatch('handle-in-house-lab-results', error, ENVIRONMENT);
     return {
       statusCode: 500,
       body: JSON.stringify({
@@ -186,10 +192,11 @@ const getInHouseLabResultResources = async (
   currentUserPractitioner: Practitioner;
   attendingPractitioner: Practitioner;
   location: Location | undefined;
+  schedule: Schedule;
   serviceRequestsRelatedViaRepeat: ServiceRequest[] | undefined;
 }> => {
   const labOrderResources = (
-    await oystehr.fhir.search<ServiceRequest | Patient | Encounter | Specimen | Task | Location>({
+    await oystehr.fhir.search<ServiceRequest | Patient | Encounter | Specimen | Task | Schedule | Location>({
       resourceType: 'ServiceRequest',
       params: [
         {
@@ -217,6 +224,18 @@ const getInHouseLabResultResources = async (
           value: 'Task:based-on',
         },
         { name: '_include:iterate', value: 'Encounter:location' },
+        {
+          name: '_include:iterate',
+          value: 'Encounter:appointment',
+        },
+        {
+          name: '_include:iterate',
+          value: 'Appointment:slot',
+        },
+        {
+          name: '_include:iterate',
+          value: 'Slot:schedule',
+        },
         // Include any related repeat test SRs
         {
           name: '_include:iterate',
@@ -237,6 +256,7 @@ const getInHouseLabResultResources = async (
   const inputRequestTasks: Task[] = []; // IRT tasks
   const specimens: Specimen[] = [];
   const encounters: Encounter[] = [];
+  const schedules: Schedule[] = [];
   const locations: Location[] = [];
 
   labOrderResources.forEach((resource) => {
@@ -244,6 +264,7 @@ const getInHouseLabResultResources = async (
     if (resource.resourceType === 'Patient') patients.push(resource);
     if (resource.resourceType === 'Specimen') specimens.push(resource);
     if (resource.resourceType === 'Encounter') encounters.push(resource);
+    if (resource.resourceType === 'Schedule') schedules.push(resource);
     if (resource.resourceType === 'Location') locations.push(resource);
     if (
       resource.resourceType === 'Task' &&
@@ -274,6 +295,7 @@ const getInHouseLabResultResources = async (
 
   const encounter = encounters[0];
   const attendingPractitionerId = getAttendingPractionerId(encounter);
+  const schedule = schedules[0];
   const location = locations.length ? locations[0] : undefined;
 
   const { url: adUrl, version } = getUrlAndVersionForADFromServiceRequest(serviceRequest);
@@ -315,6 +337,7 @@ const getInHouseLabResultResources = async (
     currentUserPractitioner,
     attendingPractitioner,
     location,
+    schedule,
     serviceRequestsRelatedViaRepeat,
   };
 };

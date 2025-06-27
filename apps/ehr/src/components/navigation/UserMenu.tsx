@@ -13,9 +13,9 @@ import {
 import { FC, MouseEvent, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getFullestAvailableName, PROJECT_NAME, RoleType } from 'utils';
+import { dataTestIds } from '../../constants/data-test-ids';
 import { ProviderNotifications } from '../../features';
 import useEvolveUser from '../../hooks/useEvolveUser';
-import { dataTestIds } from '../../constants/data-test-ids';
 import { Practitioner } from 'fhir/r4b';
 import { useApiClients } from '../../hooks/useAppClients';
 import { getPractitionerAccounting } from '../../api/api';
