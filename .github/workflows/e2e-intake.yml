@@ -10,7 +10,6 @@ env:
   PLAYWRIGHT_CACHE_PATH: ~/.cache/ms-playwright
   USER_JSON_PATH: apps/intake/playwright/user.json
 
-
 on:
   workflow_dispatch:
     inputs:
@@ -28,18 +27,33 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches: [main, develop, 'release/**']
-    paths:
-      - 'apps/intake/**'
-      - 'packages/zambdas/**'
-      - 'packages/utils/**'
-      - 'packages/ui-components/**'
-      - '.github/**'
-      - '.prettierignore'
-      - 'package.json'
 
 jobs:
+  check-changes:
+    if: github.event.pull_request.draft == false || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      should-run: ${{ steps.check.outputs.should-run }}
+      skip-reason: ${{ steps.check.outputs.skip-reason }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Need at least 2 commits to compare
+
+      - name: Check if Intake changes are relevant
+        id: check
+        run: |
+          TRACKED_FILES=$(node -e "
+            const config = require('./.github/trigger-paths.js');
+            console.log(config.getE2EPaths('intake').join(' '));
+          ")
+          node .github/check-changed-files.js $TRACKED_FILES
+
   check-token-validity:
-    if: (github.event.pull_request.draft == false || github.event_name == 'workflow_dispatch')
+    needs: check-changes
+    if: needs.check-changes.outputs.should-run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 2
     outputs:
@@ -47,7 +61,7 @@ jobs:
     steps:
       - name: Try restore user.json cache
         id: cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: ${{ env.USER_JSON_PATH }}
           key: ${{ env.USER_JSON_CACHE_KEY }}
@@ -129,8 +143,8 @@ jobs:
           echo "needs-login=$NEEDS_LOGIN" >> $GITHUB_OUTPUT
 
   intake-login:
-    needs: check-token-validity
-    if: needs.check-token-validity.outputs.needs-login == 'true'
+    needs: [check-changes, check-token-validity]
+    if: needs.check-changes.outputs.should-run == 'true' && needs.check-token-validity.outputs.needs-login == 'true'
     concurrency: # to prevent parallel login jobs; we can optimize it and eliminate user.json related steps when we have email login
       group: intake-login
       cancel-in-progress: false
@@ -165,7 +179,7 @@ jobs:
 
       - name: Try restore user.json cache
         id: cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: ${{ env.USER_JSON_PATH }}
           key: ${{ env.USER_JSON_CACHE_KEY }}
@@ -240,6 +254,47 @@ jobs:
           path: ${{ env.USER_JSON_PATH }}
           key: ${{ env.USER_JSON_CACHE_KEY }}
 
+      - name: Encrypt user.json for main branch
+        if: steps.validate.outcome == 'success' && github.ref != 'refs/heads/main'
+        id: encrypt
+        continue-on-error: true
+        run: |
+          if [ -z "${{ secrets.DEPLOY_OTTEHR_KEY }}" ]; then
+            echo "ERROR: DEPLOY_OTTEHR_KEY secret is empty or missing"
+            exit 1
+          fi
+          
+          if openssl enc -aes-256-cbc -a -salt \
+              -pass pass:"${{ secrets.DEPLOY_OTTEHR_KEY }}" \
+              -in ${{ env.USER_JSON_PATH }} \
+              -out user.json.enc; then
+            echo "File encrypted successfully"
+          else
+            echo "ERROR: Failed to encrypt user.json"
+            exit 1
+          fi
+          
+          # Convert to hex to avoid JSON escaping issues
+          ENCRYPTED_HEX=$(xxd -p user.json.enc | tr -d '\n')
+          echo "encrypted_content<<EOF" >> $GITHUB_OUTPUT
+          echo "$ENCRYPTED_HEX" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          rm -f user.json.enc
+
+      - name: Send to main branch for caching
+        if: steps.encrypt.outcome == 'success'
+        continue-on-error: true
+        uses: peter-evans/repository-dispatch@ff45666b9427631e3450c54a1bcbee4d9ff4d7c0  # v3.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: cache-user-json-to-main
+          client-payload: |
+            {
+              "encrypted_content": "${{ steps.encrypt.outputs.encrypted_content }}",
+              "cache_key": "${{ env.USER_JSON_CACHE_KEY }}"
+            }    
+
       - name: Upload login test results
         if: steps.login.outcome == 'success' || steps.login.outcome == 'failure' # log on success needed for investigate false success caces, we can remove it if login will work stable
         uses: actions/upload-artifact@v4
@@ -250,11 +305,11 @@ jobs:
             apps/intake/test-results-login/
           retention-days: ${{ fromJson(env.TEST_RESULTS_CACHE_RETENTION_DAYS) }}      
 
-  intake-e2e-tests:
-    needs: [check-token-validity, intake-login]
+  intake-e2e-tests-run:
+    needs: [check-changes, check-token-validity, intake-login]
     if: |
       always() && !cancelled() && 
-      (github.event.pull_request.draft == false || github.event_name == 'workflow_dispatch') &&
+      needs.check-changes.outputs.should-run == 'true' &&
       (
         needs.check-token-validity.outputs.needs-login == 'false' ||
         needs.intake-login.result == 'success'
@@ -295,7 +350,7 @@ jobs:
         run: npx playwright install chromium
 
       - name: Restore user.json cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: ${{ env.USER_JSON_PATH }}
           key: ${{ env.USER_JSON_CACHE_KEY }}
@@ -342,3 +397,28 @@ jobs:
             apps/intake/playwright-report/
             apps/intake/test-results/
           retention-days: ${{ fromJson(env.TEST_RESULTS_CACHE_RETENTION_DAYS) }}
+
+  # This job always runs and satisfies branch protection rules
+  intake-e2e-tests:
+    needs: [check-changes, check-token-validity, intake-login, intake-e2e-tests-run]
+    if: always() && !cancelled()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Report status
+        run: |
+          if [ "${{ needs.check-changes.outputs.should-run }}" == "false" ]; then
+            echo "Intake E2E tests skipped: ${{ needs.check-changes.outputs.skip-reason }}"
+            exit 0
+          elif [ "${{ needs.intake-e2e-tests-run.result }}" == "success" ]; then
+            echo "Intake E2E tests passed"
+            exit 0
+          elif [ "${{ needs.intake-e2e-tests-run.result }}" == "failure" ]; then
+            echo "Intake E2E tests failed"
+            exit 1
+          elif [ "${{ needs.intake-e2e-tests-run.result }}" == "cancelled" ]; then
+            echo "Intake E2E tests cancelled"
+            exit 1
+          else
+            echo "Intake E2E tests status unknown: ${{ needs.intake-e2e-tests-run.result }}"
+            exit 1
+          fi

@@ -2,55 +2,58 @@ import Oystehr, { SearchParam } from '@oystehr/sdk';
 import {
   ActivityDefinition,
   Appointment,
+  Bundle,
   BundleEntry,
   DiagnosticReport,
-  Encounter,
-  Observation,
-  Resource,
-  Practitioner,
-  ServiceRequest,
-  Task,
-  Reference,
-  Provenance,
-  Organization,
-  QuestionnaireResponse,
-  Questionnaire,
-  QuestionnaireResponseItem,
-  Location,
-  Specimen,
-  Bundle,
   DocumentReference,
+  Encounter,
+  Location,
+  Observation,
+  Organization,
+  Practitioner,
+  Provenance,
+  Questionnaire,
+  QuestionnaireResponse,
+  QuestionnaireResponseItem,
+  Reference,
+  Resource,
+  ServiceRequest,
+  Specimen,
+  Task,
 } from 'fhir/r4b';
 import {
   compareDates,
   DEFAULT_LABS_ITEMS_PER_PAGE,
+  DiagnosisDTO,
   EMPTY_PAGINATION,
+  ExternalLabsStatus,
+  getFullestAvailableName,
+  getTimezone,
   isPositiveNumberOrZero,
   LAB_ACCOUNT_NUMBER_SYSTEM,
+  LAB_ORDER_TASK,
   LabOrderDetailedPageDTO,
+  LabOrderDTO,
   LabOrderHistoryRow,
   LabOrderListPageDTO,
+  LabOrderPDF,
   LabOrderResultDetails,
   LabOrdersSearchBy,
+  LabResultPDF,
   OYSTEHR_LAB_OI_CODE_SYSTEM,
   Pagination,
-  QuestionnaireData,
+  PatientLabItem,
   PROVENANCE_ACTIVITY_CODES,
   PROVENANCE_ACTIVITY_TYPE_SYSTEM,
-  getTimezone,
+  PSC_HOLD_CONFIG,
+  QuestionnaireData,
+  RELATED_SPECIMEN_DEFINITION_SYSTEM,
   sampleDTO,
   SPECIMEN_CODING_CONFIG,
-  RELATED_SPECIMEN_DEFINITION_SYSTEM,
-  LabResultPDF,
-  LabOrderPDF,
-  Secrets,
-  PatientLabItem,
 } from 'utils';
-import { GetZambdaLabOrdersParams } from './validateRequestParameters';
-import { DiagnosisDTO, LabOrderDTO, ExternalLabsStatus, LAB_ORDER_TASK, PSC_HOLD_CONFIG } from 'utils';
-import { captureSentryException } from '../../shared';
 import { sendErrors } from '../../shared';
-import { fetchLabOrderPDFsPresignedUrls } from '../shared/labs';
+import { fetchLabOrderPDFsPresignedUrls, parseAppointmentIdForServiceRequest } from '../shared/labs';
+import { GetZambdaLabOrdersParams } from './validateRequestParameters';
 
 // cache for the service request context: contains parsed tasks and results
 type Cache = {
@@ -73,7 +76,7 @@ export const mapResourcesToLabOrderDTOs = <SearchBy extends LabOrdersSearchBy>(
   resultPDFs: LabResultPDF[],
   orderPDF: LabOrderPDF | undefined,
   specimens: Specimen[],
-  secrets: Secrets | null
+  ENVIRONMENT: string
 ): LabOrderDTO<SearchBy>[] => {
   console.log('mapResourcesToLabOrderDTOs');
   const result: LabOrderDTO<SearchBy>[] = [];
@@ -110,7 +113,7 @@ export const mapResourcesToLabOrderDTOs = <SearchBy extends LabOrdersSearchBy>(
       );
     } catch (error) {
       console.error(`Error parsing service request ${serviceRequest.id}:`, error);
-      void sendErrors('get-lab-orders', error, secrets, captureSentryException);
+      void sendErrors(error, ENVIRONMENT);
     }
   }
   return result;
@@ -154,7 +157,7 @@ export const parseOrderData = <SearchBy extends LabOrdersSearchBy>({
     throw new Error('ServiceRequest ID is required');
   }
 
-  const appointmentId = parseAppointmentId(serviceRequest, encounters);
+  const appointmentId = parseAppointmentIdForServiceRequest(serviceRequest, encounters) || '';
   const appointment = appointments.find((a) => a.id === appointmentId);
   const { testItem, fillerLab } = parseLabInfo(serviceRequest);
   const orderStatus = parseLabOrderStatus(serviceRequest, tasks, results, cache);
@@ -385,7 +388,7 @@ export const parseResults = (
 export const getLabResources = async (
   oystehr: Oystehr,
   params: GetZambdaLabOrdersParams,
-  m2mtoken: string,
+  m2mToken: string,
   searchBy: LabOrdersSearchBy
 ): Promise<{
   serviceRequests: ServiceRequest[];
@@ -471,7 +474,7 @@ export const getLabResources = async (
       fetchAppointmentsForServiceRequests(oystehr, serviceRequests, encounters),
       fetchFinalAndPrelimAndCorrectedTasks(oystehr, diagnosticReports),
       executeByCondition(isDetailPageRequest, () =>
-        fetchQuestionnaireForServiceRequests(m2mtoken, serviceRequests, questionnaireResponses)
+        fetchQuestionnaireForServiceRequests(m2mToken, serviceRequests, questionnaireResponses)
       ),
     ]);
 
@@ -480,7 +483,7 @@ export const getLabResources = async (
   let resultPDFs: LabResultPDF[] = [];
   let orderPDF: LabOrderPDF | undefined;
   if (isDetailPageRequest) {
-    const pdfs = await fetchLabOrderPDFsPresignedUrls(documentReferences, m2mtoken);
+    const pdfs = await fetchLabOrderPDFsPresignedUrls(documentReferences, m2mToken);
     if (pdfs) {
       resultPDFs = pdfs.resultPDFs;
       orderPDF = pdfs.orderPDF;
@@ -713,7 +716,7 @@ export const extractLabResources = (
       specimens.push(resource);
     } else if (resource.resourceType === 'Practitioner') {
       practitioners.push(resource);
-    } else if (resource.resourceType === 'DocumentReference') {
+    } else if (resource.resourceType === 'DocumentReference' && resource.status === 'current') {
       documentReferences.push(resource);
     }
   }
@@ -780,7 +783,9 @@ export const fetchAppointmentsForServiceRequests = async (
   serviceRequests: ServiceRequest[],
   encounters: Encounter[]
 ): Promise<Appointment[]> => {
-  const appointmentsIds = serviceRequests.map((sr) => parseAppointmentId(sr, encounters)).filter(Boolean);
+  const appointmentsIds = serviceRequests
+    .map((sr) => parseAppointmentIdForServiceRequest(sr, encounters))
+    .filter(Boolean);
 
   if (!appointmentsIds.length) {
     return [] as Appointment[];
@@ -805,7 +810,10 @@ export const fetchFinalAndPrelimAndCorrectedTasks = async (
   oystehr: Oystehr,
   results: DiagnosticReport[]
 ): Promise<Task[]> => {
-  const resultsIds = results.map((result) => result.id).filter(Boolean);
+  const resultsIds = results.reduce(
+    (acc: string[], result) => (result?.id ? [...acc, `DiagnosticReport/${result.id}`] : acc),
+    []
+  );
 
   if (!resultsIds.length) {
     return [];
@@ -897,7 +905,7 @@ export const fetchFinalAndPrelimAndCorrectedTasks = async (
 };
 
 export const fetchQuestionnaireForServiceRequests = async (
-  m2mtoken: string,
+  m2mToken: string,
   serviceRequests: ServiceRequest[],
   questionnaireResponses: QuestionnaireResponse[]
 ): Promise<QuestionnaireData[]> => {
@@ -928,7 +936,7 @@ export const fetchQuestionnaireForServiceRequests = async (
     results.map(async (result) => {
       const questionnaireRequest = await fetch(result.questionnaireUrl, {
         headers: {
-          Authorization: `Bearer ${m2mtoken}`,
+          Authorization: `Bearer ${m2mToken}`,
         },
       });
 
@@ -1145,13 +1153,13 @@ export const parsePractitionerName = (practitionerId: string | undefined, practi
     return NOT_FOUND;
   }
 
-  const name = practitioner.name?.[0];
+  const providerName = getFullestAvailableName(practitioner);
 
-  if (!name) {
+  if (!providerName) {
     return NOT_FOUND;
   }
 
-  return [name.prefix, name.given, name.family].flat().filter(Boolean).join(' ') || NOT_FOUND;
+  return providerName;
 };
 
 export const parseLabInfo = (serviceRequest: ServiceRequest): { testItem: string; fillerLab: string } => {
@@ -1265,24 +1273,6 @@ export const parsePaginationFromResponse = (data: {
   };
 };
 
-export const parseAppointmentId = (serviceRequest: ServiceRequest, encounters: Encounter[]): string => {
-  console.log('getting appointment id for service request', serviceRequest.id);
-  const encounterId = parseEncounterId(serviceRequest);
-  const NOT_FOUND = '';
-
-  if (!encounterId) {
-    return NOT_FOUND;
-  }
-
-  const relatedEncounter = encounters.find((encounter) => encounter.id === encounterId);
-
-  if (relatedEncounter?.appointment?.length) {
-    return relatedEncounter.appointment[0]?.reference?.split('/').pop() || NOT_FOUND;
-  }
-
-  return NOT_FOUND;
-};
-
 const parseLocationTimezoneForSR = (serviceRequest: ServiceRequest, locations: Location[]): string | undefined => {
   const location = locations.find((location) => {
     const locationRef = `Location/${location.id}`;
@@ -1294,11 +1284,6 @@ const parseLocationTimezoneForSR = (serviceRequest: ServiceRequest, locations: L
 
 export const parseVisitDate = (appointment: Appointment | undefined): string => {
   return appointment?.created || '';
-};
-
-const parseEncounterId = (serviceRequest: ServiceRequest): string => {
-  const NOT_FOUND = '';
-  return serviceRequest.encounter?.reference?.split('/').pop() || NOT_FOUND;
 };
 
 export const parsePractitionerIdFromServiceRequest = (serviceRequest: ServiceRequest): string => {

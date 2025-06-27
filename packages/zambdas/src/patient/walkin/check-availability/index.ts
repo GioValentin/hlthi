@@ -37,6 +37,8 @@ export const index = wrapHandler(async (input: ZambdaInput): Promise<APIGatewayP
     const projectAPI = getSecret(SecretsKeys.PROJECT_API, input.secrets);
     const basicInput = validateRequestParameters(input);
 
+    console.log('basicInput', JSON.stringify(basicInput));
+
     if (!zapehrToken) {
       console.log('getting m2m token for service calls');
       zapehrToken = await getAuth0Token(input.secrets);
@@ -56,7 +58,8 @@ export const index = wrapHandler(async (input: ZambdaInput): Promise<APIGatewayP
     };
   } catch (error: any) {
     console.error('walkin-check-availability error', error);
-    return topLevelCatch('walkin-check-availability', error, input.secrets);
+    const ENVIRONMENT = getSecret(SecretsKeys.ENVIRONMENT, input.secrets);
+    return topLevelCatch('walkin-check-availability', error, ENVIRONMENT);
   }
 });
 
@@ -184,8 +187,26 @@ const complexValidation = async (input: BasicInput, oystehr: Oystehr): Promise<E
 
   let scheduleOwner: ScheduleOwnerFhirResource | undefined;
 
+  // there is an oystehr bug that can cause a schedule to match based on a deleted Location
+  // it points to. those deleted locations will not make it into the result set, so filtering like
+  // this ensures we do not select an un-cleaned-up schedule that has lost its actor
+  const actors = new Set(
+    scheduleAndOwnerResults
+      .filter((res) => {
+        return res.resourceType !== 'Schedule' && res.id !== undefined;
+      })
+      .map((res) => {
+        return `${res.resourceType}/${res.id}`;
+      })
+  );
+
   const schedule = scheduleAndOwnerResults.find((res) => {
-    return res.resourceType === 'Schedule';
+    return (
+      res.resourceType === 'Schedule' &&
+      res.actor.some((actor) => {
+        return actors.has(actor.reference ?? '');
+      })
+    );
   }) as Schedule;
   if (!schedule) {
     throw FHIR_RESOURCE_NOT_FOUND('Schedule');

@@ -3,52 +3,49 @@ import {
   ActivityDefinition,
   Appointment,
   BundleEntry,
-  Encounter,
-  Resource,
-  Practitioner,
-  ServiceRequest,
-  Task,
-  Provenance,
-  Location,
-  FhirResource,
-  Specimen,
-  Observation,
   DiagnosticReport,
+  Encounter,
+  FhirResource,
+  Location,
+  Observation,
+  Practitioner,
+  Provenance,
+  Resource,
+  ServiceRequest,
+  Specimen,
+  Task,
 } from 'fhir/r4b';
 import {
   compareDates,
-  fetchDocumentReferencesForDiagnosticReports,
-  LabResultPDF,
-  getTimezone,
+  convertActivityDefinitionToTestItem,
   DEFAULT_IN_HOUSE_LABS_ITEMS_PER_PAGE,
-  Secrets,
-  InHouseGetOrdersResponseDTO,
-} from 'utils';
-import { getMyPractitionerId, createOystehrClient, sendErrors, captureSentryException } from '../../shared';
-import {
+  DiagnosisDTO,
   EMPTY_PAGINATION,
-  isPositiveNumberOrZero,
+  fetchDocumentReferencesForDiagnosticReports,
+  getFullestAvailableName,
+  getTimezone,
+  IN_HOUSE_TEST_CODE_SYSTEM,
+  InHouseGetOrdersResponseDTO,
   InHouseOrderListPageItemDTO,
   InHouseOrdersSearchBy,
+  isPositiveNumberOrZero,
+  LabResultPDF,
   Pagination,
-  DiagnosisDTO,
-  convertActivityDefinitionToTestItem,
-  getFullestAvailableName,
   PRACTITIONER_CODINGS,
   TestStatus,
-  IN_HOUSE_TEST_CODE_SYSTEM,
 } from 'utils';
-import { GetZambdaInHouseOrdersParams } from './validateRequestParameters';
+import { createOystehrClient, getMyPractitionerId, sendErrors } from '../../shared';
 import {
-  getSpecimenDetails,
-  taskIsBasedOnServiceRequest,
-  determineOrderStatus,
   buildOrderHistory,
-  getUrlAndVersionForADFromServiceRequest,
-  getServiceRequestsRelatedViaRepeat,
+  determineOrderStatus,
   fetchResultResourcesForRepeatServiceRequest,
+  getServiceRequestsRelatedViaRepeat,
+  getSpecimenDetails,
+  getUrlAndVersionForADFromServiceRequest,
+  taskIsBasedOnServiceRequest,
 } from '../shared/inhouse-labs';
 import { fetchLabOrderPDFsPresignedUrls } from '../shared/labs';
+import { GetZambdaInHouseOrdersParams } from './validateRequestParameters';
 
 // cache for the service request context
 type Cache = {
@@ -69,7 +66,7 @@ export const mapResourcesToInHouseOrderDTOs = <SearchBy extends InHouseOrdersSea
   observations: Observation[],
   diagnosticReports: DiagnosticReport[],
   resultsPDFs: LabResultPDF[],
-  secrets: Secrets | null,
+  ENVIRONMENT: string,
   currentPractitioner?: Practitioner,
   timezone?: string
 ): InHouseGetOrdersResponseDTO<SearchBy>['data'] => {
@@ -113,7 +110,7 @@ export const mapResourcesToInHouseOrderDTOs = <SearchBy extends InHouseOrdersSea
       );
     } catch (error) {
       console.error(`Error parsing order data for service request ${serviceRequest.id}:`, error, JSON.stringify(error));
-      void sendErrors('get-in-house-orders', error, secrets, captureSentryException);
+      void sendErrors(error, ENVIRONMENT);
     }
   }
 
@@ -247,7 +244,7 @@ export const getInHouseResources = async (
   params: GetZambdaInHouseOrdersParams,
   searchBy: InHouseOrdersSearchBy,
   userToken: string,
-  m2mtoken: string
+  m2mToken: string
 ): Promise<{
   serviceRequests: ServiceRequest[];
   tasks: Task[];
@@ -322,7 +319,7 @@ export const getInHouseResources = async (
 
     if (diagnosticReports.length > 0) {
       const resultsDocumentReferences = await fetchDocumentReferencesForDiagnosticReports(oystehr, diagnosticReports); // todo i think we can get this from the big query
-      const pdfs = await fetchLabOrderPDFsPresignedUrls(resultsDocumentReferences, m2mtoken);
+      const pdfs = await fetchLabOrderPDFsPresignedUrls(resultsDocumentReferences, m2mToken);
       if (pdfs) resultsPDFs = pdfs.resultPDFs;
     }
   }
