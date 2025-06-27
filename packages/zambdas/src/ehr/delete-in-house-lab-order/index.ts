@@ -1,11 +1,10 @@
+import Oystehr, { BatchInputDeleteRequest } from '@oystehr/sdk';
+import { wrapHandler } from '@sentry/aws-serverless';
 import { APIGatewayProxyResult } from 'aws-lambda';
-import { BatchInputDeleteRequest } from '@oystehr/sdk';
-import { Secrets, DeleteInHouseLabOrderParameters } from 'utils';
-import { ZambdaInput, topLevelCatch, checkOrCreateM2MClientToken, createOystehrClient } from '../../shared';
+import { Bundle, FhirResource, Provenance, ServiceRequest, Task } from 'fhir/r4b';
+import { DeleteInHouseLabOrderParameters, DeleteInHouseLabOrderZambdaOutput, Secrets } from 'utils';
+import { ZambdaInput, checkOrCreateM2MClientToken, createOystehrClient, topLevelCatch } from '../../shared';
 import { validateRequestParameters } from './validateRequestParameters';
-import { ServiceRequest, Task, Provenance, FhirResource, Bundle } from 'fhir/r4b';
-import Oystehr from '@oystehr/sdk';
-
 let m2mtoken: string;
 
 const makeDeleteResourceRequest = (resourceType: string, id: string): BatchInputDeleteRequest => ({
@@ -92,7 +91,7 @@ const getInHouseLabOrderRelatedResources = async (
   }
 };
 
-export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> => {
+export const index = wrapHandler(async (input: ZambdaInput): Promise<APIGatewayProxyResult> => {
   console.log(`delete-in-house-lab-order started, input: ${JSON.stringify(input)}`);
 
   let secrets = input.secrets;
@@ -165,12 +164,11 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
       }
     }
 
+    const response: DeleteInHouseLabOrderZambdaOutput = {};
+
     return {
       statusCode: 200,
-      body: JSON.stringify({
-        message: 'Successfully deleted in-house lab order.',
-        deletedResources: transactionResponse,
-      }),
+      body: JSON.stringify(response),
     };
   } catch (error: any) {
     console.error('Error deleting in-house lab order:', error);
@@ -182,6 +180,4 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
       }),
     };
   }
-};
-
-export default index;
+});

@@ -11,6 +11,7 @@ import Reauth from './pages/Reauth';
 import { CustomThemeProvider } from './CustomThemeProvider';
 import Banner from './components/Banner';
 import { LoadingScreen } from './components/LoadingScreen';
+import { TestErrorPage } from './components/TestErrorPage';
 import LogoutWarning from './components/dialogs/LogoutWarning';
 import Navbar from './components/navigation/Navbar';
 import AddPatientFollowup from './components/patient/AddPatientFollowup';
@@ -260,6 +261,7 @@ function App(): ReactElement {
                 </>
               )}
             </Route>
+            <Route path="/test-error" element={<TestErrorPage />} />
           </Routes>
           <SnackbarProvider maxSnack={5} autoHideDuration={6000} />
         </BrowserRouter>

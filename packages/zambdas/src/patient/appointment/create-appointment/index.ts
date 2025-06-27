@@ -25,6 +25,7 @@ import {
   CreateAppointmentResponse,
   CREATED_BY_SYSTEM,
   createUserResourcesForPatient,
+  E2E_TEST_RESOURCE_PROCESS_ID_SYSTEM,
   FHIR_APPOINTMENT_READY_FOR_PREPROCESSING_TAG,
   FHIR_EXTENSION,
   FhirAppointmentStatus,
@@ -75,10 +76,11 @@ interface CreateAppointmentInput {
   language?: string;
   locationState?: string;
   unconfirmedDateOfBirth?: string;
+  appointmentMetadata?: Appointment['meta'];
 }
 
 // Lifting up value to outside of the handler allows it to stay in memory across warm lambda invocations
-let zapehrToken: string;
+let oystehrToken: string;
 export const index = wrapHandler(async (input: ZambdaInput): Promise<APIGatewayProxyResult> => {
   configSentry('create-appointment', input.secrets);
   console.log(`Input: ${JSON.stringify(input)}`);
@@ -95,21 +97,31 @@ export const index = wrapHandler(async (input: ZambdaInput): Promise<APIGatewayP
     console.groupEnd();
     console.debug('validateRequestParameters success', JSON.stringify(validatedParameters));
 
-    if (!zapehrToken) {
+    if (!oystehrToken) {
       console.log('getting token');
-      zapehrToken = await getAuth0Token(input.secrets);
+      oystehrToken = await getAuth0Token(input.secrets);
     } else {
       console.log('already have token');
     }
-    const oystehr = createOystehrClient(zapehrToken, input.secrets);
+    const oystehr = createOystehrClient(oystehrToken, input.secrets);
 
     console.time('performing-complex-validation');
     const effectInput = await createAppointmentComplexValidation(validatedParameters, oystehr);
-    const { slot, scheduleOwner, serviceMode, patient, questionnaireCanonical, visitType } = effectInput;
+    const {
+      slot,
+      scheduleOwner,
+      serviceMode,
+      patient,
+      questionnaireCanonical,
+      visitType,
+      appointmentMetadata: maybeMetadata,
+    } = effectInput;
     console.log('effectInput', effectInput);
     console.timeEnd('performing-complex-validation');
 
-    console.log('creating appointment');
+    const appointmentMetadata = injectMetadataIfNeeded(maybeMetadata);
+
+    console.log('creating appointment with metadata: ', JSON.stringify(appointmentMetadata));
 
     const data_appointment = await createAppointment(
       {
@@ -123,13 +135,14 @@ export const index = wrapHandler(async (input: ZambdaInput): Promise<APIGatewayP
         visitType,
         unconfirmedDateOfBirth,
         questionnaireCanonical,
+        appointmentMetadata,
       },
       oystehr
     );
 
     console.log('appointment created');
 
-    const { message, appointment, fhirPatientId, questionnaireResponseId, encounterId, resources, relatedPersonId } =
+    const { message, appointmentId, fhirPatientId, questionnaireResponseId, encounterId, resources, relatedPersonId } =
       data_appointment;
 
     await createAuditEvent(
@@ -140,9 +153,9 @@ export const index = wrapHandler(async (input: ZambdaInput): Promise<APIGatewayP
       validatedParameters.secrets
     );
 
-    const response = {
+    const response: CreateAppointmentResponse = {
       message,
-      appointment,
+      appointmentId,
       fhirPatientId,
       questionnaireResponseId,
       encounterId,
@@ -174,6 +187,7 @@ export async function createAppointment(
     unconfirmedDateOfBirth,
     serviceMode,
     questionnaireCanonical: questionnaireUrl,
+    appointmentMetadata,
   } = input;
 
   const { verifiedPhoneNumber, listRequests, createPatientRequest, updatePatientRequest, isEHRUser, maybeFhirPatient } =
@@ -185,7 +199,7 @@ export async function createAppointment(
   const endTime = originalDate.plus({ minutes: getAppointmentDurationFromSlot(slot) }).toISO() || '';
   const formattedUserNumber = formatPhoneNumberDisplay(user.name.replace('+1', ''));
   const createdBy = isEHRUser
-    ? `Staff ${user?.email} via QRS`
+    ? `Staff ${user?.email}`
     : `${visitType === VisitType.WalkIn ? 'QR - ' : ''}Patient${formattedUserNumber ? ` ${formattedUserNumber}` : ''}`;
 
   console.log('getting questionnaire ID to create blank questionnaire response');
@@ -234,6 +248,7 @@ export async function createAppointment(
     newPatientDob: (createPatientRequest?.resource as Patient | undefined)?.birthDate,
     createdBy,
     slot,
+    appointmentMetadata,
   });
 
   let relatedPersonId = '';
@@ -259,14 +274,26 @@ export async function createAppointment(
     }
   }
 
+  if (appointment.id === undefined) {
+    throw new Error('Appointment resource does not have an ID');
+  }
+
+  if (fhirPatient.id === undefined) {
+    throw new Error('Patient resource does not have an ID');
+  }
+
+  if (encounter.id === undefined) {
+    throw new Error('Encounter resource does not have an ID');
+  }
+
   console.log('success, here is the id: ', appointment.id);
 
   return {
     message: 'Successfully created an appointment and encounter',
-    appointment: appointment.id || '',
-    fhirPatientId: fhirPatient.id || '',
-    questionnaireResponseId: questionnaireResponseId || '',
-    encounterId: encounter.id || '',
+    appointmentId: appointment.id,
+    fhirPatientId: fhirPatient.id,
+    questionnaireResponseId: questionnaireResponseId,
+    encounterId: encounter.id,
     relatedPersonId: relatedPersonId,
     resources: {
       appointment,
@@ -300,6 +327,7 @@ interface TransactionInput {
   updatePatientRequest?: BatchInputRequest<Patient>;
   formUser?: string;
   slot?: Slot;
+  appointmentMetadata?: Appointment['meta'];
 }
 interface TransactionOutput {
   appointment: Appointment;
@@ -332,6 +360,7 @@ export const performTransactionalFhirRequests = async (input: TransactionInput):
     createdBy,
     serviceMode,
     slot,
+    appointmentMetadata,
   } = input;
 
   if (!patient && !createPatientRequest?.fullUrl) {
@@ -425,10 +454,10 @@ export const performTransactionalFhirRequests = async (input: TransactionInput):
   }
 
   const otherMetaTags = performPreProcessing ? [FHIR_APPOINTMENT_READY_FOR_PREPROCESSING_TAG] : [];
-
   const apptResource: Appointment = {
     resourceType: 'Appointment',
     meta: {
+      ...(appointmentMetadata ?? {}),
       tag: [
         { code: serviceMode === ServiceMode.virtual ? OTTEHR_MODULE.TM : OTTEHR_MODULE.IP },
         {
@@ -436,6 +465,7 @@ export const performTransactionalFhirRequests = async (input: TransactionInput):
           display: createdBy,
         },
         ...otherMetaTags,
+        ...(appointmentMetadata?.tag ?? []),
       ],
     },
     participant: participants,
@@ -642,14 +672,41 @@ const extractResourcesFromBundle = (bundle: Bundle<Resource>): TransactionOutput
     throw new Error('QuestionnaireResponse could not be created');
   }
 
+  if (questionnaireResponse.id === undefined) {
+    throw new Error('QuestionnaireResponse does not have an ID');
+  }
+
   console.log('successfully obtained resources from bundle');
   return {
     appointment,
     encounter,
     patient,
     questionnaire: questionnaireResponse,
-    questionnaireResponseId: questionnaireResponse.id || '',
+    questionnaireResponseId: questionnaireResponse.id,
   };
 };
 
-export default index;
+const injectMetadataIfNeeded = (maybeMetadata: Appointment['meta']): Appointment['meta'] => {
+  let appointmentMetadata: Appointment['meta'] = maybeMetadata;
+  console.log('PLAYWRIGHT_SUITE_ID: ', process.env.PLAYWRIGHT_SUITE_ID);
+  let shouldInjectTestMetadata = process.env.PLAYWRIGHT_SUITE_ID ?? false;
+  if (maybeMetadata && shouldInjectTestMetadata) {
+    const hasTestTagAlready =
+      maybeMetadata.tag?.some((coding) => {
+        return coding.system === E2E_TEST_RESOURCE_PROCESS_ID_SYSTEM;
+      }) ?? false;
+    shouldInjectTestMetadata = !hasTestTagAlready;
+  }
+  if (shouldInjectTestMetadata) {
+    appointmentMetadata = {
+      tag: [
+        {
+          system: E2E_TEST_RESOURCE_PROCESS_ID_SYSTEM,
+          code: `failsafe-${process.env.PLAYWRIGHT_SUITE_ID}`,
+        },
+      ],
+    };
+    console.log('using test metadata: ', JSON.stringify(appointmentMetadata, null, 2));
+  }
+  return appointmentMetadata;
+};

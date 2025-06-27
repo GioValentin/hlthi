@@ -15,8 +15,9 @@ import {
   PROJECT_NAME,
   PROJECT_WEBSITE,
   AvailableLocationInformation,
+  GetAppointmentResponseAppointmentDetails,
 } from 'utils';
-import ottehrApi, { AppointmentBasicInfo } from '../api/ottehrApi';
+import ottehrApi from '../api/ottehrApi';
 import { ottehrLightBlue } from '../themes/ottehr/icons';
 import { PageContainer, Schedule } from '../components';
 import { useCheckOfficeOpen } from '../hooks/useCheckOfficeOpen';
@@ -31,7 +32,7 @@ const Reschedule = (): JSX.Element => {
   const [loading, setLoading] = useState<boolean>(true);
   const [slotData, setSlotData] = useState<SlotListItem[] | undefined>(undefined);
   const [selectedSlot, setSelectedSlot] = useState<Slot | undefined>(undefined);
-  const [appointment, setAppointment] = useState<AppointmentBasicInfo | undefined>();
+  const [appointment, setAppointment] = useState<GetAppointmentResponseAppointmentDetails | undefined>();
   const [pageNotFound, setPageNotFound] = useState(false);
   const { isLoading } = useAuth0();
   const navigate = useNavigate();
@@ -98,8 +99,8 @@ const Reschedule = (): JSX.Element => {
       const currentSlotTime = DateTime.fromISO(selectedSlot.start)
         .setZone(location?.timezone)
         .setLocale(i18n.language);
-      const currentSlotTimePasssed = currentSlotTime > currentDateTime;
-      if (currentSlotTimePasssed) {
+      const currentSlotTimePassed = currentSlotTime > currentDateTime;
+      if (currentSlotTimePassed) {
         return slots;
       }
       const alreadyIncluded = slots.some((s) => s.start === selectedSlot.start);

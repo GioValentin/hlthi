@@ -1,5 +1,4 @@
 import { BrowserContext, expect, Page, test } from '@playwright/test';
-import { cleanAppointment } from 'test-utils';
 import { chooseJson, CreateAppointmentResponse } from 'utils';
 import { dataTestIds } from '../../../src/helpers/data-test-ids';
 import { Locators } from '../../utils/locators';
@@ -24,10 +23,9 @@ test.beforeAll(async ({ browser }) => {
 
   page.on('response', async (response) => {
     if (response.url().includes('/create-appointment/')) {
-      const { appointment } = chooseJson(await response.json()) as CreateAppointmentResponse;
-      if (appointment && !appointmentIds.includes(appointment)) {
-        console.log('Created appointment: ', appointment);
-        appointmentIds.push(appointment);
+      const { appointmentId } = chooseJson(await response.json()) as CreateAppointmentResponse;
+      if (!appointmentIds.includes(appointmentId)) {
+        appointmentIds.push(appointmentId);
       }
     }
   });
@@ -36,12 +34,6 @@ test.beforeAll(async ({ browser }) => {
 test.afterAll(async () => {
   await page.close();
   await context.close();
-  const env = process.env.ENV;
-
-  for (const appointmentId of appointmentIds) {
-    console.log(`Deleting ${appointmentId} on env: ${env}`);
-    await cleanAppointment(appointmentId, env!);
-  }
 });
 
 test('Should select state and time', async () => {
