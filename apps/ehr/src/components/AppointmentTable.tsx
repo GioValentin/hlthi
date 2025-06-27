@@ -1,5 +1,6 @@
 import ArrowDropDownCircleOutlinedIcon from '@mui/icons-material/ArrowDropDownCircleOutlined';
 import {
+  alpha,
   Box,
   IconButton,
   Paper,
@@ -10,16 +11,12 @@ import {
   TableHead,
   TableRow,
   Typography,
-  alpha,
   useTheme,
 } from '@mui/material';
 import { Location } from 'fhir/r4b';
 import { DateTime } from 'luxon';
 import { ReactElement, useState } from 'react';
-import { InHouseOrderListPageItemDTO, InPersonAppointmentInformation, LabOrderListPageDTO } from 'utils';
-import { AppointmentsStatusChipsCount } from './AppointmentStatusChipsCount';
-import AppointmentTableRow from './AppointmentTableRow';
-import { ApptTab } from './AppointmentTabs';
+import { InHouseOrderListPageItemDTO, InPersonAppointmentInformation, LabOrderListPageDTO, NursingOrder } from 'utils';
 import {
   ACTION_WIDTH,
   ACTION_WIDTH_MIN,
@@ -45,6 +42,9 @@ import {
   VISIT_ICONS_WIDTH_MIN,
 } from '../constants';
 import { dataTestIds } from '../constants/data-test-ids';
+import { AppointmentsStatusChipsCount } from './AppointmentStatusChipsCount';
+import AppointmentTableRow from './AppointmentTableRow';
+import { ApptTab } from './AppointmentTabs';
 
 interface AppointmentTableProps {
   appointments: InPersonAppointmentInformation[];
@@ -55,6 +55,7 @@ interface AppointmentTableProps {
   setEditingComment: (editingComment: boolean) => void;
   inHouseLabOrdersByAppointmentId: Record<string, InHouseOrderListPageItemDTO[]>;
   externalLabOrdersByAppointmentId: Record<string, LabOrderListPageDTO[]>;
+  nursingOrdersByAppointmentId: Record<string, NursingOrder[]>;
 }
 
 export default function AppointmentTable({
@@ -66,6 +67,7 @@ export default function AppointmentTable({
   setEditingComment,
   inHouseLabOrdersByAppointmentId,
   externalLabOrdersByAppointmentId,
+  nursingOrdersByAppointmentId,
 }: AppointmentTableProps): ReactElement {
   const theme = useTheme();
   const actionButtons = tab === ApptTab.prebooked ? true : false;
@@ -135,7 +137,7 @@ export default function AppointmentTable({
                     minWidth: tab === ApptTab.prebooked ? GO_TO_ONE_BUTTON_WIDTH_MIN : GO_TO_TWO_BUTTON_WIDTH_MIN,
                   }}
                 >
-                  <Typography variant="subtitle2" sx={{ fontSize: '14px' }}>
+                  <Typography variant="subtitle2" sx={{ fontSize: '14px', textAlign: 'center' }}>
                     Go to...
                   </Typography>
                 </TableCell>
@@ -152,7 +154,7 @@ export default function AppointmentTable({
               {tab === ApptTab['in-office'] ? (
                 <>
                   <TableRow>
-                    <TableCell sx={{ backgroundColor: alpha(theme.palette.secondary.main, 0.08) }} colSpan={11}>
+                    <TableCell sx={{ backgroundColor: alpha(theme.palette.secondary.main, 0.08) }} colSpan={10}>
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <IconButton onClick={() => setCollapseWaiting(!collapseWaiting)} sx={{ mr: 0.75, p: 0 }}>
                           <ArrowDropDownCircleOutlinedIcon
@@ -195,6 +197,7 @@ export default function AppointmentTable({
                             tab={tab}
                             inHouseLabOrders={inHouseLabOrdersByAppointmentId[appointment.id]}
                             externalLabOrders={externalLabOrdersByAppointmentId[appointment.id]}
+                            nursingOrders={nursingOrdersByAppointmentId[appointment.id]}
                           ></AppointmentTableRow>
                         );
                       })}
@@ -214,6 +217,7 @@ export default function AppointmentTable({
                       tab={tab}
                       inHouseLabOrders={inHouseLabOrdersByAppointmentId[appointment.id]}
                       externalLabOrders={externalLabOrdersByAppointmentId[appointment.id]}
+                      nursingOrders={nursingOrdersByAppointmentId[appointment.id]}
                     ></AppointmentTableRow>
                   );
                 })
@@ -246,7 +250,7 @@ export default function AppointmentTable({
               </TableHead>
               <TableBody>
                 <TableRow>
-                  <TableCell sx={{ backgroundColor: alpha(theme.palette.secondary.main, 0.08) }} colSpan={11}>
+                  <TableCell sx={{ backgroundColor: alpha(theme.palette.secondary.main, 0.08) }} colSpan={10}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <IconButton onClick={() => setCollapseExam(!collapseExam)} sx={{ mr: 0.75, p: 0 }}>
                         <ArrowDropDownCircleOutlinedIcon
@@ -289,6 +293,7 @@ export default function AppointmentTable({
                           tab={tab}
                           inHouseLabOrders={inHouseLabOrdersByAppointmentId[appointment.id]}
                           externalLabOrders={externalLabOrdersByAppointmentId[appointment.id]}
+                          nursingOrders={nursingOrdersByAppointmentId[appointment.id]}
                         ></AppointmentTableRow>
                       );
                     })}

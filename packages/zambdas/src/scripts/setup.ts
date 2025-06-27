@@ -1,24 +1,22 @@
+import { promisify } from 'node:util';
 import Oystehr, { BatchInputPostRequest } from '@oystehr/sdk';
 import { exec } from 'child_process';
 import { FhirResource, HealthcareService, Organization, PractitionerRole, Schedule } from 'fhir/r4b';
 import fs from 'fs';
-import { promisify } from 'node:util';
 import path from 'path';
 import {
   FHIR_BASE_URL,
   FOLDERS_CONFIG,
+  generateDeployAccountNumber,
   PROJECT_DOMAIN,
   PROJECT_NAME,
   PROJECT_NAME_LOWER,
   SCHEDULE_EXTENSION_URL,
   ScheduleStrategyCoding,
   TIMEZONE_EXTENSION_URL,
-  generateDeployAccountNumber,
 } from 'utils';
 import { inviteUser } from './invite-user';
 import { defaultGroup } from './setup-default-locations';
-
-export const BUCKET_PAPERWORK_PDF = 'paperwork-pdf';
 
 async function createApplication(oystehr: Oystehr, applicationName: string): Promise<[string, string]> {
   const application = await oystehr.application.create({
@@ -346,7 +344,7 @@ export async function setupEHR(
   console.log('Created environment file:', envPath2);
 
   const documentExplorerFolders = FOLDERS_CONFIG.map((folder) => folder.title);
-  const bucketNames = ['photo-id-cards', 'school-work-notes', BUCKET_PAPERWORK_PDF, ...documentExplorerFolders];
+  const bucketNames = [...documentExplorerFolders];
 
   await createZ3(oystehr, bucketNames);
 
