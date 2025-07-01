@@ -136,6 +136,20 @@ function App(): ReactElement {
             />
           </>
         )}
+
+        {currentUser?.hasRole([RoleType.Inactive]) && (
+          <>
+            <Banner
+              text={`Your account is currently in the final stages of setup and will be activated shortly.`}
+              icon="warning"
+              iconSize="medium"
+              bgcolor="info.main"
+              color="info.contrast"
+            />
+          </>
+        )}
+        
+        {!currentUser?.hasRole([RoleType.Inactive]) && (
         <BrowserRouter>
           <Routes>
             <Route path="/reauth/:account_id" element={<Reauth />} />
@@ -265,6 +279,7 @@ function App(): ReactElement {
           </Routes>
           <SnackbarProvider maxSnack={5} autoHideDuration={6000} />
         </BrowserRouter>
+        )}
       </FeatureFlagsProvider>
     </CustomThemeProvider>
   );
