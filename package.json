@@ -1,6 +1,6 @@
 {
   "name": "ottehr",
-  "version": "1.12.2",
+  "version": "1.12.4",
   "private": true,
   "engines": {
     "node": ">=20.0.0",
@@ -154,7 +154,9 @@
     "@twilio-paste/text": "^10.1.1",
     "@twilio-paste/theme": "^11.1.0",
     "@twilio-paste/types": "^6.0.0",
-    "@twilio-paste/uid-library": "^2.0.0"
+    "@twilio-paste/uid-library": "^2.0.0",
+    "zod": "^3.25.67",
+    "zod-validation-error": "^3.5.2"
   },
   "devDependencies": {
     "@hookform/devtools": "^4.3.1",

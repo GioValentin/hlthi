@@ -21,7 +21,7 @@ import {
   CreateInHouseLabOrderResponse,
   CreateLabOrderParameters,
   CreateLabOrderZambdaOutput,
-  CreateNursingOrderParameters,
+  CreateNursingOrderInput,
   CreateRadiologyZambdaOrderInput,
   CreateRadiologyZambdaOrderOutput,
   CreateScheduleParams,
@@ -73,7 +73,7 @@ import {
   UnassignPractitionerZambdaInput,
   UnassignPractitionerZambdaOutput,
   UpdateLabOrderResourcesParameters,
-  UpdateNursingOrderParameters,
+  UpdateNursingOrderInput,
   UpdateScheduleParams,
   UpdateUserParams,
   UpdateUserZambdaOutput,
@@ -931,10 +931,6 @@ export const deleteInHouseLabOrder = async (
 
 export const getNursingOrders = async (oystehr: Oystehr, parameters: GetNursingOrdersInput): Promise<any> => {
   try {
-    if (GET_NURSING_ORDERS_ZAMBDA_ID == null) {
-      throw new Error('get nursing orders zambda environment variable could not be loaded');
-    }
-
     const response = await oystehr.zambda.execute({
       id: GET_NURSING_ORDERS_ZAMBDA_ID,
       ...parameters,
@@ -947,11 +943,8 @@ export const getNursingOrders = async (oystehr: Oystehr, parameters: GetNursingO
   }
 };
 
-export const createNursingOrder = async (oystehr: Oystehr, parameters: CreateNursingOrderParameters): Promise<any> => {
+export const createNursingOrder = async (oystehr: Oystehr, parameters: CreateNursingOrderInput): Promise<any> => {
   try {
-    if (CREATE_NURSING_ORDER_ZAMBDA_ID == null) {
-      throw new Error('create nursing order zambda environment variable could not be loaded');
-    }
     const response = await oystehr.zambda.execute({
       id: CREATE_NURSING_ORDER_ZAMBDA_ID,
       ...parameters,
@@ -963,11 +956,8 @@ export const createNursingOrder = async (oystehr: Oystehr, parameters: CreateNur
   }
 };
 
-export const updateNursingOrder = async (oystehr: Oystehr, parameters: UpdateNursingOrderParameters): Promise<any> => {
+export const updateNursingOrder = async (oystehr: Oystehr, parameters: UpdateNursingOrderInput): Promise<any> => {
   try {
-    if (UPDATE_NURSING_ORDER == null) {
-      throw new Error('update nursing order zambda environment variable could not be loaded');
-    }
     const response = await oystehr.zambda.execute({
       id: UPDATE_NURSING_ORDER,
       ...parameters,
