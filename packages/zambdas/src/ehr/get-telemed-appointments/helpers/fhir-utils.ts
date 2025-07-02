@@ -179,8 +179,8 @@ const locationIdsForAppointmentsSearch = async (
   return mapStatesToLocationIds([], virtualLocationsMap);
 };
 
-export const getAllPartiallyPrefilteredFhirResources = async (
-  oystehrm2m: Oystehr,
+export const getAllPartiallyPreFilteredFhirResources = async (
+  oystehrM2m: Oystehr,
   oystehrCurrentUser: Oystehr,
   params: GetTelemedAppointmentsInput,
   virtualLocationsMap: LocationIdToAbbreviationMap
@@ -204,7 +204,7 @@ export const getAllPartiallyPrefilteredFhirResources = async (
 
   const dateFilterConverted = dateFilter ? DateTime.fromISO(dateFilter) : undefined;
   allResources = await getAllResourcesFromFhir(
-    oystehrm2m,
+    oystehrM2m,
     locationsIdsToSearchWith,
     encounterStatusesToSearchWith,
     appointmentStatusesToSearchWith,
