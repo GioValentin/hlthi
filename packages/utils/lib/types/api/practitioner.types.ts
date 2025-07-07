@@ -1,4 +1,7 @@
-import { Practitioner } from 'fhir/r4b';
+// cSpell:ignore ACMHC, ACSW, APCC, APSW, ASSISTA, BCBA, BHARI, CISW, CMHC, CMSW, COTA, CRNA, LACMH, LAPC, LASW, LCADC
+// cSpell:ignore LCAT, LCMHC, LCMHCA, LCPC, LCSW, LCSWA, LGPC, LGSW, LICSW, LIMHP, LISW, LMFT, LMFTA, LMHC, LMHCA, LMPC
+// cSpell:ignore LMSW, LPCA, LPCC, LPCI, LPCMH, LSCSW, MFTA, MHCA, MHSP, MLSW, PMHNP, PROFESSI, RCSWI, RHMCI, RNFA, SLPA
+// cSpell:ignore SLPD
 import { StateType } from 'utils';
 
 export type PractitionerQualificationCode =
@@ -101,6 +104,7 @@ export type PractitionerQualificationCode =
   | 'RT'
   | 'AUD'
   | 'CRNA'
+  // cSpell:disable-next ophtha*L*mologist
   | 'OPTHAMOLOGIST'
   | 'OPA'
   | 'CP-A'
@@ -240,6 +244,7 @@ export const PractitionerQualificationCodesLabels: Record<PractitionerQualificat
   RT: 'Respiratory Therapist',
   AUD: 'Audiologist',
   CRNA: 'Certified Registered Nurse Anesthetist',
+  // cSpell:disable-next ophtha*L*mologist
   OPTHAMOLOGIST: 'Ophthalmologist (M.D. specializing in the eye)',
   OPA: 'Ophthalmic Technician/Assistant',
   'CP-A': 'Unknown meaning** (not a recognized code in standard healthcare classification systems)',

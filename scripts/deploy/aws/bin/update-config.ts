@@ -3,7 +3,7 @@ import { CloudFrontClient, ListDistributionsCommand, ListDistributionsCommandOut
 import { fromIni } from '@aws-sdk/credential-providers';
 import Oystehr from '@oystehr/sdk';
 import config from '../../deploy-config.json';
-import { updateEnvFiles, updateZapehr } from '../../helpers';
+import { updateEnvFiles, updateOystehr } from '../../helpers';
 
 const projectConfig: any = config;
 const environment = projectConfig.environment;
@@ -29,10 +29,8 @@ void (async () => {
         accessToken,
         projectId,
       });
-      await updateEnvFiles(environment, patientDomain, ehrDomain);
-      //await updateBuildFiles('ehr');
-      //await updateBuildFiles('intake');
-      await updateZapehr(oystehr, [patientPortalUrl,`https://${patientPortalDistribution.DomainName}`], [ehrUrl,`https://${ehrDistribution.DomainName}`]);
+      await updateEnvFiles(environment, patientPortalUrl, ehrUrl);
+      await updateOystehr(oystehr, patientPortalUrl, ehrUrl);
     }
   } catch (error) {
     console.error('Deployment failed:', error);
