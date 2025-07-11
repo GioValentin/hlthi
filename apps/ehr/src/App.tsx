@@ -30,6 +30,7 @@ import EditEmployeePage from './pages/EditEmployee';
 import EmployeesPage from './pages/Employees';
 import GroupPage from './pages/GroupPage';
 import Logout from './pages/Logout';
+import ErxPortal from '@pages/ErxPortal';
 import PatientDocumentsExplorerPage from './pages/PatientDocumentsExplorerPage';
 import PatientInformationPage from './pages/PatientInformationPage';
 import PatientPage from './pages/PatientPage';
@@ -42,6 +43,7 @@ import { useNavStore } from './state/nav.store';
 import EditInsurance from './telemed/features/telemed-admin/EditInsurance';
 import EditStatePage from './telemed/features/telemed-admin/EditState';
 import { PatientVisitDetails } from './telemed/pages/PatientVisitDetailsPage';
+import { ErxButton } from '@components/patient/ErxButton';
 
 const { VITE_APP_SENTRY_DSN, VITE_APP_SENTRY_ENV } = import.meta.env;
 
@@ -140,6 +142,7 @@ function App(): ReactElement {
               bgcolor="info.main"
               color="info.contrast"
             />
+
           </>
         )}
         
@@ -188,6 +191,7 @@ function App(): ReactElement {
                 <>
                   <Route path="/" element={<Navigate to="/visits" />} />
                   <Route path="/logout" element={<Logout />} />
+                   <Route path="/erx" element={<ErxPortal />} />
                   <Route path="/visits" element={<AppointmentsPage />} />
                   <Route path="/visits/add" element={<AddPatient />} />
                   <Route path="/visit/:id" element={<AppointmentPage />} />
@@ -245,7 +249,7 @@ function App(): ReactElement {
                   <Route path="/patient/:id/followup/add" element={<AddPatientFollowup />} />
                   <Route path="/patient/:id/followup/:encounterId" element={<PatientFollowup />} />
                   <Route path="/patients" element={<PatientsPage />} />
-
+                  <Route path="/erx" element={<ErxPortal />} />
                   <Route path="/rcm/claims" element={<Claims />} />
                   <Route path="/rcm/claims/:id" element={<Claim />} />
                   {/** telemed */}

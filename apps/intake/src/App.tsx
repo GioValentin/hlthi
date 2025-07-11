@@ -45,7 +45,7 @@ import WaitingRoom from './telemed/pages/WaitingRoom';
 import Welcome from './telemed/pages/Welcome';
 import ChatBubble from '../../../custom-packages/ui-components/lib/plugins/ChatBubbleProvider';
 const { VITE_APP_MIXPANEL_TOKEN, VITE_APP_SENTRY_ENV, VITE_APP_SENTRY_DSN } = import.meta.env;
-
+import SegmentProvider from './providers/SegmentProvider'
 setupSentry({
   dsn: VITE_APP_SENTRY_DSN,
   environment: VITE_APP_SENTRY_ENV,
@@ -264,6 +264,7 @@ function App(): JSX.Element {
   }, [user?.name]);
 
   return (
+    
     <QueryClientProvider client={queryClient}>
       <HelmetProvider>
         <Helmet>
@@ -280,6 +281,7 @@ function App(): JSX.Element {
         </Helmet>
         <IntakeThemeProvider>
           <Router>
+            <SegmentProvider>
             <ScrollToTop />
             <ErrorAlert />
             <IOSMessagesHandler />
@@ -425,10 +427,12 @@ function App(): JSX.Element {
               />
               <Route path="*" element={<Navigate to={intakeFlowPageRoute.Welcome.path} />} />
             </Routes>
+            </SegmentProvider>
           </Router>
         </IntakeThemeProvider>
       </HelmetProvider>
     </QueryClientProvider>
+    
   );
 }
 

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type AppTab = 'In Person' | 'Telemedicine' | 'Schedules' | 'Employees' | 'Patients' | 'Telemedicine:Admin' | 'Wallet';
+export type AppTab = 'In Person' | 'Telemedicine' | 'Schedules' | 'Employees' | 'Patients' | 'Telemedicine:Admin' | 'Wallet' | 'E-Rx Portal';
 
 interface NavState {
   currentTab?: string;

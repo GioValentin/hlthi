@@ -26,6 +26,7 @@ export enum RoleType {
   Inactive = 'Inactive',
   Prescriber = 'Prescriber',
   Patient = 'Patient',
+  'Prescriber OnBoarding' = 'Prescriber OnBoarding'
   // Medical Assistant
 }
 

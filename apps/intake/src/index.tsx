@@ -52,7 +52,8 @@ root.render(
         localStorage.setItem('redirectDestination', appState.target);
       }}
     >
-      <App />
+     
+        <App />
     </Auth0Provider>
   </React.StrictMode>
 );

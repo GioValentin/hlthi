@@ -54,7 +54,7 @@ export const changeStatusIfPossible = async (
     encounterPatchOp = defaultEncounterOperations(newStatus, resourcesToUpdate);
     encounterPatchOp.push(addPeriodEndOp(now()));
     if (appointment.id)
-      smsToSend = `Thanks for visiting. Tap https://feedbackURL/220116034976149?VisitID=${appointment.id} to let us know how it went.`;
+      smsToSend = `Thanks for visiting. Tap https://www.trustpilot.com/evaluate/hlthi.life to let us know how it went.`;
   } else if (currentStatus === 'unsigned' && newStatus === 'complete') {
     encounterPatchOp = encounterOperationsWrapper(
       newStatus,

@@ -37,3 +37,7 @@ custom-packages
 **/custom-patient
 
 scripts/quest-test.ts
+scripts/Roboto/
+scripts/bank-statements.py
+scripts/Novo_idpmMLw2CI_1.png
+scripts/on-board-providers.ts
