@@ -34,7 +34,7 @@ export const ERXDialog = ({ ssoLink }: { ssoLink: string }): ReactElement => {
     <>
       {erxPortalElement &&
         createPortal(
-          <Box sx={{ minHeight: '600px', flex: '1 0 auto' }}>
+          <Box sx={{ minHeight: '1200px', flex: '1 0 auto' }}>
             <iframe src={ssoLink} width="100%" height="100%" />
           </Box>,
           erxPortalElement

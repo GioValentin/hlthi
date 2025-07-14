@@ -183,7 +183,14 @@ export const index = wrapHandler('notification-Updater', async (input: ZambdaInp
                 tag.system === PROVIDER_NOTIFICATION_TAG_SYSTEM &&
                 tag.code === AppointmentProviderNotificationTags.patient_waiting
             );
-            if (!isProcessed && location?.address?.state) {
+
+            const isTriageComplete = appointment.meta?.tag?.find(
+              (tag) =>
+                tag.system === 'https://api.hlthi.life/triage-status' &&
+                tag.code === 'ready'
+            );
+
+            if (!isProcessed && location?.address?.state && isTriageComplete) {
               // add tag into appointment and add to batch request
               updateAppointmentRequests.push(
                 getPatchBinary({
