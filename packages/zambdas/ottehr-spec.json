@@ -37,6 +37,26 @@
       "name": "ENVIRONMENT",
       "value": "#var/ENVIRONMENT"
     },
+    "HLTHI_SINGLE_PRICE_ID": {
+      "name": "HLTHI_SINGLE_PRICE_ID",
+      "value": "#var/HLTHI_SINGLE_PRICE_ID"
+    },
+    "HLTHI_MEMBER_MEDICATION_PRICE_ID": {
+      "name": "HLTHI_MEMBER_MEDICATION_PRICE_ID",
+      "value": "#var/HLTHI_MEMBER_MEDICATION_PRICE_ID"
+    },
+    "HLTHI_NON_MEMBER_MEDICATION_PRICE_ID": {
+      "name": "HLTHI_NON_MEMBER_MEDICATION_PRICE_ID",
+      "value": "#var/HLTHI_NON_MEMBER_MEDICATION_PRICE_ID"
+    },
+    "HLTHI_MEMBER_VISIT_PRICE_ID": {
+      "name": "HLTHI_MEMBER_VISIT_PRICE_ID",
+      "value": "#var/HLTHI_MEMBER_VISIT_PRICE_ID"
+    },
+    "HLTHI_NON_MEMBER_VISIT_PRICE_ID": {
+      "name": "HLTHI_NON_MEMBER_VISIT_PRICE_ID",
+      "value": "#var/HLTHI_NON_MEMBER_VISIT_PRICE_ID"
+    },
     "SENDGRID_API_KEY": {
       "name": "SENDGRID_API_KEY",
       "value": "#var/SENDGRID_API_KEY"

@@ -288,7 +288,6 @@ function App(): JSX.Element {
             <ChatBubble />
             <Routes>
               {/*<Route path="/" element={<UserFlowRoot />} />*/}
-              <Route path={intakeFlowPageRoute.Homepage.path} element={intakeFlowPageRoute.Homepage.getPage()} />
               <Route path={'/version'} element={<Version />} />;
               <Route path={intakeFlowPageRoute.AuthPage.path} element={intakeFlowPageRoute.AuthPage.getPage()} />;
               <Route path={intakeFlowPageRoute.Welcome.path} element={intakeFlowPageRoute.Welcome.getPage()} />
@@ -304,29 +303,31 @@ function App(): JSX.Element {
                 path={intakeFlowPageRoute.InvitedWaitingRoom.path}
                 element={intakeFlowPageRoute.InvitedWaitingRoom.getPage()}
               />
-              <Route
-                path={intakeFlowPageRoute.PrebookVisit.path}
-                element={intakeFlowPageRoute.PrebookVisit.getPage()}
-              />
-              <Route
-                path={intakeFlowPageRoute.WalkinLanding.path}
-                element={intakeFlowPageRoute.WalkinLanding.getPage()}
-              />
-              <Route
-                path={intakeFlowPageRoute.WalkinLandingByLocationName.path}
-                element={intakeFlowPageRoute.WalkinLandingByLocationName.getPage()}
-              />
-              <Route
-                path={intakeFlowPageRoute.PrebookVisitDynamic.path}
-                element={intakeFlowPageRoute.PrebookVisitDynamic.getPage()}
-              />
-              <Route
-                path={intakeFlowPageRoute.StartVirtualVisit.path}
-                element={intakeFlowPageRoute.StartVirtualVisit.getPage()}
-              />
+              
               <Route
                 element={<ProtectedRoute loadingFallback={<LoadingScreen />} errorFallback={<ErrorFallbackScreen />} />}
               >
+                <Route path={intakeFlowPageRoute.Homepage.path} element={intakeFlowPageRoute.Homepage.getPage()} />
+                <Route
+                  path={intakeFlowPageRoute.PrebookVisit.path}
+                  element={intakeFlowPageRoute.PrebookVisit.getPage()}
+                />
+                <Route
+                  path={intakeFlowPageRoute.WalkinLanding.path}
+                  element={intakeFlowPageRoute.WalkinLanding.getPage()}
+                />
+                <Route
+                  path={intakeFlowPageRoute.WalkinLandingByLocationName.path}
+                  element={intakeFlowPageRoute.WalkinLandingByLocationName.getPage()}
+                />
+                <Route
+                  path={intakeFlowPageRoute.PrebookVisitDynamic.path}
+                  element={intakeFlowPageRoute.PrebookVisitDynamic.getPage()}
+                />
+                <Route
+                  path={intakeFlowPageRoute.StartVirtualVisit.path}
+                  element={intakeFlowPageRoute.StartVirtualVisit.getPage()}
+                />
                 <Route path={intakeFlowPageRoute.MyPatients.path} element={intakeFlowPageRoute.MyPatients.getPage()}>
                   <Route
                     path={intakeFlowPageRoute.PastVisits.path}
