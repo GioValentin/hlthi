@@ -14,6 +14,7 @@ import { otherColors } from '../IntakeThemeProvider';
 import { CancelVisitDialog } from '../telemed/components';
 import {
   findActiveAppointment,
+  findPendingAppointment,
   useAppointmentsData,
   useAppointmentStore,
   useGetAppointments,
@@ -29,8 +30,11 @@ const Homepage = (): JSX.Element => {
   const [isCancelVisitDialogOpen, setCancelVisitDialogOpen] = useState<boolean>(false);
   const { isAppointmentsFetching, refetchAppointments, appointments } = useAppointmentsData();
   const activeAppointment = useMemo(() => findActiveAppointment(appointments), [appointments]);
+  const pendingAppointment = useMemo(() => findPendingAppointment(appointments), [appointments]);
   const isAppointmentStatusProposed = activeAppointment?.appointmentStatus === 'proposed';
+  const isAppointmentStatusPending = pendingAppointment?.appointmentStatus === 'pending';
   const appointmentID = activeAppointment?.id || '';
+  const pendingAppointmentID = pendingAppointment?.id || '';
   const { refetch } = useGetAppointments(apiClient, Boolean(apiClient));
 
   useEffect(() => {
@@ -71,6 +75,16 @@ const Homepage = (): JSX.Element => {
     });
   };
 
+  const handleFinishPaperworkRequest = (): void => {
+
+    const destination = `${intakeFlowPageRoute.PaperworkHomeRoute.path.replace(
+      `:id`,
+      pendingAppointmentID
+    )}?id=${pendingAppointmentID}`;
+
+    navigate(`${destination}`);
+  };
+
   const handlePastVisits = (): void => {
     // was telemedSelectPatient
     navigate(intakeFlowPageRoute.MyPatients.path);
@@ -94,6 +108,23 @@ const Homepage = (): JSX.Element => {
     );
   };
 
+  let handleFn: any;
+  let text = isAppointmentStatusProposed ? 'Continue Virtual Visit Request' : 'Return to Call'
+  let badge = 'Active Call';
+  if(isAppointmentStatusPending) {
+    handleFn = handleFinishPaperworkRequest;
+    text = 'Finish Virtual Visit Paperwork';
+    badge = 'Pending'
+  } else {
+
+    if(isAppointmentStatusProposed) {
+      handleFn = handleContinueRequest;
+    } else {
+      handleFn = handleReturnToCall;
+    }
+  }
+
+
   return (
     <CustomContainer title={`Welcome to ${PROJECT_NAME}`} description="" isFirstPage={true}>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -108,12 +139,12 @@ const Homepage = (): JSX.Element => {
           />
         ) : (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            {activeAppointment && (
+            {(activeAppointment || pendingAppointment) && (
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, alignItems: 'flex-start' }}>
                 <HomepageOption
-                  title={isAppointmentStatusProposed ? 'Continue Virtual Visit Request' : 'Return to Call'}
+                  title={text}
                   icon={<VideoCameraFrontOutlinedIcon />}
-                  handleClick={isAppointmentStatusProposed ? handleContinueRequest : handleReturnToCall}
+                  handleClick={handleFn}
                   subSlot={
                     isAppointmentStatusProposed ? undefined : (
                       <Typography
@@ -127,7 +158,7 @@ const Homepage = (): JSX.Element => {
                           px: 1,
                         }}
                       >
-                        Active call
+                        {badge}
                       </Typography>
                     )
                   }

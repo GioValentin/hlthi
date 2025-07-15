@@ -15,6 +15,24 @@ export const findActiveAppointment = (
   }, undefined);
 };
 
+export const findPendingAppointment = (
+  appointments?: TelemedAppointmentInformationIntake[]
+): TelemedAppointmentInformationIntake | undefined => {
+  return appointments?.reduce<TelemedAppointmentInformationIntake | undefined>?.((latest, current) => {
+
+    if (!['pending'].includes(current.telemedStatus)) {
+      return latest;
+    }
+
+    if (!latest?.start || !current.start) {
+      return latest || current;
+    }
+    return new Date(current.start) > new Date(latest.start) ? current : latest;
+  }, undefined);
+};
+
+
+
 const UPDATABLE_PATIENT_INFO_FIELDS: (keyof Omit<PatientInfo, 'id'>)[] = [
   'firstName',
   'lastName',

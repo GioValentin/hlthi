@@ -1,8 +1,9 @@
 import Oystehr, { FhirSearchParams } from '@oystehr/sdk';
-import { Appointment, Encounter, Location, Patient, RelatedPerson, Resource } from 'fhir/r4b';
+import { Appointment, Encounter, Location, Patient, QuestionnaireResponse, RelatedPerson, Resource } from 'fhir/r4b';
 import { getVideoRoomResourceExtension, OTTEHR_MODULE, removePrefix } from 'utils';
 
 export type EncounterToAppointmentIdMap = { [appointmentId: string]: Encounter };
+export type QuestionnaireResponseToAppointmentIdMap = { [encounterId: string]: QuestionnaireResponse };
 
 export function filterTelemedVideoEncounters(allResources: Resource[]): EncounterToAppointmentIdMap {
   const result: EncounterToAppointmentIdMap = {};
@@ -13,6 +14,19 @@ export function filterTelemedVideoEncounters(allResources: Resource[]): Encounte
     const appointmentReference = encounter?.appointment?.[0].reference || '';
     const appointmentId = removePrefix('Appointment/', appointmentReference);
     if (appointmentId) result[appointmentId] = encounter;
+  });
+  return result;
+}
+
+export function filterTelemedQuestionnaireResponses(allResources: Resource[]): QuestionnaireResponseToAppointmentIdMap {
+  const result: QuestionnaireResponseToAppointmentIdMap = {};
+  allResources.forEach((resource) => {
+    if (resource.resourceType != 'QuestionnaireResponse') return;
+    const questionnaireResponse = resource as QuestionnaireResponse;
+
+    const encounterReference = questionnaireResponse?.encounter?.reference || '';
+    const encounterId = removePrefix('Encounter/', encounterReference);
+    if (encounterId) result[encounterId] = questionnaireResponse;
   });
   return result;
 }
@@ -47,21 +61,23 @@ export async function getFhirResources(
         value: 'Encounter:appointment',
       },
       {
+        name: '_revinclude:iterate',
+        value: 'QuestionnaireResponse:encounter',
+      },
+      {
         name: '_include',
         value: 'Appointment:location',
       },
       // {
       //   name: '_revinclude:iterate',
       //   value: 'DocumentReference:patient',
-      // },
-      // {
-      //   name: '_revinclude:iterate',
-      //   value: 'QuestionnaireResponse:encounter',
-      // },
+      // // },
+      
     ],
   };
-  const bundle = await oystehr.fhir.search<Appointment | Encounter | Location | Patient | RelatedPerson>(
+  const bundle = await oystehr.fhir.search<Appointment | Encounter | Location | Patient | RelatedPerson | QuestionnaireResponse>(
     fhirSearchParams
   );
+
   return bundle.unbundle();
 }

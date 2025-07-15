@@ -86,6 +86,7 @@ export enum TelemedAppointmentStatusEnum {
   'unsigned' = 'unsigned',
   'complete' = 'complete',
   'cancelled' = 'cancelled',
+  'pending' = 'pending'
 }
 
 export type TelemedAppointmentStatus = `${TelemedAppointmentStatusEnum}`;

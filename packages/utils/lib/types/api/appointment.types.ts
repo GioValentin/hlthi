@@ -14,10 +14,20 @@ export type RefreshableAppointmentData = {
 
 export const mapStatusToTelemed = (
   encounterStatus: string,
-  appointmentStatus: string | undefined
+  appointmentStatus: string | undefined,
+  questionnaireStatus?: string | undefined
 ): TelemedAppointmentStatusEnum | undefined => {
   switch (encounterStatus) {
     case 'planned':
+
+      if(questionnaireStatus !== undefined) {
+
+        if(questionnaireStatus == 'in-progress' && encounterStatus == 'planned') {
+          return TelemedAppointmentStatusEnum.pending;
+        }
+
+      }
+
       return TelemedAppointmentStatusEnum.ready;
     case 'arrived':
       return TelemedAppointmentStatusEnum['pre-video'];

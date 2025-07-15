@@ -11,7 +11,7 @@ import {
   TelemedAppointmentInformationIntake,
 } from 'utils';
 import { checkOrCreateM2MClientToken, getUser, ZambdaInput } from '../../../shared';
-import { filterTelemedVideoEncounters, getFhirResources } from './helpers';
+import { filterTelemedVideoEncounters, filterTelemedQuestionnaireResponses, getFhirResources } from './helpers';
 import { validateRequestParameters } from './validateRequestParameters';
 
 // Lifting up value to outside of the handler allows it to stay in memory across warm lambda invocations
@@ -53,6 +53,9 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     console.log('allResources awaited');
     const locations = allResources.filter((resource) => resource.resourceType === 'Location') as Location[];
     const encountersMap = filterTelemedVideoEncounters(allResources);
+    const questionnaireResponsesMap = filterTelemedQuestionnaireResponses(allResources);
+    
+    console.log(questionnaireResponsesMap);
     const appointments: TelemedAppointmentInformationIntake[] = [];
     allResources
       .filter((resourceTemp) => resourceTemp.resourceType === 'Appointment')
@@ -64,12 +67,20 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
         ) as Patient;
         const encounter = encountersMap[fhirAppointment.id];
 
+        
         if (!encounter) {
           console.log('No encounter for appointment: ' + fhirAppointment.id);
           return;
         }
 
-        const telemedStatus = mapStatusToTelemed(encounter.status, fhirAppointment.status);
+        const questionnaireResponse = questionnaireResponsesMap[encounter.id!];
+
+        if(!questionnaireResponse) {
+          console.log("No questionnaire response for encounter");
+          return;
+        }
+
+        const telemedStatus = mapStatusToTelemed(encounter.status, fhirAppointment.status, questionnaireResponse.status);
         if (!telemedStatus) {
           console.log('No telemed status for appointment');
           return;

@@ -216,7 +216,7 @@ export default function AddPatient(): JSX.Element {
           scheduleId: selectedLocation?.walkinSchedule?.id ?? '',
           startISO: DateTime.now().setZone(timezone).toISO() ?? '',
           lengthInMinutes: 15,
-          serviceModality: ServiceMode['in-person'],
+          serviceModality: ServiceMode['virtual'],
           walkin: true,
         };
       } else {
@@ -230,7 +230,7 @@ export default function AddPatient(): JSX.Element {
           scheduleId: scheduleId,
           startISO: slot?.start ?? '',
           lengthInMinutes: getAppointmentDurationFromSlot(slot),
-          serviceModality: ServiceMode['in-person'],
+          serviceModality: ServiceMode['virtual'],
           walkin: false,
           postTelemedLabOnly: visitType === VisitType.PostTelemed,
         };
@@ -659,9 +659,9 @@ export default function AddPatient(): JSX.Element {
                             setVisitType(event.target.value as VisitType);
                           }}
                         >
-                          {/* <MenuItem value={VisitType.WalkIn}>Walk-in Visit</MenuItem> */}
+                          <MenuItem value={VisitType.WalkIn}>Walk-in Visit</MenuItem>
                           <MenuItem value={VisitType.PreBook}>Future Visit</MenuItem>
-                          {/* <MenuItem value={VisitType.PostTelemed}>Post Telemed Lab Only</MenuItem> */}
+                          <MenuItem value={VisitType.PostTelemed}>Post Telemed Lab Only</MenuItem>
                         </Select>
                       </FormControl>
                     </Box>

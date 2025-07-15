@@ -128,13 +128,14 @@ const StartVirtualVisit = (): JSX.Element => {
         const currentWorkingHours = currentWorkingHoursText(serverState);
         return {
           state: stateCode,
-          available: serverState?.locationInformation?.scheduleExtension
-            ? isLocationOpen(
-                serverState.locationInformation.scheduleExtension,
-                serverState.locationInformation.timezone ?? TIMEZONES[0],
-                DateTime.now().setZone(serverState.locationInformation.timezone ?? '')
-              )
-            : false,
+          available:
+            serverState?.available && serverState?.locationInformation?.scheduleExtension
+              ? isLocationOpen(
+                  serverState.locationInformation.scheduleExtension,
+                  serverState.locationInformation.timezone ?? TIMEZONES[0],
+                  DateTime.now().setZone(serverState.locationInformation.timezone ?? '')
+                )
+              : false,
           workingHours: (Boolean(serverState?.available) && currentWorkingHours) || null,
           fullName: stateCodeToFullName[stateCode] || stateCode,
           scheduleId: serverState?.schedule.id || '',
@@ -153,8 +154,8 @@ const StartVirtualVisit = (): JSX.Element => {
   return (
     <PageContainer title="Request a Virtual Visit" imgAlt="Chat icon">
       <Typography variant="body1">
-        We're pleased to offer this new technology for accessing care. You will need to enter your information just
-        once. Next time you return, it will all be here for you!
+        Start a virtual visit with one of our providers. Just like a walk-in clinic, wait times can be up to an hour. 
+        If you begin after midnight in your time zone, the wait may be longer.
       </Typography>
       {!sortedStates?.length || !telemedStates?.length ? (
         <Skeleton

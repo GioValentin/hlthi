@@ -27,7 +27,7 @@ const administratorNavbarItems: NavbarItems = {
   Employees: { urls: ['/employees', '/employee'] },
   'Telemedicine:Admin': { urls: ['/telemed-admin'] },
   Telemedicine: { urls: ['/telemed/appointments', '/telemed', '/video-call'] },
-  'E-Rx Portal': {urls: ['/erx']}
+  // 'E-Rx Portal': {urls: ['/erx']}
 };
 
 const managerNavbarItems: NavbarItems = {
@@ -47,8 +47,7 @@ const staffNavbarItems: NavbarItems = {
 const providerNavbarItems: NavbarItems = {
   //'In Person': { urls: ['/visits', '/visit'] },
   Patients: { urls: ['/patients', '/patient'] },
-  Telemedicine: { urls: ['/telemed/appointments', '/telemed', '/video-call'] },
-  'E-Rx Portal': {urls: ['/erx']}
+  Telemedicine: { urls: ['/telemed/appointments', '/telemed', '/video-call'] }
 };
 
 const hideNavbarPathPatterns = [/^\/telemed\/appointments\//, /^\/patient\/[^/]+\/info$/];

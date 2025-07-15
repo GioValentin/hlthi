@@ -1,6 +1,6 @@
 {
   "name": "ottehr",
-  "version": "1.13.1",
+  "version": "1.13.0",
   "private": true,
   "engines": {
     "node": ">=20.0.0",
@@ -81,7 +81,7 @@
     "@mui/material": "^5.14.18",
     "@mui/system": "^5.10.16",
     "@mui/x-date-pickers": "^6.18.6",
-    "@oystehr/sdk": "4.1.0",
+    "@oystehr/sdk": "4.1.1",
     "@pdf-lib/fontkit": "^1.1.1",
     "@segment/analytics-next": "^1.81.1",
     "@segment/analytics-react": "^1.0.0-rc1",
@@ -110,9 +110,7 @@
     "axios": "1.6.4",
     "browser-image-compression": "^2.0.2",
     "browserslist-to-esbuild": "^1.2.0",
-    "candidhealth": "0.38.2",
-    "crc-32": "^1.2.2",
-    "dotenv": "10.0.0",
+    "candidhealth": "1.3.0",
     "fast-json-patch": "^3.1.1",
     "file-saver": "2.0.5",
     "firebase": "9.15.0",
