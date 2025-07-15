@@ -173,7 +173,9 @@ function composeDataForPdf(
     ?.map((note) => note.text);
 
   // --- Vitals ---
-  const vitals = mapVitalsToDisplay(additionalChartData?.vitalsObservations);
+  const vitals = additionalChartData?.vitalsObservations
+    ? mapVitalsToDisplay(additionalChartData.vitalsObservations, timezone)
+    : undefined;
   const vitalsNotes = additionalChartData?.notes
     ?.filter((note) => note.type === NOTE_TYPE.VITALS)
     ?.map((note) => note.text);
@@ -222,7 +224,7 @@ function composeDataForPdf(
 
   // --- Discharge instructions ---
   const disposition = additionalChartData?.disposition;
-  let dispositionHeader = 'Discharge instructions - ';
+  let dispositionHeader = 'Disposition - ';
   let dispositionText = '';
   if (disposition?.type) {
     dispositionHeader += mapDispositionTypeToLabel[disposition.type];
@@ -272,6 +274,8 @@ function composeDataForPdf(
     timeSpent: procedure.timeSpent,
     documentedBy: procedure.documentedBy,
   }));
+
+  const addendumNote = chartData?.addendumNote?.text;
 
   return {
     patientName: patientName ?? '',
@@ -332,6 +336,7 @@ function composeDataForPdf(
     subSpecialtyFollowUp,
     workSchoolExcuse,
     procedures,
+    addendumNote,
   };
 }
 
