@@ -21,6 +21,7 @@ export const ApptTabToStatus: Record<ApptTelemedTab, TelemedAppointmentStatus[]>
   [ApptTelemedTab.provider]: [TelemedAppointmentStatusEnum['pre-video'], TelemedAppointmentStatusEnum['on-video']],
   [ApptTelemedTab['not-signed']]: [TelemedAppointmentStatusEnum.unsigned],
   [ApptTelemedTab.complete]: [TelemedAppointmentStatusEnum.complete, TelemedAppointmentStatusEnum.cancelled],
+  [ApptTelemedTab.pending]: [TelemedAppointmentStatusEnum.pending],
 };
 
 export enum UnsignedFor {
@@ -272,6 +273,14 @@ export const TelemedAppointmentStatusToPalette: {
       primary: '#BF360C',
     },
   },
+  pending: {
+    background: {
+      primary: '#FFCCBC',
+    },
+    color: {
+      primary: '#BF360C',
+    },
+  },
 };
 
 export type GetAppointmentsRequestParams = Pick<
@@ -307,6 +316,14 @@ export const APPT_STATUS_MAP: {
     },
   },
   'pre-video': {
+    background: {
+      primary: '#B3E5FC',
+    },
+    color: {
+      primary: '#01579B',
+    },
+  },
+  'pending': {
     background: {
       primary: '#B3E5FC',
     },

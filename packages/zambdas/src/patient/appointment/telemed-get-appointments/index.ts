@@ -55,7 +55,6 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     const encountersMap = filterTelemedVideoEncounters(allResources);
     const questionnaireResponsesMap = filterTelemedQuestionnaireResponses(allResources);
     
-    console.log(questionnaireResponsesMap);
     const appointments: TelemedAppointmentInformationIntake[] = [];
     allResources
       .filter((resourceTemp) => resourceTemp.resourceType === 'Appointment')

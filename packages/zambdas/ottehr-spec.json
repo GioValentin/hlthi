@@ -161,6 +161,10 @@
       "name": "TELEMED_CLIENT_SECRET",
       "value": "#var/TELEMED_CLIENT_SECRET"
     },
+    "HLTHI_SINGLE_VISIT_PRICE_ID": {
+      "name": "HLTHI_SINGLE_VISIT_PRICE_ID",
+      "value": "#var/HLTHI_SINGLE_VISIT_PRICE_ID"
+    },
     "IN_PERSON_PREVISIT_QUESTIONNAIRE": {
       "name": "IN_PERSON_PREVISIT_QUESTIONNAIRE",
       "value": "#var/IN_PERSON_PREVISIT_QUESTIONNAIRE"

@@ -365,7 +365,7 @@ export const performTransactionalFhirRequests = async (input: TransactionInput):
     throw new Error('Unexpectedly have no patient and no request to make one');
   }
   const patientRef = patient ? `Patient/${patient.id}` : createPatientRequest?.fullUrl || '';
-
+  
   const now = DateTime.now().setZone('UTC');
   const nowIso = now.toISO() ?? '';
   let initialAppointmentStatus: FhirAppointmentStatus =
@@ -408,6 +408,10 @@ export const performTransactionalFhirRequests = async (input: TransactionInput):
     },
     status: 'accepted',
   });
+
+  console.log(`Resource Type: ${scheduleOwner.resourceType}`);
+  console.log(`Resource ID: ${scheduleOwner.id}`);
+
   participants.push({
     actor: {
       reference: `${scheduleOwner.resourceType}/${scheduleOwner.id}`,
@@ -514,7 +518,7 @@ export const performTransactionalFhirRequests = async (input: TransactionInput):
   };
 
   const { documents, accountInfo } = await getRelatedResources(oystehr, patient?.id);
-
+  
   const patientToUse = patient ?? (createPatientRequest?.resource as Patient);
 
   let currentPatientAccount: Account | undefined;
@@ -578,6 +582,7 @@ export const performTransactionalFhirRequests = async (input: TransactionInput):
   if (updatePatientRequest) {
     patientRequests.push(updatePatientRequest);
   }
+
   if (createPatientRequest) {
     patientRequests.push(createPatientRequest);
   }
@@ -633,14 +638,14 @@ export const performTransactionalFhirRequests = async (input: TransactionInput):
   };
   console.log('making transaction request');
   const bundle = await oystehr.fhir.transaction(transactionInput);
-  const resources = extractResourcesFromBundle(bundle);
+  const resources = extractResourcesFromBundle(bundle, patientRequests.length);
   return resources;
 };
 
-const extractResourcesFromBundle = (bundle: Bundle<Resource>): TransactionOutput => {
+const extractResourcesFromBundle = (bundle: Bundle<Resource>, checkForPatient: number): TransactionOutput => {
   console.log('getting resources from bundle');
   const entry = bundle.entry ?? [];
-
+  console.log(bundle);
   const appointment: Appointment = entry.find((appt) => {
     return appt.resource && appt.resource.resourceType === 'Appointment';
   })?.resource as Appointment;
@@ -663,7 +668,7 @@ const extractResourcesFromBundle = (bundle: Bundle<Resource>): TransactionOutput
   if (encounter === undefined) {
     throw new Error('Encounter could not be created');
   }
-  if (patient === undefined) {
+  if (patient === undefined && checkForPatient != 0) {
     throw new Error('Patient could not be found');
   }
   if (questionnaireResponse === undefined) {

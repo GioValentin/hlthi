@@ -69,6 +69,8 @@ export const telemedStatusToEncounter = (telemedStatus: TelemedCallStatuses): En
   switch (telemedStatus) {
     case 'ready':
       return 'planned';
+    case 'pending':
+      return 'planned';
     case 'pre-video':
       return 'arrived';
     case 'on-video':

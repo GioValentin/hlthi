@@ -37,6 +37,10 @@ const Homepage = (): JSX.Element => {
   const pendingAppointmentID = pendingAppointment?.id || '';
   const { refetch } = useGetAppointments(apiClient, Boolean(apiClient));
 
+  console.log(appointmentID);
+  console.log(pendingAppointmentID);
+  console.log(activeAppointment);
+
   useEffect(() => {
     if (apiClient) {
       // TODO research option invalidate cache on the place to rid of useEffects with manually refetching
@@ -63,6 +67,19 @@ const Homepage = (): JSX.Element => {
   };
 
   const handleReturnToCall = (): void => {
+
+    let ap = '';
+
+    if(appointmentID == '' && pendingAppointmentID != '' && pendingAppointmentID != undefined) {
+
+       const destination = `${intakeFlowPageRoute.PaperworkHomeRoute.path.replace(
+          `:id`,
+          pendingAppointmentID
+        )}?id=${pendingAppointmentID}`;
+        navigate(`${destination}`);
+        return;
+    }
+
     navigate(`${intakeFlowPageRoute.WaitingRoom.path}?appointment_id=${appointmentID}`);
   };
 
