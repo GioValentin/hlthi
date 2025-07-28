@@ -1,5 +1,4 @@
-import { BatchInputPatchRequest, BatchInputPostRequest } from '@oystehr/sdk';
-import { Oystehr } from '@oystehr/sdk/dist/cjs/resources/classes';
+import Oystehr, { BatchInputPatchRequest, BatchInputPostRequest } from '@oystehr/sdk';
 import { APIGatewayProxyResult } from 'aws-lambda';
 import { Operation } from 'fast-json-patch';
 import {
@@ -28,14 +27,17 @@ import {
   createOystehrClient,
   getMyPractitionerId,
   topLevelCatch,
+  wrapHandler,
   ZambdaInput,
 } from '../../shared';
 import { createExternalLabResultPDF } from '../../shared/pdf/labs-results-form-pdf';
 import { validateRequestParameters } from './validateRequestParameters';
 
+const ZAMBDA_NAME = 'update-lab-order-resources';
+
 let m2mToken: string;
 
-export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> => {
+export const index = wrapHandler(ZAMBDA_NAME, async (input: ZambdaInput): Promise<APIGatewayProxyResult> => {
   console.log(`update-lab-order-resources started, input: ${JSON.stringify(input)}`);
 
   let secrets = input.secrets;
@@ -115,7 +117,7 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
       }),
     };
   }
-};
+});
 
 const handleReviewedEvent = async ({
   oystehr,
@@ -145,14 +147,14 @@ const handleReviewedEvent = async ({
   ).unbundle();
 
   const serviceRequest = resources.find(
-    (r) => r.resourceType === 'ServiceRequest' && r.id === serviceRequestId
+    (r: any) => r.resourceType === 'ServiceRequest' && r.id === serviceRequestId
   ) as ServiceRequest;
 
   const diagnosticReport = resources.find(
-    (r) => r.resourceType === 'DiagnosticReport' && r.id === diagnosticReportId
+    (r: any) => r.resourceType === 'DiagnosticReport' && r.id === diagnosticReportId
   ) as DiagnosticReport;
 
-  const task = resources.find((r) => r.resourceType === 'Task' && r.id === taskId) as Task;
+  const task = resources.find((r: any) => r.resourceType === 'Task' && r.id === taskId) as Task;
 
   if (!serviceRequest) {
     throw new Error(`ServiceRequest/${serviceRequestId} not found`);

@@ -1,3 +1,4 @@
+import { ERX_MEDICATION_META_TAG_CODE } from '../../../fhir/constants';
 import { SCHOOL_WORK_NOTE } from '../../data';
 import { CSS_NOTE_ID, NOTHING_TO_EAT_OR_DRINK_ID } from './chart-data.types';
 
@@ -25,7 +26,8 @@ export type ProviderChartDataFieldsNames =
   | typeof CSS_NOTE_ID
   | 'birth-history'
   | 'ai-potential-diagnosis'
-  | 'procedure';
+  | 'procedure'
+  | typeof ERX_MEDICATION_META_TAG_CODE;
 
 export type DispositionMetaFieldsNames = 'disposition-follow-up' | 'sub-follow-up';
 
@@ -36,6 +38,20 @@ export const PATIENT_SUPPORT_PHONE_NUMBER = '202-555-1212';
 export const HISTORY_OBTAINED_FROM_FIELD = 'history-obtained-from';
 
 export const SEEN_IN_LAST_THREE_YEARS_FIELD = 'seen-in-last-three-years';
+
+export const PATIENT_VACCINATION_STATUS = 'patient-vaccination-status';
+
+export enum PatientVaccinationKeys {
+  yes = 'yes',
+  partially = 'partially',
+  no = 'no',
+}
+
+export const patientVaccinationLabels: Record<PatientVaccinationKeys, string> = {
+  [PatientVaccinationKeys.yes]: 'Yes, up to date',
+  [PatientVaccinationKeys.partially]: 'Partially vaccinated',
+  [PatientVaccinationKeys.no]: 'No vaccinations',
+};
 
 export enum HistorySourceKeys {
   Mother = 'mother',

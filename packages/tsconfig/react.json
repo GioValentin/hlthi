@@ -1,13 +1,15 @@
 {
   "extends": "./base.json",
   "compilerOptions": {
+    "sourceMap": true,
+    "inlineSources": true,
     "jsx": "react-jsx",
     "lib": ["dom", "dom.iterable", "esnext"],
     "target": "ESNext",
     "useDefineForClassFields": true,
     "types": ["vite/client"],
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": false,
@@ -17,7 +19,8 @@
     "noEmit": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "verbatimModuleSyntax": false
   },
   "references": [{ "path": "./react.node.json" }]
 }
