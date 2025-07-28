@@ -27,7 +27,7 @@ export const getAllResourcesFromFhir = async (
         name: '_tag',
         value: OTTEHR_MODULE.TM,
       },
-      { name: '_tag', value: 'https://api.hlthi.life/triage-status|ready' },
+      // { name: '_tag', value: 'https://api.hlthi.life/triage-status|ready' },
       {
         name: 'status',
         value: appointmentStatusesToSearchWith.join(','),
