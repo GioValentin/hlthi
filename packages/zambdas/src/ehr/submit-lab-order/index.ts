@@ -19,13 +19,20 @@ import {
   isApiError,
   isPSCOrder,
   ORDER_NUMBER_LEN,
+  ORDER_SUBMITTED_MESSAGE,
   OTTEHR_LAB_ORDER_PLACER_ID_SYSTEM,
   OYSTEHR_LAB_OI_CODE_SYSTEM,
   OYSTEHR_LAB_ORDER_PLACER_ID_SYSTEM,
   PROVENANCE_ACTIVITY_CODING_ENTITY,
   SecretsKeys,
 } from 'utils';
-import { checkOrCreateM2MClientToken, createOystehrClient, topLevelCatch, ZambdaInput } from '../../shared';
+import {
+  checkOrCreateM2MClientToken,
+  createOystehrClient,
+  topLevelCatch,
+  wrapHandler,
+  ZambdaInput,
+} from '../../shared';
 import { createExternalLabsLabelPDF, ExternalLabsLabelConfig } from '../../shared/pdf/external-labs-label-pdf';
 import { createExternalLabsOrderFormPDF } from '../../shared/pdf/external-labs-order-form-pdf';
 import { makeLabPdfDocumentReference } from '../../shared/pdf/labs-results-form-pdf';
@@ -33,11 +40,13 @@ import { getExternalLabOrderResources } from '../shared/labs';
 import { AOEDisplayForOrderForm, createOrderNumber, populateQuestionnaireResponseItems } from './helpers';
 import { validateRequestParameters } from './validateRequestParameters';
 
+const ZAMBDA_NAME = 'submit-lab-order';
+
 // Lifting up value to outside of the handler allows it to stay in memory across warm lambda invocations
 let m2mToken: string;
 export const LABS_DATE_STRING_FORMAT = 'MM/dd/yyyy hh:mm a ZZZZ';
 
-export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> => {
+export const index = wrapHandler(ZAMBDA_NAME, async (input: ZambdaInput): Promise<APIGatewayProxyResult> => {
   try {
     console.log(`Input: ${JSON.stringify(input)}`);
     console.log('Validating input');
@@ -81,7 +90,7 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     const orderNumber = serviceRequest.identifier?.find(
       (id) => id.system === OTTEHR_LAB_ORDER_PLACER_ID_SYSTEM || id.system === OYSTEHR_LAB_ORDER_PLACER_ID_SYSTEM
     )?.value;
-    if (orderNumber) throw EXTERNAL_LAB_ERROR('Order is already submitted');
+    if (orderNumber) throw EXTERNAL_LAB_ERROR(ORDER_SUBMITTED_MESSAGE);
 
     const locationID = serviceRequest.locationReference?.[0].reference?.replace('Location/', '');
 
@@ -152,7 +161,7 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
       }
 
       if (organizationsRequestsTemp?.length !== 1) {
-        throw EXTERNAL_LAB_ERROR('organization is not found');
+        throw EXTERNAL_LAB_ERROR('organization for insurance is not found');
       }
 
       if (patientsRequestsTemp?.length !== 1) {
@@ -196,7 +205,9 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
             const specimenCollector = { reference: currentUser?.profile };
             const requests: Operation[] = [];
 
-            specimenFromSubmitDate && sampleCollectionDates.push(specimenFromSubmitDate);
+            if (specimenFromSubmitDate) {
+              sampleCollectionDates.push(specimenFromSubmitDate);
+            }
 
             if (specimenCollection) {
               console.log('specimen collection found');
@@ -461,6 +472,7 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
           name: code.text || ORDER_ITEM_UNKNOWN,
         })),
         orderPriority: serviceRequest.priority || ORDER_ITEM_UNKNOWN,
+        isManualOrder: manualOrder,
       },
       patient.id,
       secrets,
@@ -522,4 +534,4 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
       body,
     };
   }
-};
+});
