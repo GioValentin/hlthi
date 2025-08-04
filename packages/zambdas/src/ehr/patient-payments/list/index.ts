@@ -28,13 +28,17 @@ import {
   lambdaResponse,
   STRIPE_PAYMENT_ID_SYSTEM,
   topLevelCatch,
+  wrapHandler,
   ZambdaInput,
 } from '../../../shared';
 import { getAccountAndCoverageResourcesForPatient } from '../../shared/harvest';
 
 // Lifting up value to outside of the handler allows it to stay in memory across warm lambda invocations
 let oystehrM2MClientToken: string;
-export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> => {
+
+const ZAMBDA_NAME = 'patient-payments-list';
+
+export const index = wrapHandler(ZAMBDA_NAME, async (input: ZambdaInput): Promise<APIGatewayProxyResult> => {
   try {
     console.group('validateRequestParameters');
     let validatedParameters: ReturnType<typeof validateRequestParameters>;
@@ -83,7 +87,7 @@ export const index = async (input: ZambdaInput): Promise<APIGatewayProxyResult> 
     const ENVIRONMENT = getSecret(SecretsKeys.ENVIRONMENT, input.secrets);
     return topLevelCatch('patient-payments-list', error, ENVIRONMENT);
   }
-};
+});
 interface EffectInput extends ListPatientPaymentInput {
   stripeClient: Stripe;
   patientAccount: Account;
@@ -98,7 +102,8 @@ const performEffect = async (input: EffectInput): Promise<ListPatientPaymentResp
     if (customerId) {
       const [paymentIntents, pms] = await Promise.all([
         stripeClient.paymentIntents.search({
-          query: `customer:"${customerId}" AND metadata['encounterId']:"${encounterId}"`,
+          query: `metadata['encounterId']:"${encounterId}" OR metadata['oystehr_encounter_id']:"${encounterId}"`,
+          limit: 20, // default is 10
         }),
         stripeClient.paymentMethods.list({
           customer: customerId,
@@ -124,29 +129,30 @@ const performEffect = async (input: EffectInput): Promise<ListPatientPaymentResp
     paymentMethods.push(...pms.data);
   }
 
-  const cardPayments: CardPaymentDTO[] = stripePayments.flatMap((paymentIntent) => {
-    const cardUsed = paymentMethods.find((pm) => pm.id === paymentIntent.payment_method);
-    const last4 = cardUsed?.card?.last4;
-    const paymentMethodId = cardUsed?.id;
-    if (!last4 || !paymentMethodId) {
-      return [];
-    }
-    const fhirPaymentNoticeId = fhirPaymentNotices.find(
-      (notice) =>
-        notice.identifier?.some((id) => id.system === STRIPE_PAYMENT_ID_SYSTEM && id.value === paymentIntent.id) ??
-        false
-    )?.id;
-    return {
-      paymentMethod: 'card',
-      stripePaymentId: paymentIntent.id,
-      amountInCents: paymentIntent.amount,
-      description: paymentIntent.description ?? undefined,
-      stripePaymentMethodId: paymentMethodId,
-      fhirPaymentNoticeId,
-      cardLast4: last4,
-      dateISO: DateTime.fromSeconds(paymentIntent.created).toISO(),
-    };
-  });
+  const cardPayments: CardPaymentDTO[] = fhirPaymentNotices
+    .flatMap((paymentNotice) => {
+      const pnStripeId = paymentNotice.identifier?.find((id) => id.system === STRIPE_PAYMENT_ID_SYSTEM)?.value;
+      const paymentIntent = stripePayments.find((pi) => pi.id === pnStripeId);
+      const stripePaymentId = paymentIntent ? paymentIntent.id : pnStripeId;
+      const last4 = paymentMethods.find((pm) => pm.id === paymentIntent?.payment_method)?.card?.last4;
+      const paymentMethodId = paymentMethods.find((pm) => pm.id === paymentIntent?.payment_method)?.id;
+      const dateISO = DateTime.fromISO(paymentNotice.created).toISO();
+      if (!dateISO || !paymentNotice.id) {
+        console.log('missing data for payment notice:', paymentNotice.id, 'dateISO', dateISO);
+        return [];
+      }
+      return {
+        paymentMethod: 'card' as const,
+        stripePaymentId,
+        amountInCents: (paymentNotice.amount.value ?? 0) * 100,
+        description: paymentIntent?.description ?? undefined,
+        stripePaymentMethodId: paymentMethodId,
+        fhirPaymentNotificationId: paymentNotice.id,
+        cardLast4: last4,
+        dateISO,
+      };
+    })
+    .slice(0, 20); // We only fetch the last 20 payments from stripe, which should be more than enough for pretty much any real world use case
 
   // todo: the data here should be fetched from candid and then linked to the payment notice ala stripe,
   // but that awaits the candid integration portion

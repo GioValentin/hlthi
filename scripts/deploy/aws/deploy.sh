@@ -8,6 +8,13 @@ provider_email=$(grep '"provider_email"' "$(dirname "$0")/../deploy-config.json"
 environment=$(grep '"environment"' "$(dirname "$0")/../deploy-config.json" | sed 's/.*: "\(.*\)".*/\1/')
 ENV=$environment
 
+# Use "default" instead of "local" for build:env commands
+if [ "$environment" = "local" ]; then
+    build_env="default"
+else
+    build_env="$environment"
+fi
+
 if [ -f "apps/intake/env/.env.$environment" ]; then
     first_setup=false
 else
@@ -29,11 +36,11 @@ ENV=$environment npm run setup-secrets $environment
 popd
 
 pushd apps/intake
-npm run build:env --env=$environment
+npm run build:env --env=$build_env
 popd
 
 pushd apps/ehr
-npm run build:env --env=$environment
+npm run build:env --env=$build_env
 popd
 
 # bootstrap if necessary
@@ -51,14 +58,13 @@ npx cdk deploy --require-approval=never "ottehr-infra-stack-${environment}"
 npx ts-node ./bin/update-config.ts
 popd
 
-#recompile apps with updated env files
-# pushd apps/intake
-# npm run build:env --env=$environment
-# popd
-
-# pushd apps/ehr
-# npm run build:env --env=$environment
-# popd
+# recompile apps with updated env files
+pushd apps/intake
+npm run build:env --env=$build_env
+popd
+pushd apps/ehr
+npm run build:env --env=$build_env
+popd
 
 # second cdk deploy uploads compiled apps
 pushd scripts/deploy/aws

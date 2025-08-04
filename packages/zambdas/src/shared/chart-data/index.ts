@@ -48,6 +48,7 @@ import {
   DispositionFollowUpType,
   DispositionMetaFieldsNames,
   DispositionType,
+  ERX_MEDICATION_META_TAG_CODE,
   EXAM_OBSERVATION_META_SYSTEM,
   ExamCardsNames,
   ExamFieldsNames,
@@ -56,6 +57,7 @@ import {
   fillVitalObservationAttributes,
   FreeTextNoteDTO,
   GetChartDataResponse,
+  getVitalObservationFhirInterpretations,
   HospitalizationDTO,
   isVitalObservation,
   makeVitalsObservationDTO,
@@ -247,7 +249,7 @@ export function makeMedicationDTO(medication: MedicationStatement): MedicationDT
     name: medication.medicationCodeableConcept?.coding?.[0].display || '',
     type: medication.dosage?.[0].asNeededBoolean ? 'as-needed' : 'scheduled',
     intakeInfo: {
-      dose: medication.dosage?.[0].text || '',
+      dose: getMedicationDosage(medication),
       date: medication.effectiveDateTime,
     },
     status: ['active', 'completed'].includes(medication.status)
@@ -264,12 +266,11 @@ export function makePrescribedMedicationDTO(medRequest: MedicationRequest): Pres
       (coding) => coding.system === MEDICATION_DISPENSABLE_DRUG_ID
     )?.display,
     instructions: medRequest.dosageInstruction?.[0]?.patientInstruction,
-    added: medRequest.extension?.find((extension) => extension.url === 'http://api.zapehr.com/photon-event-time')
-      ?.valueDateTime,
+    added: medRequest.meta?.lastUpdated,
     provider: medRequest.requester?.reference?.split('/')?.[1],
     status: medRequest.status,
     prescriptionId: medRequest.identifier?.find(
-      (identifier) => identifier.system === 'http://api.zapehr.com/photon-prescription-id'
+      (identifier) => identifier.system === 'https://identifiers.fhir.oystehr.com/erx-prescription-id'
     )?.value,
   };
 }
@@ -306,7 +307,8 @@ export function makeObservationResource(
   patientId: string,
   practitionerId: string,
   data: ObservationDTO,
-  metaSystem: string
+  metaSystem: string,
+  patientDOB?: string
 ): Observation {
   const base: Observation = {
     id: data.resourceId,
@@ -325,8 +327,14 @@ export function makeObservationResource(
   console.log(`makeObservationResource() fieldName=[${fieldName}]`);
 
   if (isVitalObservation(data)) {
-    console.log(`isVitalObservation() == true`);
-    return fillVitalObservationAttributes(base, data);
+    let interpretation: Observation['interpretation'];
+    if (patientDOB) {
+      interpretation = getVitalObservationFhirInterpretations({
+        patientDOB,
+        vitalsObservation: data,
+      });
+    }
+    return fillVitalObservationAttributes({ ...base, interpretation }, data, patientDOB);
   }
 
   if (isObservationBooleanFieldDTO(data)) {
@@ -337,7 +345,7 @@ export function makeObservationResource(
   }
 
   if (isObservationTextFieldDTO(data)) {
-    if ('note' in data) {
+    if ('note' in data && data.note) {
       return {
         ...base,
         valueString: data.value,
@@ -1070,7 +1078,10 @@ const mapResourceToChartDataFields = (
   ) {
     data.inhouseMedications?.push(makeMedicationDTO(resource));
     resourceMapped = true;
-  } else if (resource?.resourceType === 'MedicationRequest') {
+  } else if (
+    resource?.resourceType === 'MedicationRequest' &&
+    chartDataResourceHasMetaTagByCode(resource, ERX_MEDICATION_META_TAG_CODE)
+  ) {
     data.prescribedMedications?.push(makePrescribedMedicationDTO(resource));
     resourceMapped = true;
   } else if (
@@ -1501,4 +1512,12 @@ function getCode(codeableConcept: CodeableConcept | CodeableConcept[] | undefine
 
 function getExtension(resource: DomainResource, url: string): Extension | undefined {
   return resource.extension?.find((extension) => extension.url === url);
+}
+
+function getMedicationDosage(medication: MedicationStatement): string | undefined {
+  const doseQuantity = medication.dosage?.[0].doseAndRate?.[0].doseQuantity;
+  if (!doseQuantity?.value || !doseQuantity?.unit) {
+    return undefined;
+  }
+  return `${doseQuantity.value}${doseQuantity.unit}`;
 }

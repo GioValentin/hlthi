@@ -132,8 +132,8 @@ export const DispositionCard: FC = () => {
   //   return () => subscription.unsubscribe();
   // }, [handleSubmit, onSubmit, watch]);
   useEffect(() => {
-    const subscription = watch(() => {
-      if (!isResetting.current) {
+    const subscription = watch((data, { type }) => {
+      if (!isResetting.current && type === 'change') {
         void handleSubmit(onSubmit)();
       }
     });

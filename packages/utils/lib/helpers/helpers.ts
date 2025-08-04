@@ -23,6 +23,52 @@ export function createOystehrClient(token: string, fhirAPI: string, projectAPI: 
   return new Oystehr(CLIENT_CONFIG);
 }
 
+export type FetchClientWithOystAuth = {
+  oystFetch: <T = any>(method: 'GET' | 'POST' | 'DELETE' | 'PUT' | 'PATCH', url: string, body?: any) => Promise<T>;
+};
+
+export function createFetchClientWithOystAuth(params: {
+  authToken: string;
+  projectId?: string;
+}): FetchClientWithOystAuth {
+  const authToken = params.authToken;
+  const oystehrProjectId = params.projectId;
+
+  async function fetchWithOystehrAuth<T = any>(
+    method: 'GET' | 'POST' | 'DELETE' | 'PUT' | 'PATCH',
+    url: string,
+    body?: any
+  ): Promise<T> {
+    const headers: any = {
+      accept: 'application/json',
+      'content-type': 'application/json',
+      authorization: `Bearer ${authToken}`,
+    };
+    if (oystehrProjectId) headers['x-oystehr-project-id'] = oystehrProjectId;
+    const response = await fetch(url, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+    });
+
+    if (!response.ok) {
+      const res = await response.json();
+      throw new Error(`HTTP error for ${method} ${url}: ${res}, ${JSON.stringify(res)}`);
+    }
+    console.log(`Request status for ${method} ${url}: `, response.status);
+
+    if (response.body) {
+      const data = await response.json();
+      return data?.output ? data.output : data;
+    }
+
+    return {} as T;
+  }
+  return {
+    oystFetch: fetchWithOystehrAuth,
+  };
+}
+
 export function getParticipantIdFromAppointment(
   appointment: Appointment,
   participant: 'Patient' | 'Practitioner'
@@ -162,7 +208,7 @@ export function stripMarkdownLink(text: string): string {
   try {
     const str = String(text).replace(/(?:__|[*#])|\[(.*?)\]\(.*?\)/gm, '$1');
     return str;
-  } catch (_) {
+  } catch {
     return text;
   }
 }
@@ -238,6 +284,7 @@ export const DEMO_VISIT_RESPONSIBLE_DATE_OF_BIRTH_MONTH = '05';
 export const DEMO_VISIT_RESPONSIBLE_DATE_OF_BIRTH_YEAR = '1900';
 export const DEMO_VISIT_RESPONSIBLE_BIRTH_SEX = 'Intersex';
 export const DEMO_VISIT_RESPONSIBLE_PHONE = '(240) 333-3333';
+export const DEMO_VISIT_RESPONSIBLE_EMAIL = 'ibenham+test@masslight.com';
 export const DEMO_VISIT_RESPONSIBLE_ADDRESS1 = '333 test street';
 export const DEMO_VISIT_RESPONSIBLE_CITY = 'Cleveland';
 export const DEMO_VISIT_RESPONSIBLE_STATE = 'OH';
@@ -444,6 +491,7 @@ export function getResponsiblePartyStepAnswers({
   city = DEMO_VISIT_RESPONSIBLE_CITY,
   state = DEMO_VISIT_RESPONSIBLE_STATE,
   zip = DEMO_VISIT_RESPONSIBLE_ZIP,
+  email = DEMO_VISIT_RESPONSIBLE_EMAIL,
 }: {
   firstName?: string;
   relationship?: string;
@@ -454,6 +502,7 @@ export function getResponsiblePartyStepAnswers({
   city?: string;
   state?: string;
   zip?: string;
+  email?: string;
   phone?: string;
 }): PatchPaperworkParameters['answers'] {
   return {
@@ -504,6 +553,14 @@ export function getResponsiblePartyStepAnswers({
         answer: [
           {
             valueString: phone,
+          },
+        ],
+      },
+      {
+        linkId: 'responsible-party-email',
+        answer: [
+          {
+            valueString: email,
           },
         ],
       },

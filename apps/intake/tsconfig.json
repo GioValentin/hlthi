@@ -1,6 +1,9 @@
 {
   "extends": "tsconfig/react.json",
   "compilerOptions": {
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "inlineSources": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "baseUrl": ".",
