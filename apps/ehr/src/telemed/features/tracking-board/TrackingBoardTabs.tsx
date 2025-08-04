@@ -80,6 +80,12 @@ export function TrackingBoardTabs(): ReactElement {
               data-testid={dataTestIds.telemedEhrFlow.telemedAppointmentsTabs(ApptTelemedTab['not-signed'])}
             />
             <Tab
+              label="Cancelled"
+              value={ApptTelemedTab.cancelled}
+              sx={{ textTransform: 'none', fontWeight: 500 }}
+              data-testid={dataTestIds.telemedEhrFlow.telemedAppointmentsTabs(ApptTelemedTab.cancelled)}
+            />
+            <Tab
               label="Complete"
               value={ApptTelemedTab.complete}
               sx={{ textTransform: 'none', fontWeight: 500 }}

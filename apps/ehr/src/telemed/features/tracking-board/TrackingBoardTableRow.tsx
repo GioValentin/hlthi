@@ -20,7 +20,7 @@ import { FC, ReactElement, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { calculatePatientAge, getTimezone, TelemedAppointmentInformation, TelemedAppointmentStatusEnum } from 'utils';
 import { dataTestIds } from '../../../constants/data-test-ids';
-import ChatModal from '@features/chat/ChatModal';
+import ChatModal from '../../../features/chat/ChatModal';
 import { formatDateUsingSlashes } from '../../../helpers/formatDateTime';
 import { AppointmentStatusChip, StatusHistory } from '../../components';
 import { quickTexts } from '../../utils';
@@ -105,6 +105,10 @@ export function TrackingBoardTableRow({ appointment, showProvider, next }: Appoi
     navigate(`/telemed/appointments/${appointment.id}`);
   };
 
+  const goToVisit= (): void => {
+    navigate(`/visit/${appointment.id}`);
+  };
+
   let start;
   if (appointment.start) {
     let timezone = 'America/New_York';
@@ -114,7 +118,7 @@ export function TrackingBoardTableRow({ appointment, showProvider, next }: Appoi
       console.error('Error getting timezone for appointment', appointment.id, error);
     }
     const dateTime = DateTime.fromISO(appointment.start).setZone(timezone);
-    start = dateTime.toFormat('h:mm a');
+    start = dateTime.toFormat('cccc, MM/dd/yyyy - hh:mm a');
   }
 
   return (
@@ -218,6 +222,7 @@ export function TrackingBoardTableRow({ appointment, showProvider, next }: Appoi
           {reasonForVisit}
         </Typography>
       </TableCell>
+      
       <TableCell sx={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={goToAppointment}>
         <Typography sx={{ fontSize: '16px' }}>{appointment.locationVirtual.state}</Typography>
       </TableCell>
@@ -286,6 +291,9 @@ export function TrackingBoardTableRow({ appointment, showProvider, next }: Appoi
             )}
           </IconButton>
         )}
+      </TableCell>
+      <TableCell sx={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={goToVisit}>
+        <Typography sx={{ fontSize: '16px' }}>See Uploads</Typography>
       </TableCell>
       <TableCell sx={{ verticalAlign: 'middle' }}>
         <TrackingBoardTableButton appointment={appointment} />

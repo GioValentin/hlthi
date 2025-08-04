@@ -19,7 +19,7 @@ export const findPendingAppointment = (
   appointments?: TelemedAppointmentInformationIntake[]
 ): TelemedAppointmentInformationIntake | undefined => {
   return appointments?.reduce<TelemedAppointmentInformationIntake | undefined>?.((latest, current) => {
-
+    
     if (!['pending'].includes(current.telemedStatus)) {
       return latest;
     }

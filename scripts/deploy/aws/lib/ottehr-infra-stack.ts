@@ -26,28 +26,29 @@ export class OttehrInfraStack extends cdk.Stack {
     const domain = 'domain' in projectConfig ? projectConfig.domain : 'ottehr.com';
     const patientPortalSubdomain = 'intake_subdomain' in projectConfig ? projectConfig.intake_subdomain : 'intake';
     const ehrSubdomain = 'ehr_subdomain' in projectConfig ? projectConfig.ehr_subdomain : 'ehr';
+
     this.patientPortalBucket = createWebsiteBucket(
       this,
-      'patientPortal',
+      `patientPortal`,
       projectIdentifier,
       domain,
       patientPortalSubdomain
     );
-    this.ehrBucket = createWebsiteBucket(this, 'ehr', projectIdentifier, domain, ehrSubdomain);
+    this.ehrBucket = createWebsiteBucket(this, `ehr`, projectIdentifier, domain, ehrSubdomain);
     this.patientPortalDistribution = setUpCloudFront(
       this,
-      'patientPortal',
+      `patientPortal`,
       this.patientPortalBucket,
       projectIdentifier,
       projectConfig.intake_domain
     );
-    this.ehrDistribution = setUpCloudFront(this, 'ehr', this.ehrBucket, projectIdentifier, projectConfig.ehr_domain);
+    this.ehrDistribution = setUpCloudFront(this, `ehr`, this.ehrBucket, projectIdentifier, projectConfig.ehr_domain);
   }
 }
 
 function createWebsiteBucket(
   scope: Construct,
-  website: 'patientPortal' | 'ehr',
+  website: 'patientPortal' | 'ehr' | string,
   projectIdentifier: string,
   domain: string,
   subdomain: string
@@ -70,7 +71,7 @@ function createWebsiteBucket(
 
 function setUpCloudFront(
   scope: Construct,
-  website: 'patientPortal' | 'ehr',
+  website: 'patientPortal' | 'ehr' | string,
   bucket: s3.Bucket,
   projectId: string,
   domainName: string
@@ -88,7 +89,7 @@ function setUpCloudFront(
       cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
       viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
     },
-    domainNames: [website == 'ehr' ? 'provider.hlthi.life' : 'patients.hlthi.life'], // e.g., 'provider.hlthi.life'
+    domainNames: [domainName], // e.g., 'provider.hlthi.life'
     certificate,
     comment: `ottehr-${website}-${projectId} - redeployed at ${new Date().toISOString()}`
   });

@@ -115,5 +115,6 @@ export enum ApptTelemedTab {
   'provider' = 'provider',
   'not-signed' = 'not-signed',
   'complete' = 'complete',
-  'pending' = 'pending'
+  'pending' = 'pending',
+  'cancelled' = 'cancelled'
 }

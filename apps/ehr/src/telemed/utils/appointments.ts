@@ -20,7 +20,8 @@ export const ApptTabToStatus: Record<ApptTelemedTab, TelemedAppointmentStatus[]>
   [ApptTelemedTab.ready]: [TelemedAppointmentStatusEnum.ready],
   [ApptTelemedTab.provider]: [TelemedAppointmentStatusEnum['pre-video'], TelemedAppointmentStatusEnum['on-video']],
   [ApptTelemedTab['not-signed']]: [TelemedAppointmentStatusEnum.unsigned],
-  [ApptTelemedTab.complete]: [TelemedAppointmentStatusEnum.complete, TelemedAppointmentStatusEnum.cancelled],
+  [ApptTelemedTab.complete]: [TelemedAppointmentStatusEnum.complete],
+  [ApptTelemedTab.cancelled]: [TelemedAppointmentStatusEnum.cancelled],
   [ApptTelemedTab.pending]: [TelemedAppointmentStatusEnum.pending],
 };
 

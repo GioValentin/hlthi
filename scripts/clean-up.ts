@@ -33,126 +33,21 @@ function capitalizeWords(str) {
 
 const runCleanup = async () => {
 
-    const jsonResponse = await (await fetch('https://auth.zapehr.com/oauth/token', {
-        method: 'POST',
-        headers: {
-            'content-type': 'application/json',
-        },
-        body: JSON.stringify({
-            grant_type: 'client_credentials',
-            client_id: 'aHIMQd3Z7neJOUabd2iTdDa9RIDgLqMs',
-            client_secret: 'cTbcXeuukkXTMjf8v9y9w6xGmKej_lQRJObDlURmXQm9zEzYEowZp0vEWhpUdbTr',
-            audience: 'https://api.zapehr.com',
-        }),
-    })).json();
-
-    const data = fs.readFileSync('./records.jsonl', 'utf-8');
-    const lines = data.split('\n').filter(Boolean);
-    let counter = 0;
-    let goodRecords = 0;
-    let badRecords: string[] = [];
-
     const oystehr = new Oystehr({
-        accessToken: jsonResponse.access_token,
+        projectId: "658f1e23-ed46-4b0e-b26b-34ad923d209d",
+        accessToken: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlRRc2xGbWlRX01ZTzg4Z3BRUnlvRCJ9.eyJpc3MiOiJodHRwczovL2F1dGguemFwZWhyLmNvbS8iLCJzdWIiOiJhdXRoMHw2NWQzODUxMTFjMWNkOTA1MDI5MjA4NzIiLCJhdWQiOlsiaHR0cHM6Ly9hcGkuemFwZWhyLmNvbSIsImh0dHBzOi8vemFwZWhyLnVzLmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE3NTQwNzA5MzMsImV4cCI6MTc1NDE1NzMzMywic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCBvZmZsaW5lX2FjY2VzcyIsImF6cCI6Im8zcnN6bDJuS0k2STFhSDZzYmw4ZEZyRmdNVkcyaU1jIn0.tGZRfEUNGwQpE6SmNeZ8B0ahF5pNBx55WAlPLh8dqlfoVWNMLnAdJE1T38xW1drVSXszzxZ2ireqpfulAexZ3TodIlhOCKcsbZTrak0MyiGJ94maZXeu0AKZJC9_KXaBOWogQQvbvzmOh65ZiYS8rmOsslmFIfp0UvAHfZnuIubkvAho5l_qqPvoLK6ded6xpk5Oia3_YdZb_SoNLicI8JUXT5paqf4aXlwNEocK8oe4KEPntPcQu1qEx47DzgVvTPqFjh_-Tzz1cGdgB6LMzss-EsAirL7Mx09p0kj5VP0jalSe7YrHPzbrazhDyj9ibFRfEaWQPSFpiHZlozj6Lw',
         fhirApiUrl: 'https://fhir-api.zapehr.com',
     });
 
-    for (const line of lines) {
-        const record = JSON.parse(line);
+    let zambdas = await oystehr.zambda.list();
 
-        let flowId = record['Flow ID'];
-        let id = record['ID'];
+    for(const zambda of zambdas) {
+        console.log(zambda)
 
-        delete record['ID'];
-        delete record['Flow ID'];
-
-        record['First Name'] = capitalizeWords(record['First Name']);
-        record['Last Name'] = capitalizeWords(record['Last Name']);
-
-        const payload = {
-            "flowID": flowId,
-            "id": id,
-            "fields": {
-                ...record
-            }
-        }
-
-        let users = await oystehr.user.listV2({
-            'email': record['Primary Email Address']
-        });
-
-        let userId = users?.data[0]?.id;
-        let practitionerProfileId = users?.data[0]?.profile
-        
-        // Try with emergency contact email
-        if(userId == undefined || practitionerProfileId == undefined) {
-
-            users = await oystehr.user.listV2({
-                'email': record['Emergency Contact Email']
-            });
-
-            userId = users?.data[0]?.id;
-            practitionerProfileId = users?.data[0]?.profile
-
-            if(userId != undefined || practitionerProfileId != undefined) {
-                console.info("Found user with " + record['Emergency Contact Email']);
-            }
-
-        } else {
-
-            try {
-                await oystehr.user.delete({
-                    id: userId
-                });
-            } catch(e) {
-                console.log(`Could not delete user ${record['Primary Email Address']}`);
-
-            }
-
-            try {
-                await oystehr.fhir.delete({
-                    resourceType: "Practitioner",
-                    id: practitionerProfileId.split('/')[1]
-                });
-            } catch(e) {
-                console.log("Couldn't Delete FHIR account");
-            }
-                
-        }
-
-        if(
-            record['SSN'] == '***deleted***' ||
-            record['ProviderDEALicenseNumber'] == '***deleted***' || 
-            isValidDEALength(record['ProviderDEALicenseNumber']) == false || 
-            isValidSSN(record['SSN']) == false ||
-            isValidNPILength(record['NPI']) == false ||
-            await validateNPI(record['NPI']) == false 
-        ) {
-            badRecords.push(record['Primary Email Address']);
-        } else {
-            
-            try {
-                let request = await fetch('https://project-api.zapehr.com/v1/zambda/custom-onboard-provider/execute', {
-                    method: 'POST',
-                    headers: {
-                    'Content-Type': 'application/json',
-                    'x-oystehr-project-id': '4a44d30b-6200-4256-9a36-63bde08c2cd7',
-                    'Authorization': 'Bearer ' + jsonResponse.access_token
-                    },
-                    body: JSON.stringify({
-                        action: 'create-practitioner',
-                        data: payload
-                    })
-                });
-            } catch(e) {
-                console.log(e);
-            }
-
-        }
-
+       await oystehr.zambda.delete({
+        id:zambda.id
+    });
     }
-
-    console.log(JSON.stringify(badRecords));
 
 };
 

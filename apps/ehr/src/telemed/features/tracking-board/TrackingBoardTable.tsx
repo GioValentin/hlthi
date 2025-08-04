@@ -68,6 +68,10 @@ const TRACKING_BOARD_COLUMNS_CONFIG: Record<string, TrackingBoardColumn> = {
     id: 'chat',
     label: 'Chat',
   },
+  Profile: {
+    id: 'profile',
+    label: 'Profile',
+  },
   ACTION: {
     id: 'action',
     label: 'Action',

@@ -190,7 +190,7 @@ export const index = wrapHandler('notification-Updater', async (input: ZambdaInp
                 tag.code === 'ready'
             );
 
-            if (!isProcessed && location?.address?.state && isTriageComplete) {
+            if (!isProcessed && location?.address?.state) {
               // add tag into appointment and add to batch request
               updateAppointmentRequests.push(
                 getPatchBinary({

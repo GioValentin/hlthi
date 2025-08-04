@@ -141,7 +141,7 @@ export default function CancellationReasonDialog({
             </FormControl>
           </div>
         </DialogContent>
-        {/* <DialogActions sx={{ justifyContent: 'flex-start', marginLeft: 1 }}>
+        <DialogActions sx={{ justifyContent: 'flex-start', marginLeft: 1 }}>
           <LoadingButton
             data-testid={dataTestIds.visitDetailsPage.cancelVisitDialogue}
             loading={cancelLoading}
@@ -156,7 +156,7 @@ export default function CancellationReasonDialog({
           <Button variant="text" onClick={handleDialogClose} size="medium" sx={buttonSx}>
             Keep
           </Button>
-        </DialogActions> */}
+        </DialogActions>
         {error && (
           <Typography color="error" variant="body2" my={1} mx={2}>
             There was an error cancelling this appointment, please try again.

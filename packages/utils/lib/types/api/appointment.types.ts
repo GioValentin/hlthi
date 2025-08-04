@@ -23,6 +23,7 @@ export const mapStatusToTelemed = (
       if(questionnaireStatus !== undefined) {
 
         if(questionnaireStatus == 'in-progress' && encounterStatus == 'planned') {
+          console.log("GOING INTO HERE?");
           return TelemedAppointmentStatusEnum.pending;
         }
 

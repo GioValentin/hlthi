@@ -127,6 +127,7 @@ const UPDATE_NURSING_ORDER = 'update-nursing-order';
 const GET_LABEL_PDF_ZAMBDA_ID = import.meta.env.VITE_APP_GET_LABEL_PDF_ZAMBDA_ID;
 const GET_OR_CREATE_VISIT_LABEL_PDF_ZAMBDA_ID = import.meta.env.VITE_APP_GET_OR_CREATE_VISIT_LABEL_PDF_ZAMBDA_ID;
 const GET_PRACTICITIONER_ACCOUNTING = import.meta.env.VITE_APP_GET_CUSTOM_ACCOUTING_STRIPE;
+const CREATE_COMPOUND_ORDER  = import.meta.env.VITE_APP_CREATE_COMPOUND_ORDER;
 
 export const getUser = async (token: string): Promise<User> => {
   const oystehr = new Oystehr({
@@ -564,6 +565,19 @@ export const createSchedule = async (params: CreateScheduleParams, oystehr: Oyst
   try {
     const response = await oystehr.zambda.execute({
       id: CREATE_SCHEDULE_ZAMBDA_ID,
+      ...params,
+    });
+    return chooseJson(response);
+  } catch (error: unknown) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const createCompoundOrder = async (params: any, oystehr: Oystehr): Promise<Schedule> => {
+  try {
+    const response = await oystehr.zambda.execute({
+      id: CREATE_COMPOUND_ORDER,
       ...params,
     });
     return chooseJson(response);

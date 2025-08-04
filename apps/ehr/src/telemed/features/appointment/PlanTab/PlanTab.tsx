@@ -7,6 +7,7 @@ import { ERxCard } from './ERxCard';
 import { HealthwiseDocumentsCard } from './HealthwiseDocumentsCard';
 import { PatientInstructionsCard } from './PatientInstructionsCard';
 import { SchoolWorkExcuseCard } from './SchoolWorkExcuseCard';
+import { CompoundOrderCard } from './CompoundOrderCard';
 
 export const PlanTab: FC = () => {
   const { isChartDataLoading } = getSelectors(useAppointmentStore, ['isChartDataLoading']);
@@ -31,6 +32,7 @@ export const PlanTab: FC = () => {
       }}
     >
       <ERxCard />
+      <CompoundOrderCard/>
       <PatientInstructionsCard />
       {tmpHideHealthwiseDocuments ? <></> : <HealthwiseDocumentsCard />}
       <DispositionCard />

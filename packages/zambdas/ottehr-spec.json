@@ -25,6 +25,22 @@
       "name": "DEFAULT_BILLING_RESOURCE",
       "value": "#var/DEFAULT_BILLING_RESOURCE"
     },
+    "HLTHI_ONE_TIME_VISIT_PRICE_ID":{
+      "name":"HLTHI_ONE_TIME_VISIT_PRICE_ID",
+      "value": "#var/HLTHI_ONE_TIME_VISIT_PRICE_ID"
+    },
+    "HLTHI_ENCOUNTER_PROMO": {
+      "name": "HLTHI_ENCOUNTER_PROMO",
+      "value": "#var/HLTHI_ENCOUNTER_PROMO"
+    },
+    "HLTHI_STANDARD_VISIT_PRICE_ID":{
+      "name": "HLTHI_STANDARD_VISIT_PRICE_ID",
+      "value": "#var/HLTHI_STANDARD_VISIT_PRICE_ID"
+    },
+    "HLTHI_BASE_VISIT_PRICE_ID": {
+      "name": "HLTHI_BASE_VISIT_PRICE_ID",
+      "value": "#var/HLTHI_BASE_VISIT_PRICE_ID"
+    },
     "FHIR_API": {
       "name": "FHIR_API",
       "value": "#var/FHIR_API"
@@ -479,6 +495,7 @@
       "src": "src/ehr/sync-user/index",
       "zip": ".dist/zips/sync-user.zip"
     },
+    
     "ICD-SEARCH": {
       "name": "ICD-SEARCH",
       "type": "http_auth",
@@ -905,6 +922,13 @@
       "src": "src/custom-ehr/conversation/create-conversation/index",
       "zip": ".dist/zips/admin-create-conversation.zip"
     },
+    "COMPOUND-ORDER": {
+      "name": "COMPOUND-ORDER",
+      "type": "http_auth",
+      "runtime": "nodejs20.x",
+      "src": "src/custom-ehr/compound-order/index",
+      "zip": ".dist/zips/compound-order.zip"
+    },
     "GET-CONNECTED-AUTH": {
       "name": "GET-CONNECTED-AUTH",
       "type": "http_open",
@@ -954,7 +978,7 @@
       "src": "src/custom-patient/billing/get-setup-intent/index",
       "zip": ".dist/zips/intake-get-billing-setup-intent.zip"
     },
-    "CUSTOM-HOOK-QUESTIONNAIRE-COMPLETED": {
+     "CUSTOM-HOOK-QUESTIONNAIRE-COMPLETED": {
       "name": "CUSTOM-HOOK-QUESTIONNAIRE-COMPLETED",
       "type": "subscription",
       "runtime": "nodejs20.x",

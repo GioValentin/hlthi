@@ -13,7 +13,7 @@ export const ContactSupportDialog: FC<ContactSupportDialogProps> = ({ onClose })
       </Typography>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Typography variant="body2">
-          E-Mail us: <span style={{ fontWeight: 700 }}>patients@hlthi.life</span>
+          E-Mail us: <span style={{ fontWeight: 700 }}>support@hlthi.life</span>
         </Typography>
         <Typography variant="body2" sx={{ mt: -1.5 }}>
           Sunday-Saturday 10am-10pm ET.

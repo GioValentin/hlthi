@@ -31,15 +31,15 @@ const Homepage = (): JSX.Element => {
   const { isAppointmentsFetching, refetchAppointments, appointments } = useAppointmentsData();
   const activeAppointment = useMemo(() => findActiveAppointment(appointments), [appointments]);
   const pendingAppointment = useMemo(() => findPendingAppointment(appointments), [appointments]);
+
   const isAppointmentStatusProposed = activeAppointment?.appointmentStatus === 'proposed';
-  const isAppointmentStatusPending = pendingAppointment?.appointmentStatus === 'pending';
+  const isAppointmentStatusPending = pendingAppointment?.telemedStatus === 'pending';
+
+  console.log(isAppointmentStatusPending);
+  console.log(pendingAppointment);
   const appointmentID = activeAppointment?.id || '';
   const pendingAppointmentID = pendingAppointment?.id || '';
   const { refetch } = useGetAppointments(apiClient, Boolean(apiClient));
-
-  console.log(appointmentID);
-  console.log(pendingAppointmentID);
-  console.log(activeAppointment);
 
   useEffect(() => {
     if (apiClient) {
@@ -204,12 +204,16 @@ const Homepage = (): JSX.Element => {
               handleClick={handleInPerson}
               dataTestId={dataTestIds.scheduleInPersonVisitButton}
             /> */}
-            <HomepageOption
-              title="Virtual Visit Check-In"
-              icon={<VideoCameraFrontOutlinedIcon />}
-              handleClick={handleRequestVisit}
-              dataTestId={dataTestIds.startVirtualVisitButton}
-            />
+
+            {(!activeAppointment && !pendingAppointment) && (
+              <HomepageOption
+                title="Request a Virtual Visit"
+                icon={<VideoCameraFrontOutlinedIcon />}
+                handleClick={handleRequestVisit}
+                dataTestId={dataTestIds.startVirtualVisitButton}
+              />
+            )}
+            
 
             {/* <HomepageOption
               title="In-Person Check-In"

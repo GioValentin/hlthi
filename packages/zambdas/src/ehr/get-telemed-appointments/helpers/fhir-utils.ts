@@ -20,6 +20,24 @@ export const getAllResourcesFromFhir = async (
   appointmentStatusesToSearchWith: string[],
   searchDate?: DateTime
 ): Promise<FhirResource[]> => {
+
+  if(searchDate == undefined) {
+    searchDate = DateTime.now()
+  }
+
+  // Lower bound: 1 day + 30s ago
+  const lowerBound = searchDate
+    .minus({ days: 31 })
+    .startOf('day')
+    .toISO()    // e.g. "2025-07-29T14:59:30.123Z"
+
+  // Upper bound: 1 day ahead
+  const upperBound = searchDate
+    .plus({ days: 1 })
+    .endOf('day')
+    .toISO()    // e.g. "2025-07-31T15:00:00.000Z"
+
+
   const fhirSearchParams: FhirSearchParams<Appointment> = {
     resourceType: 'Appointment',
     params: [
@@ -38,7 +56,7 @@ export const getAllResourcesFromFhir = async (
       },
       {
         name: '_sort',
-        value: 'date',
+        value: '-date',
       },
       { name: '_count', value: '1000' },
       {
@@ -77,11 +95,11 @@ export const getAllResourcesFromFhir = async (
         ? [
             {
               name: 'date',
-              value: `ge${searchDate.startOf('day')}`,
+              value: `ge${lowerBound}`,
             },
             {
               name: 'date',
-              value: `le${searchDate.endOf('day')}`,
+              value: `le${upperBound}`,
             },
           ]
         : []),
