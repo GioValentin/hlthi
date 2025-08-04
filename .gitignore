@@ -32,3 +32,4 @@ custom-packages
 
 **/custom-ehr
 **/custom-patient
+packages/utils/.ottehr_config/*
