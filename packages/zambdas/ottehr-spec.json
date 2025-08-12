@@ -9,6 +9,14 @@
       "name": "AUTH0_ENDPOINT",
       "value": "#var/AUTH0_ENDPOINT"
     },
+    "VIRTUAL_SENDGRID_EMAIL_BCC": {
+      "name": "VIRTUAL_SENDGRID_EMAIL_BCC",
+      "value":"#var/VIRTUAL_SENDGRID_EMAIL_BCC"
+    },
+    "INACTIVE_ROLE_ID": {
+      "name": "INACTIVE_ROLE_ID",
+      "value": "#var/INACTIVE_ROLE_ID"
+    },
     "AUTH0_AUDIENCE": {
       "name": "AUTH0_AUDIENCE",
       "value": "#var/AUTH0_AUDIENCE"
@@ -998,8 +1006,7 @@
       "src": "src/custom-ehr/payouts/appointment/appointment-chart-data-prefilling/index",
       "zip": ".dist/zips/custom-practitioner-payout.zip",
       "subscription": {
-        "status":"fulfilled",
-        "criteria":"Appointment",
+        "criteria":"Appointment?status=fulfilled",
         "event":"update",
         "reason": "Needs to transfer funds to practitioner"
       }

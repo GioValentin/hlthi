@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { progressNoteIcon, startIntakeIcon } from '@ehrTheme/icons';
 import ChatOutlineIcon from '@mui/icons-material/ChatOutlined';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';

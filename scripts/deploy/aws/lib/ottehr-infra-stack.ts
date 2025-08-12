@@ -89,7 +89,7 @@ function setUpCloudFront(
       cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
       viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS
     },
-    domainNames: [domainName], // e.g., 'provider.hlthi.life'
+    domainNames: [website == 'ehr' ? 'provider.hlthi.life' : 'patients.hlthi.life'],//[domainName], // e.g., 'provider.hlthi.life'
     certificate,
     comment: `ottehr-${website}-${projectId} - redeployed at ${new Date().toISOString()}`
   });

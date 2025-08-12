@@ -237,7 +237,7 @@ function App(): ReactElement {
               )}
               {currentUser?.hasRole([RoleType.Staff, RoleType.Provider]) && (
                 <>
-                  <Route path="/" element={<Navigate to="/visits" />} />
+                  <Route path="/" element={<Navigate to="/telemed/appointments" />} />
                   <Route path="/logout" element={<Logout />} />
                   <Route path="/visits" element={<AppointmentsPage />} />
                   <Route path="/visits/add" element={<AddPatient />} />

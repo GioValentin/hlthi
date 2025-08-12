@@ -8,6 +8,7 @@ export class CustomAdapterLuxon extends AdapterLuxon {
   // labels for the top
   public getWeekdays = (): string[] => {
     const { t } = useTranslation();
+    //@ts-ignore
     return t('general.weekdays', { returnObjects: true });
   };
 

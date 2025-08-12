@@ -2,7 +2,7 @@
 
 # E2E Testing Documentation
 
-End-to-End testing guide for the Ottehr platform using Playwright in a Turborepo monorepo setup.
+End-to-End testing guide for the Ottehr platform using Playwright in a Turborepo monorepo setup. 
 
 ## Navigation by Role
 

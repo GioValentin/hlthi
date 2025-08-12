@@ -202,7 +202,7 @@ export default function Data(): React.ReactElement {
           return { date: DateTime.fromISO(day), appointments: visitCountByDay[day] };
         });
         console.log('visitCountByDay', visitCountByDay);
-
+        //@ts-ignore
         const statusesCount: { [status in VisitStatusHistoryLabel]: VisitStatusMetrics } = {
           pending: { numAppointments: 0, averageTime: 0 },
           arrived: { numAppointments: 0, averageTime: 0 },

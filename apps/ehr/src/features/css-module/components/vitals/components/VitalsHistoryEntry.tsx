@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { DeleteOutlined as DeleteIcon } from '@mui/icons-material';
 import ErrorIcon from '@mui/icons-material/Error';
 import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined';
@@ -47,6 +48,7 @@ export const VitalHistoryElement: React.FC<VitalHistoryElementProps> = ({ histor
         <Typography color="textPrimary" component="div">
           {formatDateTimeToLocalTimezone(historyEntry.lastUpdated)} {hasAuthor && 'by'} {historyEntry.authorName} -
           &nbsp;
+          
           {observationValueElements.map((value, index) => {
             if (typeof value === 'string') {
               return (

@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "es6",
     "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "moduleResolution": "node",
     "newLine": "lf",
     "strict": true,
     "sourceMap": true,
@@ -24,8 +24,7 @@
     "noUnusedParameters": false,
     "noUnusedLocals": false,
     "resolveJsonModule": true,
-    "noEmit": true,
-    "verbatimModuleSyntax": false
+    "noEmit": true
   },
   "exclude": ["node_modules"],
   "include": [".eslintrc.cjs", "scripts/**/*.ts", "scripts/**/*.js"]

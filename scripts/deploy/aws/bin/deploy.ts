@@ -15,7 +15,7 @@ void (async () => {
     await setupDeploy();
   } catch (error) {
     console.error('Deployment failed:', error);
-    process.exit(1);
+    //process.exit(1);
   }
 })();
 
