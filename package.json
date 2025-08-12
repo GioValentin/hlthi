@@ -1,6 +1,6 @@
 {
   "name": "ottehr",
-  "version": "1.15.0",
+  "version": "1.15.6",
   "private": true,
   "engines": {
     "node": ">=20.0.0",
@@ -108,6 +108,7 @@
     "@twilio-paste/theme": "^12.0.0",
     "@twilio-paste/types": "^7.0.0",
     "@twilio-paste/uid-library": "^3.0.0",
+    "@tanstack/react-query": "^5.83.0",
     "@twilio/conversations": "^2.4.1",
     "@types/inquirer": "^9.0.7",
     "axios": "1.6.4",
@@ -165,6 +166,7 @@
     "@playwright/test": "^1.40.1",
     "@sentry/cli": "^2.27.0",
     "@sentry/vite-plugin": "^2.10.2",
+    "@tanstack/eslint-plugin-query": "^5.81.2",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
