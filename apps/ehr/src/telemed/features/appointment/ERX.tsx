@@ -96,6 +96,9 @@ export const ERX: FC<{
     onError: (error) => {
       let errorMsg = 'Something went wrong while trying to sync patient to eRx';
 
+      console.log(error);
+      console.log("ERROR SYNCING PATIENT");
+      
       if (error.status === 400) {
         if (error.message?.includes('phone')) {
           errorMsg = `Patient has specified some wrong phone number: ${phoneNumber}. Please provide a real patient's phone number`;

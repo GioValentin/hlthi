@@ -99,6 +99,7 @@ const WaitingRoom = (): JSX.Element => {
           marginTop: 3,
           borderRadius: '8px',
           display: 'flex',
+          flexDirection: 'column',
           gap: 3,
         }}
       >
@@ -107,6 +108,12 @@ const WaitingRoom = (): JSX.Element => {
         </Typography>
         <Typography variant="subtitle1" color={theme.palette.primary.main}>
           Number in line - {numberInLine || '...'}
+        </Typography>
+        <Typography variant="subtitle1" color={theme.palette.primary.main}>
+          Thanks for your patience. You don’t need to remain in this room—feel free to wait wherever is comfortable. We’ll text you when your provider is ready, and your place in line is secure.
+        </Typography>
+        <Typography variant="subtitle1" color={theme.palette.primary.main}>
+          Wait times are longer than usual. However, most patients are being seen within 2 hours, often sooner than the posted estimate.  
         </Typography>
       </Box>
 
@@ -139,14 +146,14 @@ const WaitingRoom = (): JSX.Element => {
               <img alt="HLTHi icon" src={ottehrLightBlue} width={24} />
             </StyledListItemWithButton>
 
-            <StyledListItemWithButton
+            {/* <StyledListItemWithButton
               onClick={() => setCancelVisitDialogOpen(true)}
               primaryText="Cancel visit"
               secondaryText="Please reach out to support after cancelling for a refund."
               noDivider
             >
               <CancelOutlinedIcon sx={{ color: otherColors.clearImage }} />
-            </StyledListItemWithButton>
+            </StyledListItemWithButton> */}
           </>
         )}
       </List>

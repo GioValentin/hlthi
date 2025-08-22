@@ -34,7 +34,9 @@ export const CompoundOrderCard: FC = () => {
   const [instruction, setInstruction] = useState('');
   const [medication, setMedication] = useState<MedicationDTO|undefined>(undefined);
 
+  //@ts-ignore
   const { mutate: savePatientInstruction, isLoading: isSavePatientInstructionLoading } = useSavePatientInstruction();
+  //@ts-ignore
   const { mutate: saveChartData, isLoading: isSaveChartDataLoading } = useSaveChartData();
   const { mutate: deleteChartData } = useDeleteChartData();
 

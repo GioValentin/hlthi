@@ -1001,14 +1001,12 @@
     },
     "CUSTOM-PRACTITIONER-PAYOUT": {
       "name": "CUSTOM-PRACTITIONER-PAYOUT",
-      "type": "subscription",
+      "type": "cron",
       "runtime": "nodejs20.x",
       "src": "src/custom-ehr/payouts/appointment/appointment-chart-data-prefilling/index",
       "zip": ".dist/zips/custom-practitioner-payout.zip",
-      "subscription": {
-        "criteria":"Appointment?status=fulfilled",
-        "event":"update",
-        "reason": "Needs to transfer funds to practitioner"
+      "schedule": {
+        "expression": "cron(*/5 * * * ? *)"
       }
     },
     "CUSTOM-BILLING-STRIPE-WEBHOOK": {

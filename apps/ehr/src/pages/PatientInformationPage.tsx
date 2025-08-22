@@ -439,6 +439,7 @@ const PatientInformationPage: FC = () => {
           </Box>
           <ActionBar
             handleDiscard={handleBackClickWithConfirmation}
+            //@ts-ignore
             handleSave={handleSubmit(handleSaveForm, () => {
               enqueueSnackbar('Please fix all field validation errors and try again', { variant: 'error' });
             })}

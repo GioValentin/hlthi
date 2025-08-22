@@ -58,7 +58,7 @@ export const ErxButton: FC<ERXButtonProps> = ({ patient }) => {
     <RoundedButton
       sx={{ width: '100%' }}
       href={ssoLink ?? '#'}
-      target="_blank"
+      target="_BLANK"
       disabled={loading || !ssoLink || error}
       onClick={() => {
         if (!loading && ssoLink && !error) {

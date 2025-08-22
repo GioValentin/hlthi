@@ -6,6 +6,7 @@ import {
   PractitionerLicense,
   StateType,
   TelemedAppointmentStatusEnum,
+  RoleType
 } from 'utils';
 import { FeatureFlags } from '../../features/css-module/context/featureFlags';
 import { EvolveUser } from '../../hooks/useEvolveUser';
@@ -54,6 +55,7 @@ export const getAppointmentAccessibilityData = ({
     (status === TelemedAppointmentStatusEnum.ready || isEncounterAssignedToCurrentPractitioner);
 
   const isAppointmentReadOnly = (() => {
+
     if (featureFlags.css) {
       // TODO actualize this logic
       return false;

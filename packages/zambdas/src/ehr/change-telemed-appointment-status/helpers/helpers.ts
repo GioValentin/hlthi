@@ -39,6 +39,10 @@ export const changeStatusIfPossible = async (
       encounterPatchOp.push(addPractitionerOp);
     }
     smsToSend = 'Thank you for waiting. The clinician will see you within around 5 minutes.';
+  } 
+  else if(currentStatus === 'pre-video' && newStatus === 'unsigned') {
+    encounterPatchOp = defaultEncounterOperations(newStatus, resourcesToUpdate);
+    encounterPatchOp.push(addPeriodEndOp(now()));
   } else if (currentStatus === 'pre-video' && newStatus === 'ready') {
     encounterPatchOp = defaultEncounterOperations(newStatus, resourcesToUpdate);
     const removePractitionerOr = getRemovePractitionerFromEncounterOperation(
@@ -53,8 +57,7 @@ export const changeStatusIfPossible = async (
   } else if (currentStatus === 'on-video' && newStatus === 'unsigned') {
     encounterPatchOp = defaultEncounterOperations(newStatus, resourcesToUpdate);
     encounterPatchOp.push(addPeriodEndOp(now()));
-    if (appointment.id)
-      smsToSend = `Thanks for visiting. Tap https://www.trustpilot.com/evaluate/hlthi.life to let us know how it went.`;
+    
   } else if (currentStatus === 'unsigned' && newStatus === 'complete') {
     encounterPatchOp = encounterOperationsWrapper(
       newStatus,
@@ -79,6 +82,9 @@ export const changeStatusIfPossible = async (
       patchOperationsBinaries.push(...updateNotesOps);
     }
     appointmentPatchOp = [changeStatusOp('fulfilled')];
+
+    if (appointment.id)
+      smsToSend = `Thanks for visiting. Tap https://www.trustpilot.com/evaluate/hlthi.life to let us know how it went.`;
   } else if (currentStatus === 'complete' && newStatus === 'unsigned') {
     encounterPatchOp = encounterOperationsWrapper(
       newStatus,

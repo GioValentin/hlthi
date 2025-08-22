@@ -5,6 +5,7 @@ import ContentPasteOffIcon from '@mui/icons-material/ContentPasteOff';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { LoadingButton } from '@mui/lab';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -538,6 +539,8 @@ export default function AppointmentPage(): ReactElement {
     });
     setPaperworkModifiedFlag(undefined);
   }
+
+  const navigate = useNavigate();
 
   const hopInQueue = async (): Promise<void> => {
     setHopLoading(true);
@@ -1170,6 +1173,23 @@ export default function AppointmentPage(): ReactElement {
               )}
               {appointment && appointment?.status !== 'cancelled' ? (
                 <>
+                <Button
+                    data-testid={dataTestIds.visitDetailsPage.cancelVisitButton}
+                    variant="outlined"
+                    sx={{
+                      alignSelf: 'center',
+                      marginLeft: 'auto',
+                      // marginRight: 2,
+                      borderRadius: '20px',
+                      textTransform: 'none',
+                    }}
+                    color="info"
+                    onClick={() => {
+                      navigate('/telemed/appointments/'+ appointment?.id)
+                    }}
+                  >
+                    Go To Telemed Visit
+                  </Button>
                   <Button
                     data-testid={dataTestIds.visitDetailsPage.cancelVisitButton}
                     variant="outlined"

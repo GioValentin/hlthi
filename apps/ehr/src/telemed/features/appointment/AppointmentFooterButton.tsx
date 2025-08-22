@@ -17,7 +17,7 @@ import {
   useChangeTelemedAppointmentStatusMutation,
   useGetMeetingData,
   useInitTelemedSessionMutation,
-  useVideoCallStore,
+  useVideoCallStore
 } from '../../state';
 import { updateEncounterStatusHistory } from '../../utils';
 
@@ -135,6 +135,31 @@ export const AppointmentFooterButton: FC = () => {
     }
   }, [apiClient, appointment?.id, appointment?.status, encounter, getMeetingData, initTelemedSession, user]);
 
+  const {mutateAsync, isPending: isLoadingSkip} = useChangeTelemedAppointmentStatusMutation();
+
+  const onSkipVideo = async (): Promise<void> => {
+    
+    if (!apiClient || !user || !appointment?.id) {
+      throw new Error('api client not defined or userId not provided');
+    }
+
+    mutateAsync(
+      { apiClient, appointmentId: appointment.id, newStatus: TelemedAppointmentStatusEnum['unsigned'] },
+      {}
+    ).then(() => {
+      useAppointmentStore.setState({
+        encounter: {
+          ...encounter,
+          status: 'finished',
+          statusHistory: updateEncounterStatusHistory('finished', encounter.statusHistory),
+        },
+      });
+    });
+
+
+
+  };
+
   useEffect(() => {
     if (
       appointmentAccessibility.isCurrentUserHasAccessToAppointment &&
@@ -212,6 +237,39 @@ export const AppointmentFooterButton: FC = () => {
                 data-testid={dataTestIds.telemedEhrFlow.footerButtonConnectToPatient}
               >
                 Start Video
+              </FooterButton>
+            )}
+          </ConfirmationDialog>
+          <ConfirmationDialog
+            title="Do you want to skip the video chat?"
+            description="Skipping the video chat indicates that a patient video call was not required."
+            response={onSkipVideo}
+            actionButtons={{
+              proceed: {
+                text: 'Yes, skip video chat',
+                color: 'error',
+              },
+              back: { text: 'Cancel' },
+            }}
+          >
+            {(showDialog) => (
+              <FooterButton
+                loading={isLoadingSkip}
+                onClick={showDialog}
+                variant="contained"
+                data-testid={dataTestIds.telemedEhrFlow.footerButtonUnassign}
+                sx={{
+                  backgroundColor: theme.palette.warning.main,
+                  '&:hover': { backgroundColor: darken(theme.palette.warning.main, 0.125) },
+                  '&.MuiLoadingButton-loading': {
+                    backgroundColor: darken(theme.palette.warning.main, 0.25),
+                  },
+                  '& .MuiLoadingButton-loadingIndicator': {
+                    color: darken(theme.palette.warning.contrastText, 0.25),
+                  },
+                }}
+              >
+                Skip Video
               </FooterButton>
             )}
           </ConfirmationDialog>

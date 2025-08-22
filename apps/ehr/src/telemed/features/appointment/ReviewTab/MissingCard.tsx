@@ -17,8 +17,9 @@ export const MissingCard: FC = () => {
   const primaryDiagnosis = (chartData?.diagnosis || []).find((item) => item.isPrimary);
   const medicalDecision = chartData?.medicalDecision?.text;
   const emCode = chartData?.emCode;
+  const chiefComplaint = chartData?.chiefComplaint?.text;
 
-  if (primaryDiagnosis && medicalDecision && emCode) {
+  if (primaryDiagnosis && medicalDecision && emCode && chiefComplaint) {
     return null;
   }
 
@@ -29,6 +30,16 @@ export const MissingCard: FC = () => {
       });
     } else {
       useAppointmentStore.setState({ currentTab: TelemedAppointmentVisitTabs.assessment });
+    }
+  };
+
+  const navigateToTabHPI = (): void => {
+    if (css) {
+      requestAnimationFrame(() => {
+        navigate(getAssessmentUrl(appointment?.id || ''));
+      });
+    } else {
+      useAppointmentStore.setState({ currentTab: TelemedAppointmentVisitTabs.hpi });
     }
   };
 
@@ -58,6 +69,15 @@ export const MissingCard: FC = () => {
               data-testid={dataTestIds.progressNotePage.medicalDecisionLink}
             >
               Plan / Medical Decision Making
+            </Link>
+          )}
+          {!chiefComplaint && (
+            <Link
+              sx={{ cursor: 'pointer' }}
+              color="error"
+              onClick={navigateToTabHPI}
+            >
+              Chief Complaint
             </Link>
           )}
           {!emCode && (

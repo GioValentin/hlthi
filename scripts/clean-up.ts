@@ -34,20 +34,80 @@ function capitalizeWords(str) {
 const runCleanup = async () => {
 
     const oystehr = new Oystehr({
-        projectId: "658f1e23-ed46-4b0e-b26b-34ad923d209d",
-        accessToken: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlRRc2xGbWlRX01ZTzg4Z3BRUnlvRCJ9.eyJpc3MiOiJodHRwczovL2F1dGguemFwZWhyLmNvbS8iLCJzdWIiOiJhdXRoMHw2NWQzODUxMTFjMWNkOTA1MDI5MjA4NzIiLCJhdWQiOlsiaHR0cHM6Ly9hcGkuemFwZWhyLmNvbSIsImh0dHBzOi8vemFwZWhyLnVzLmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE3NTQwNzA5MzMsImV4cCI6MTc1NDE1NzMzMywic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCBvZmZsaW5lX2FjY2VzcyIsImF6cCI6Im8zcnN6bDJuS0k2STFhSDZzYmw4ZEZyRmdNVkcyaU1jIn0.tGZRfEUNGwQpE6SmNeZ8B0ahF5pNBx55WAlPLh8dqlfoVWNMLnAdJE1T38xW1drVSXszzxZ2ireqpfulAexZ3TodIlhOCKcsbZTrak0MyiGJ94maZXeu0AKZJC9_KXaBOWogQQvbvzmOh65ZiYS8rmOsslmFIfp0UvAHfZnuIubkvAho5l_qqPvoLK6ded6xpk5Oia3_YdZb_SoNLicI8JUXT5paqf4aXlwNEocK8oe4KEPntPcQu1qEx47DzgVvTPqFjh_-Tzz1cGdgB6LMzss-EsAirL7Mx09p0kj5VP0jalSe7YrHPzbrazhDyj9ibFRfEaWQPSFpiHZlozj6Lw',
+        projectId: "4a44d30b-6200-4256-9a36-63bde08c2cd7",
+        accessToken: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlRRc2xGbWlRX01ZTzg4Z3BRUnlvRCJ9.eyJpc3MiOiJodHRwczovL2F1dGguemFwZWhyLmNvbS8iLCJzdWIiOiJhdXRoMHw2NWQzODUxMTFjMWNkOTA1MDI5MjA4NzIiLCJhdWQiOlsiaHR0cHM6Ly9hcGkuemFwZWhyLmNvbSIsImh0dHBzOi8vemFwZWhyLnVzLmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE3NTUxMTczOTQsImV4cCI6MTc1NTIwMzc5NCwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCBvZmZsaW5lX2FjY2VzcyIsImF6cCI6Im8zcnN6bDJuS0k2STFhSDZzYmw4ZEZyRmdNVkcyaU1jIn0.KzDvlgSSU1HOY3xdZxctoLwCfbsbcuY6iVhB1BCjROWd8LAffHiJYr9jimye5HGXY-P29a3kUdC-qbcImzkeJ7J0iIXp4ImkKVBOPrxYrTSeqgVbfP2d5uWlIOYm3Z5Q_0V1NQ2vWw_86jcj3PlHgiKirl7LYZz5OwPqBknMKeX6C1BkwwR3kZVA0IO4dpNW0RTeeYfUDODLx1DtJY5W6MYm_7ym5NwY6qk4Is2xK1Epf2nL7BE1jj7bhdFKUXO2kZMsQWkRkfwg6a_vYmjbn_IQ79xWA1TU3mKsp6cCcL08OEHsL6_n0FXLkYaXGCiXp1pn1Owlql8rhYdWd-wt4w',
         fhirApiUrl: 'https://fhir-api.zapehr.com',
     });
 
-    let zambdas = await oystehr.zambda.list();
+    // Missing states and names
+    const states = [
+      ["WV", "West Virginia"]
+    ];
 
-    for(const zambda of zambdas) {
-        console.log(zambda)
+    // Timezone mapping
+    const tzMap = {
+      "AK": "America/Anchorage",
+      "HI": "Pacific/Honolulu",
+      "ID": "America/Boise",
+      "MT": "America/Denver",
+      "UT": "America/Denver",
+      "OR": "America/Los_Angeles",
+      "NM": "America/Denver",
+      "SD": "America/Chicago",
+      "KS": "America/Chicago",
+    };
+    const defaultTz = "America/New_York";
 
-       await oystehr.zambda.delete({
-        id:zambda.id
-    });
-    }
+    // Build the FHIR batch Bundle
+    const requests = states.map(([abbr, full]) => ({
+      method: "POST",
+      url: "Location",
+      resource: {
+        resourceType: "Location",
+        status: "active",
+        address: { state: abbr },
+        extension: [
+          {
+            url: "https://extensions.fhir.zapehr.com/location-form-pre-release",
+            valueCoding: {
+              system: "http://terminology.hl7.org/CodeSystem/location-physical-type",
+              code: "vi",
+              display: "Virtual"
+            }
+          },
+          {
+            url: "http://hl7.org/fhir/StructureDefinition/timezone",
+            valueString: tzMap[abbr] || defaultTz
+          }
+        ],
+        identifier: [
+          {
+            system: "https://fhir.ottehr.com/r4/slug",
+            value: `Telemed${full.replace(/\s+/g, '')}`
+          }
+        ],
+        type: [
+          {
+            coding: [
+              {
+                system: "https://fhir.pmpediatriccare.com/r4/location-code",
+                code: `${abbr}TELE`
+              }
+            ]
+          }
+        ],
+        name: `Telemed ${full}`,
+        hoursOfOperation: [
+          {
+            openingTime: "00:00:01",
+            closingTime: "23:59:59",
+            daysOfWeek: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
+          }
+        ]
+      }
+    }));
+
+    const response = await oystehr.fhir.transaction({requests});
 
 };
 
