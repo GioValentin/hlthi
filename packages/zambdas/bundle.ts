@@ -3,8 +3,7 @@ import archiver from 'archiver';
 import * as esbuild from 'esbuild';
 import { copy } from 'esbuild-plugin-copy';
 import fs from 'fs';
-import ottehrSpec from './ottehr-spec.json';
-import hlthiSpec from './hlthi-spec.json'
+import ottehrSpec from '../../config/ottehr-spec.json';
 
 interface ZambdaSpec {
   name: string;
@@ -20,11 +19,11 @@ const zambdasList = (): ZambdaSpec[] => {
   });
 };
 
-const lambdasList = (): ZambdaSpec[] => {
-  return Object.entries(hlthiSpec.zambdas).map(([_key, spec]) => {
-    return spec;
-  });
-};
+// const lambdasList = (): ZambdaSpec[] => {
+//   return Object.entries(hlthiSpec.zambdas).map(([_key, spec]) => {
+//     return spec;
+//   });
+// };
 
 const build = async (zambdas: ZambdaSpec[]): Promise<void> => {
   const sources = zambdas.map((zambda) => `${zambda.src}.ts`);
