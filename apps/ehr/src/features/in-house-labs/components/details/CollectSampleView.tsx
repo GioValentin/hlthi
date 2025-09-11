@@ -19,6 +19,7 @@ import Oystehr from '@oystehr/sdk';
 import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
 import { getOrCreateVisitLabel } from 'src/api/api';
+import { dataTestIds } from 'src/constants/data-test-ids';
 import useEvolveUser from 'src/hooks/useEvolveUser';
 import {
   getFormattedDiagnoses,
@@ -28,8 +29,7 @@ import {
   PageName,
 } from 'utils';
 import { useApiClients } from '../../../../hooks/useAppClients';
-import { getSelectors } from '../../../../shared/store/getSelectors';
-import { useAppointmentStore } from '../../../../telemed/state/appointment/appointment.store';
+import { useAppointmentData } from '../../../../telemed/state/appointment/appointment.store';
 import { InHouseLabsDetailsCard } from './InHouseLabsDetailsCard';
 
 interface CollectSampleViewProps {
@@ -49,21 +49,16 @@ export const CollectSampleView: React.FC<CollectSampleViewProps> = ({
   const [showSampleCollection, setShowSampleCollection] = useState(true);
   const [sourceType, setSourceType] = useState('');
   const [collectedById, setCollectedById] = useState('');
-
   const initialDateTime = DateTime.now().setZone(testDetails.timezone);
   const [date, setDate] = useState<DateTime>(initialDateTime);
   const timeValue = date.toFormat('HH:mm');
-
   const [showDetails, setShowDetails] = useState(false);
   const [labelButtonLoading, setLabelButtonLoading] = useState(false);
   const [error, setError] = useState('');
-
   const theme = useTheme();
   const { oystehrZambda } = useApiClients();
-  const { encounter } = getSelectors(useAppointmentStore, ['encounter']);
-
+  const { encounter } = useAppointmentData();
   const currentUser = useEvolveUser();
-
   const [loading, setLoading] = useState(false);
 
   // set default collected by to current user if no choice made
@@ -179,6 +174,7 @@ export const CollectSampleView: React.FC<CollectSampleViewProps> = ({
           <Box sx={{ p: 3 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
               <Typography
+                data-testid={dataTestIds.collectSamplePage.testName}
                 variant="h5"
                 sx={{
                   fontSize: '1.5rem',
@@ -189,6 +185,7 @@ export const CollectSampleView: React.FC<CollectSampleViewProps> = ({
                 {testDetails.testItemName}
               </Typography>
               <Box
+                data-testid={dataTestIds.collectSamplePage.status}
                 sx={{
                   bgcolor: '#E8EAED',
                   color: '#5F6368',
@@ -227,6 +224,7 @@ export const CollectSampleView: React.FC<CollectSampleViewProps> = ({
                   <Grid container spacing={2} sx={{ padding: '4px 0 20px 0' }}>
                     <Grid item xs={12}>
                       <TextField
+                        data-testid={dataTestIds.collectSamplePage.source}
                         fullWidth
                         label="Source"
                         value={sourceType}
@@ -270,6 +268,7 @@ export const CollectSampleView: React.FC<CollectSampleViewProps> = ({
 
                     <Grid item xs={12}>
                       <TextField
+                        data-testid={dataTestIds.collectSamplePage.collectedBy}
                         fullWidth
                         select
                         label="Collected by"
@@ -323,6 +322,7 @@ export const CollectSampleView: React.FC<CollectSampleViewProps> = ({
 
                     <Grid item xs={6}>
                       <TextField
+                        data-testid={dataTestIds.collectSamplePage.collectionDate}
                         fullWidth
                         label="Collection date"
                         type="date"
@@ -369,6 +369,7 @@ export const CollectSampleView: React.FC<CollectSampleViewProps> = ({
                     <Grid item xs={6}>
                       <FormControl fullWidth>
                         <TextField
+                          data-testid={dataTestIds.collectSamplePage.collectionTime}
                           label="Collection time"
                           type="time"
                           value={timeValue}
@@ -443,6 +444,7 @@ export const CollectSampleView: React.FC<CollectSampleViewProps> = ({
               </Button>
 
               <LoadingButton
+                data-testid={dataTestIds.collectSamplePage.markCollectedButton}
                 loading={loading}
                 variant="contained"
                 onClick={handleMarkAsCollected}

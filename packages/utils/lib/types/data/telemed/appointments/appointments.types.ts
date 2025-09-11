@@ -92,7 +92,15 @@ export enum TelemedAppointmentStatusEnum {
 export type TelemedAppointmentStatus = `${TelemedAppointmentStatusEnum}`;
 
 export type TelemedCallStatuses = `${TelemedAppointmentStatus}`;
-export const TelemedCallStatusesArr = ['ready', 'pre-video', 'on-video', 'unsigned', 'complete', 'cancelled','pending'];
+export const TelemedCallStatusesArr: TelemedAppointmentStatus[] = [
+  'ready',
+  'pre-video',
+  'on-video',
+  'unsigned',
+  'complete',
+  'cancelled',
+  'pending'
+];
 
 export interface TelemedStatusHistoryElement {
   start?: string;

@@ -32,6 +32,9 @@ packages/ui-components/dist/*
 **/ottehr-secrets/
 **/.turbo/
 **/.esbuild
+config/sendgrid/*
+
+terraform.json
 custom-packages
 
 **/custom-ehr

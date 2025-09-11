@@ -7,6 +7,7 @@ const projectConfig: any = config;
 const environment = projectConfig.environment;
 
 export async function updateOystehr(oystehr: Oystehr, patientPortalUrl: string, ehrUrl: string): Promise<void> {
+  console.log('Updating Oystehr applications');
   const applications = await oystehr.application.list();
   const envPatientPortalFile = await fs.readFile(`${__dirname}/../../apps/intake/env/.env.${environment}`, 'utf8');
   const applicationPatientPortalClientID = envPatientPortalFile
@@ -57,8 +58,8 @@ export async function updateOystehr(oystehr: Oystehr, patientPortalUrl: string, 
 }
 
 export async function updateEnvFiles(environment: string, patientPortalUrl: string, ehrUrl: string): Promise<void> {
-  console.log(__dirname);
-  let patientPortalEnvFile = await fs.readFile(`${__dirname}/../../apps/intake/env/.env.${environment}`, 'utf8');
+  console.log('Updating website env files');
+  let patientPortalEnvFile = fs.readFileSync(`${__dirname}/../../apps/intake/env/.env.${environment}`, 'utf8');
   patientPortalEnvFile = patientPortalEnvFile.replace(/paperwork\//g, '');
   patientPortalEnvFile = patientPortalEnvFile.replace(
     'http://localhost:3000/local',
@@ -83,34 +84,34 @@ export async function updateEnvFiles(environment: string, patientPortalUrl: stri
   await fs.writeFile(`${__dirname}/../../apps/ehr/env/.env.${environment}`, ehrEnvFile);
 }
 
-export async function updateBuildFiles(app: string): Promise<void> {
-  const buildDir = path.resolve(__dirname, `../../apps/${app}/build`);
-  console.log('Build directory:', buildDir);
-
+export async function getM2MClientAccessToken(clientId: string, clientSecret: string): Promise<string> {
+  if (!clientId) {
+    throw new Error('Missing client_id');
+  }
+  if (!clientSecret) {
+    throw new Error('Missing client_secret');
+  }
   try {
-    // Read the list of files in the build directory
-    const files = await fs.readdir(buildDir);
+    console.log('Fetching auth0 token...');
+    const response = await fetch('https://auth.zapehr.com/oauth/token', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        grant_type: 'client_credentials',
+        client_id: clientId,
+        client_secret: clientSecret,
+        audience: 'https://api.zapehr.com',
+      }),
+    });
 
-    // Process each file
-    for (const file of files) {
-      const filePath = path.join(buildDir, file);
-      const stats = await fs.stat(filePath);
-
-      // Only update if it's a file (skip directories)
-      if (stats.isFile()) {
-        // Read file contents
-        let fileContent = await fs.readFile(filePath, 'utf8');
-
-        // Replace all occurrences of the target URL with the provided EHR URL
-        const updatedContent = fileContent.replace(/http:\/\/localhost:3000\/local/g, 'https://project-api.zapehr.com/v1');
-
-        // Write the updated content back to the file
-        await fs.writeFile(filePath, updatedContent, 'utf8');
-        console.log(`Updated file: ${filePath}`);
-      }
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  } catch (err) {
-    console.error('Error updating build files:', err);
-    throw err;
+
+    console.log('Got auth0 token');
+    return (await response.json()).access_token;
+  } catch (error: any) {
+    console.error('❌ Failed to get auth0 token', error);
+    throw new Error(error.message);
   }
 }

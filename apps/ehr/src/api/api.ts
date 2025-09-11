@@ -1,7 +1,9 @@
 import Oystehr, { User } from '@oystehr/sdk';
-import { DocumentReference, Schedule, Slot } from 'fhir/r4b';
+import { Schedule, Slot } from 'fhir/r4b';
 import {
   apiErrorToThrow,
+  ApplyTemplateZambdaInput,
+  ApplyTemplateZambdaOutput,
   AssignPractitionerInput,
   AssignPractitionerResponse,
   CancelAppointmentZambdaInput,
@@ -57,12 +59,18 @@ import {
   GetVisitLabelInput,
   HandleInHouseLabResultsParameters,
   HandleInHouseLabResultsZambdaOutput,
+  Icd10SearchRequestParams,
+  Icd10SearchResponse,
   InHouseGetOrdersResponseDTO,
   InviteParticipantRequestParameters,
   LabelPdf,
   ListScheduleOwnersParams,
   ListScheduleOwnersResponse,
+  ListTemplatesZambdaInput,
+  ListTemplatesZambdaOutput,
   PaginatedResponse,
+  PaperworkToPDFInput,
+  PendingSupervisorApprovalInput,
   RadiologyLaunchViewerZambdaInput,
   RadiologyLaunchViewerZambdaOutput,
   SaveFollowupEncounterZambdaInput,
@@ -72,7 +80,7 @@ import {
   SubmitLabOrderOutput,
   UnassignPractitionerZambdaInput,
   UnassignPractitionerZambdaOutput,
-  UpdateLabOrderResourcesParameters,
+  UpdateLabOrderResourcesInput,
   UpdateNursingOrderInput,
   UpdateScheduleParams,
   UpdateUserParams,
@@ -133,6 +141,7 @@ const PAPERWORK_TO_PDF_ZAMBDA_ID = 'paperwork-to-pdf';
 const CREATE_COMPOUND_ORDER = 'compound-order'
 
 const GET_PRACTICITIONER_ACCOUNTING = import.meta.env.VITE_APP_GET_CUSTOM_ACCOUTING_STRIPE;
+const PENDING_SUPERVISOR_APPROVAL_ZAMBDA_ID = 'pending-supervisor-approval';
 
 export const getUser = async (token: string): Promise<User> => {
   const oystehr = new Oystehr({
@@ -729,7 +738,7 @@ export const deleteLabOrder = async (
 
 export const updateLabOrderResources = async (
   oystehr: Oystehr,
-  parameters: UpdateLabOrderResourcesParameters
+  parameters: UpdateLabOrderResourcesInput
 ): Promise<any> => {
   try {
     if (UPDATE_LAB_ORDER_RESOURCES_ZAMBDA_ID == null) {
@@ -1008,11 +1017,75 @@ export const createDischargeSummary = async (
 
 export const generatePaperworkPdf = async (
   oystehr: Oystehr,
-  parameters: { questionnaireResponseId: string; documentReference: DocumentReference }
+  parameters: PaperworkToPDFInput
 ): Promise<{ documentReference: string }> => {
   try {
     const response = await oystehr.zambda.execute({
       id: PAPERWORK_TO_PDF_ZAMBDA_ID,
+      ...parameters,
+    });
+    return chooseJson(response);
+  } catch (error: unknown) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const icd10Search = async (
+  oystehr: Oystehr,
+  parameters: Icd10SearchRequestParams
+): Promise<Icd10SearchResponse> => {
+  try {
+    const response = await oystehr.zambda.execute({
+      id: 'icd-10-search',
+      ...parameters,
+    });
+    return chooseJson(response);
+  } catch (error: unknown) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const listTemplates = async (
+  oystehr: Oystehr,
+  parameters: ListTemplatesZambdaInput
+): Promise<ListTemplatesZambdaOutput> => {
+  try {
+    const response = await oystehr.zambda.execute({
+      id: 'list-templates',
+      ...parameters,
+    });
+    return chooseJson(response);
+  } catch (error: unknown) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const applyTemplate = async (
+  oystehr: Oystehr,
+  parameters: ApplyTemplateZambdaInput
+): Promise<ApplyTemplateZambdaOutput> => {
+  try {
+    const response = await oystehr.zambda.execute({
+      id: 'apply-template',
+      ...parameters,
+    });
+    return chooseJson(response);
+  } catch (error: unknown) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const pendingSupervisorApproval = async (
+  oystehr: Oystehr,
+  parameters: PendingSupervisorApprovalInput
+): Promise<any> => {
+  try {
+    const response = await oystehr.zambda.execute({
+      id: PENDING_SUPERVISOR_APPROVAL_ZAMBDA_ID,
       ...parameters,
     });
     return chooseJson(response);
