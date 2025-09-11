@@ -20,14 +20,21 @@ export const ProtectedRoute: FC<{
     const path = window.location.pathname;
     const params = window.location.search;
     const redirectPath = `${path}${params}`;
-    // console.log(`redirect path in protected route: ${path}${params}`);
+
+    let phone = localStorage.getItem('HLTHiPhone');
+
+    
     void loginWithRedirect({
+      authorizationParams: {
+        login_hint: phone ? phone : undefined
+      },
       appState: {
         target: redirectPath,
       },
     }).catch((error) => {
       throw new Error(`Error calling loginWithRedirect Auth0: ${error}`);
     });
+
     return loadingFallback;
   }
   // console.log('user is authenticated, rendering Outlet');

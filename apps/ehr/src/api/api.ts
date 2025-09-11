@@ -130,6 +130,7 @@ const GET_LABEL_PDF_ZAMBDA_ID = 'get-label-pdf';
 const GET_OR_CREATE_VISIT_LABEL_PDF_ZAMBDA_ID = 'get-or-create-visit-label-pdf';
 const CREATE_DISCHARGE_SUMMARY = 'create-discharge-summary';
 const PAPERWORK_TO_PDF_ZAMBDA_ID = 'paperwork-to-pdf';
+const CREATE_COMPOUND_ORDER = 'compound-order'
 
 const GET_PRACTICITIONER_ACCOUNTING = import.meta.env.VITE_APP_GET_CUSTOM_ACCOUTING_STRIPE;
 

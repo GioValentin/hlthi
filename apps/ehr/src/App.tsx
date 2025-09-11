@@ -240,7 +240,7 @@ function App(): ReactElement {
                   <Route path="/" element={<Navigate to="/telemed/appointments" />} />
                   <Route path="/logout" element={<Logout />} />
                   <Route path="/visits" element={<AppointmentsPage />} />
-                  <Route path="/visits/add" element={<AddPatient />} />
+                  <Route path="/visits/add/:id" element={<AddPatient />} />
                   <Route path="/visit/:id" element={<AppointmentPage />} />
                   <Route path="/patient/:id" element={<PatientPage />} />
                   <Route path="/patient/:id/info" element={<PatientInformationPage />} />

@@ -35,8 +35,6 @@ const Homepage = (): JSX.Element => {
   const isAppointmentStatusProposed = activeAppointment?.appointmentStatus === 'proposed';
   const isAppointmentStatusPending = pendingAppointment?.telemedStatus === 'pending';
 
-  console.log(isAppointmentStatusPending);
-  console.log(pendingAppointment);
   const appointmentID = activeAppointment?.id || '';
   const pendingAppointmentID = pendingAppointment?.id || '';
   const { refetch } = useGetAppointments(apiClient, Boolean(apiClient));

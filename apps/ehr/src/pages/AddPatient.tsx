@@ -49,6 +49,9 @@ import { dataTestIds } from '../constants/data-test-ids';
 import { useApiClients } from '../hooks/useAppClients';
 import PageContainer from '../layout/PageContainer';
 import { EmailUserValue, PersonSex, VisitType } from '../types/types';
+import { useParams } from 'react-router-dom';
+
+type Telecom = { system?: string; use?: string; value?: string };
 
 const mapSelectedPatientEmailUser = (selectedPatientEmailUser: string | undefined): EmailUserValue | undefined => {
   if (!selectedPatientEmailUser) {
@@ -79,6 +82,8 @@ export interface LocationWithWalkinSchedule extends Location {
 
 export default function AddPatient(): JSX.Element {
   const storedLocation = localStorage?.getItem('selectedLocation');
+  const {id} = useParams();
+
   const [selectedLocation, setSelectedLocation] = useState<LocationWithWalkinSchedule | undefined>(
     storedLocation ? JSON.parse(storedLocation) : undefined
   );
@@ -124,6 +129,47 @@ export default function AddPatient(): JSX.Element {
     setValidReasonForVisit(newValue.length <= MAXIMUM_CHARACTER_LIMIT);
     setReasonForVisitAdditional(newValue);
   };
+
+  function getState(patient: any): string | undefined {
+  if (!patient.address || patient.address.length === 0) return undefined;
+
+  // Optionally pick the "home" or "current" address if `use` is set
+  const homeAddress =
+    patient.address.find((a: any) => a.use === 'home') || patient.address[0];
+
+  return homeAddress.state;
+}
+
+  function getMobileNumber(patient: any): string | undefined {
+  // 1. Check root-level telecom
+  const rootTelecom: Telecom[] = patient.telecom || [];
+  const rootMobile = rootTelecom.find(
+    t =>
+      t.system === 'phone' && t.use === 'mobile' ||
+      t.system === 'sms' && t.use === 'mobile'
+  );
+  if (rootMobile?.value) return rootMobile.value;
+
+  // 2. Check contacts
+  for (const contact of patient.contact || []) {
+    for (const telecom of contact.telecom || []) {
+      if (
+        (telecom.system === 'phone' && telecom.use === 'mobile') ||
+        (telecom.system === 'sms' && telecom.use === 'mobile')
+      ) {
+        return telecom.value;
+      }
+    }
+  }
+
+  // 3. Fallback: any phone value
+  const anyPhone =
+    rootTelecom.find(t => t.system === 'phone')?.value ||
+    patient.contact?.flatMap((c: any) => c.telecom || [])
+      .find((t: Telecom) => t.system === 'phone')?.value;
+
+  return anyPhone;
+}
 
   useEffect(() => {
     const fetchLocationWithSlotData = async (params: GetScheduleRequestParams, client: Oystehr): Promise<void> => {
@@ -337,6 +383,34 @@ export default function AddPatient(): JSX.Element {
     const selected = patients?.find((patient) => patient.id === event.target.value);
     setSelectedPatient(selected);
   };
+
+  useEffect(() => {
+
+    if(!oystehr) return;
+
+    if(id == undefined) return;
+    setSearching(true);
+     
+
+    oystehr.fhir.get({
+      resourceType: 'Patient',
+      id: id
+    }).then((data) => {
+      console.log(data);
+      setPatients(patients);
+      const number = getMobileNumber(data);
+      //@ts-ignore
+      setMobilePhone(number);
+      //@ts-ignore
+      setPatients([data]);
+      //@ts-ignore
+      setSelectedPatient(data);
+      //@ts-ignore
+      setOpenSearchResults(true);
+      setSearching(false);
+      setOpenSearchResults(false);
+    });
+  },[]);
 
   return (
     <PageContainer>

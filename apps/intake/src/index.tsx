@@ -27,6 +27,9 @@ if (!VITE_APP_CLIENT_ID || !VITE_APP_AUTH0_AUDIENCE) {
   throw new Error('Client ID or audience not found');
 }
 
+let phone = localStorage.getItem('HLTHiPhone');
+
+
 root.render(
   <React.StrictMode>
     <Auth0Provider
@@ -36,7 +39,8 @@ root.render(
         //connection: 'email',
         redirectUri: `${window.location.origin}/redirect`,
         audience: VITE_APP_AUTH0_AUDIENCE,
-        scope: 'openid profile email offline_access',
+        scope: 'openid profile sms offline_access',
+        login_hint: phone ? phone : undefined
       }}
       useRefreshTokens={true}
       useRefreshTokensFallback={true}

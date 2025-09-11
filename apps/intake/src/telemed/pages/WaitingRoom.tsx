@@ -103,9 +103,9 @@ const WaitingRoom = (): JSX.Element => {
           gap: 3,
         }}
       >
-        <Typography variant="subtitle1" color={theme.palette.primary.main}>
+        {/* <Typography variant="subtitle1" color={theme.palette.primary.main}>
           Approx. wait time - {estimatedTime ? Duration.fromMillis(estimatedTime).toFormat("mm'mins'") : '...mins'}
-        </Typography>
+        </Typography> */}
         <Typography variant="subtitle1" color={theme.palette.primary.main}>
           Number in line - {numberInLine || '...'}
         </Typography>

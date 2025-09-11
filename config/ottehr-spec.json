@@ -939,62 +939,6 @@
         "event": "update"
       }
     },
-    "AI-INTERVIEW-START": {
-      "name": "ai-interview-start",
-      "type": "http_auth",
-      "runtime": "nodejs20.x",
-      "src": "src/patient/ai-interview/start/index",
-      "zip": ".dist/zips/ai-interview-start.zip"
-    },
-    "AI-INTERVIEW-HANDLE-ANSWER": {
-      "name": "ai-interview-handle-answer",
-      "type": "http_auth",
-      "runtime": "nodejs20.x",
-      "src": "src/patient/ai-interview/handle-answer/index",
-      "zip": ".dist/zips/ai-interview-handle-answer.zip"
-    },
-    "AI-INTERVIEW-PERSIST-CONSENT": {
-      "name": "ai-interview-persist-consent",
-      "type": "http_auth",
-      "runtime": "nodejs20.x",
-      "src": "src/patient/ai-interview/persist-consent/index",
-      "zip": ".dist/zips/ai-interview-persist-consent.zip"
-    },
-    "RADIOLOGY-CREATE-ORDER": {
-      "name": "radiology-create-order",
-      "type": "http_auth",
-      "runtime": "nodejs20.x",
-      "src": "src/ehr/radiology/create-order/index",
-      "zip": ".dist/zips/radiology-create-order.zip"
-    },
-    "RADIOLOGY-CANCEL-ORDER": {
-      "name": "radiology-cancel-order",
-      "type": "http_auth",
-      "runtime": "nodejs20.x",
-      "src": "src/ehr/radiology/cancel-order/index",
-      "zip": ".dist/zips/radiology-cancel-order.zip"
-    },
-    "RADIOLOGY-ORDER-LIST": {
-      "name": "radiology-order-list",
-      "type": "http_auth",
-      "runtime": "nodejs20.x",
-      "src": "src/ehr/radiology/order-list/index",
-      "zip": ".dist/zips/radiology-order-list.zip"
-    },
-    "RADIOLOGY-PACS-WEBHOOK": {
-      "name": "radiology-pacs-webhook",
-      "type": "http_open",
-      "runtime": "nodejs20.x",
-      "src": "src/ehr/radiology/pacs-webhook/index",
-      "zip": ".dist/zips/radiology-pacs-webhook.zip"
-    },
-    "RADIOLOGY-LAUNCH-VIEWER": {
-      "name": "radiology-launch-viewer",
-      "type": "http_auth",
-      "runtime": "nodejs20.x",
-      "src": "src/ehr/radiology/launch-viewer/index",
-      "zip": ".dist/zips/radiology-launch-viewer.zip"
-    },
     "GET-LAB-ORDERS": {
       "name": "get-lab-orders",
       "type": "http_auth",
@@ -1064,18 +1008,6 @@
       "runtime": "nodejs20.x",
       "src": "src/ehr/schedules/create-schedule/index",
       "zip": ".dist/zips/create-schedule.zip"
-    },
-    "AI-INTERVIEW-SUMMARY": {
-      "name": "ai-interview-summary",
-      "type": "subscription",
-      "runtime": "nodejs20.x",
-      "src": "src/subscriptions/questionnaire-response/ai-interview-summary/index",
-      "zip": ".dist/zips/ai-interview-summary.zip",
-      "subscription": {
-        "criteria": "QuestionnaireResponse?status=completed&questionnaire=#aiInterviewQuestionnaire",
-        "reason": "Generate summary of chat with AI",
-        "event": "update"
-      }
     },
     "SEND-FAX": {
       "name": "send-fax",
@@ -1182,13 +1114,6 @@
       "src": "src/ehr/patient-payments/post/index",
       "zip": ".dist/zips/patient-payments-post.zip"
     },
-    "FAILING-ENDPOINT": {
-      "name": "failing-endpoint",
-      "type": "http_open",
-      "runtime": "nodejs20.x",
-      "src": "src/ehr/failing-endpoint/index",
-      "zip": ".dist/zips/failing-endpoint.zip"
-    },
     "CREATE-DISCHARGE_SUMMARY": {
       "name": "CREATE-DISCHARGE-SUMMARY",
       "type": "http_auth",
@@ -1216,6 +1141,13 @@
       "runtime": "nodejs20.x",
       "src": "src/custom-ehr/conversation/create-conversation/index",
       "zip": ".dist/zips/admin-create-conversation.zip"
+    },
+    "INTAKE-SYNC-USER-ACCOUNT": {
+      "name": "intake-sync-user-account",
+      "type": "http_auth",
+      "runtime": "nodejs20.x",
+      "src": "src/custom-patient/sync-user/index",
+      "zip": ".dist/zips/intake-sync-user-account.zip"
     },
     "COMPOUND-ORDER": {
       "name": "compound-order",
@@ -1284,16 +1216,6 @@
         "criteria": "QuestionnaireResponse?status=completed",
         "event": "update",
         "reason": "Needs to generate invoice prior to appointment"
-      }
-    },
-    "CUSTOM-PRACTITIONER-PAYOUT": {
-      "name": "custom-practitioner-payout",
-      "type": "cron",
-      "runtime": "nodejs20.x",
-      "src": "src/custom-ehr/payouts/appointment/appointment-chart-data-prefilling/index",
-      "zip": ".dist/zips/custom-practitioner-payout.zip",
-      "schedule": {
-        "expression": "cron(*/5 * * * ? *)"
       }
     },
     "CUSTOM-BILLING-STRIPE-WEBHOOK": {
