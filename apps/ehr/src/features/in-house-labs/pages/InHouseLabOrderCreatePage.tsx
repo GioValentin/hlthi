@@ -21,14 +21,14 @@ import Oystehr from '@oystehr/sdk';
 import { enqueueSnackbar } from 'notistack';
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { dataTestIds } from 'src/constants/data-test-ids';
 import DetailPageContainer from 'src/features/common/DetailPageContainer';
 import { getAttendingPractitionerId, isApiError, TestItem } from 'utils';
 import { DiagnosisDTO } from 'utils/lib/types/api/chart-data';
 import { createInHouseLabOrder, getCreateInHouseLabOrderResources, getOrCreateVisitLabel } from '../../../api/api';
 import { useApiClients } from '../../../hooks/useAppClients';
-import { getSelectors } from '../../../shared/store/getSelectors';
-import { ActionsList, DeleteIconButton, useDebounce, useGetIcd10Search } from '../../../telemed';
-import { useAppointmentStore } from '../../../telemed/state/appointment/appointment.store';
+import { ActionsList, DeleteIconButton, useDebounce, useICD10SearchNew } from '../../../telemed';
+import { useAppointmentData, useChartData } from '../../../telemed/state/appointment/appointment.store';
 import { InHouseLabsNotesCard } from '../components/details/InHouseLabsNotesCard';
 import { InHouseLabsBreadcrumbs } from '../components/InHouseLabsBreadcrumbs';
 
@@ -51,13 +51,8 @@ export const InHouseLabOrderCreatePage: React.FC = () => {
     diagnoses?: DiagnosisDTO[];
   };
 
-  const { chartData, encounter, appointment, setPartialChartData } = getSelectors(useAppointmentStore, [
-    'chartData',
-    'encounter',
-    'appointment',
-    'setPartialChartData',
-  ]);
-
+  const { encounter, appointment } = useAppointmentData();
+  const { chartData, setPartialChartData } = useChartData();
   const { diagnosis = [] } = chartData || {};
   const didPrimaryDiagnosisInit = useRef(false);
 
@@ -84,7 +79,7 @@ export const InHouseLabOrderCreatePage: React.FC = () => {
 
   // used to fetch dx icd10 codes
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  const { isFetching: isSearching, data } = useGetIcd10Search({ search: debouncedSearchTerm, sabs: 'ICD10CM' });
+  const { isFetching: isSearching, data } = useICD10SearchNew({ search: debouncedSearchTerm });
   const icdSearchOptions = data?.codes || [];
   const { debounce } = useDebounce(800);
   const debouncedHandleInputChange = (data: string): void => {
@@ -228,7 +223,12 @@ export const InHouseLabOrderCreatePage: React.FC = () => {
   return (
     <DetailPageContainer>
       <InHouseLabsBreadcrumbs pageName="Order In-House Lab">
-        <Typography variant="h4" color="primary.dark" sx={{ mb: 3 }}>
+        <Typography
+          data-testid={dataTestIds.orderInHouseLabPage.title}
+          variant="h4"
+          color="primary.dark"
+          sx={{ mb: 3 }}
+        >
           Order In-house Lab
         </Typography>
 
@@ -270,6 +270,7 @@ export const InHouseLabOrderCreatePage: React.FC = () => {
                     <Select
                       labelId="test-type-label"
                       id="test-type"
+                      data-testid={dataTestIds.orderInHouseLabPage.testTypeField}
                       value={selectedTest?.name || ''}
                       label="Test"
                       onChange={(e) => handleTestSelection(e.target.value)}
@@ -287,6 +288,7 @@ export const InHouseLabOrderCreatePage: React.FC = () => {
                   <>
                     <Grid item xs={selectedTest?.repeatable ? 8.5 : 12}>
                       <TextField
+                        data-testid={dataTestIds.orderInHouseLabPage.CPTCodeField}
                         InputProps={{
                           readOnly: true,
                           sx: {
@@ -386,6 +388,7 @@ export const InHouseLabOrderCreatePage: React.FC = () => {
                       Select Dx
                     </InputLabel>
                     <Select
+                      data-testid={dataTestIds.orderInHouseLabPage.diagnosis}
                       labelId="diagnosis-label"
                       id="diagnosis"
                       multiple
@@ -458,6 +461,7 @@ export const InHouseLabOrderCreatePage: React.FC = () => {
                     }
                     renderInput={(params) => (
                       <TextField
+                        data-testid={dataTestIds.orderInHouseLabPage.additionalDx}
                         {...params}
                         onChange={(e) => debouncedHandleInputChange(e.target.value)}
                         label="Additional Dx"
@@ -525,6 +529,7 @@ export const InHouseLabOrderCreatePage: React.FC = () => {
 
                 <Grid item xs={12}>
                   <InHouseLabsNotesCard
+                    data-testid={dataTestIds.orderInHouseLabPage.notes}
                     notes={notes}
                     notesLabel={'Notes (optional)'}
                     readOnly={false}
@@ -557,6 +562,7 @@ export const InHouseLabOrderCreatePage: React.FC = () => {
                     </Button>
                     <Box>
                       <Button
+                        data-testid={dataTestIds.orderInHouseLabPage.orderAndPrintLabelButton}
                         variant="contained"
                         onClick={(e) => handleSubmit(e, true)}
                         disabled={!canBeSubmitted}
@@ -570,6 +576,7 @@ export const InHouseLabOrderCreatePage: React.FC = () => {
                         Order & Print Label
                       </Button>
                       <Button
+                        data-testid={dataTestIds.orderInHouseLabPage.orderInHouseLabButton}
                         variant="contained"
                         type="submit"
                         disabled={!canBeSubmitted}
