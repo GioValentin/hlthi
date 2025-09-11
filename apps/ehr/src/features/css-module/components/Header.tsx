@@ -5,7 +5,7 @@ import { TypographyOptions } from '@mui/material/styles/createTypography';
 import { styled } from '@mui/system';
 import { useQuery } from '@tanstack/react-query';
 import { enqueueSnackbar } from 'notistack';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   getAdmitterPractitionerId,
@@ -17,10 +17,8 @@ import {
 import { getEmployees } from '../../../api/api';
 import { dataTestIds } from '../../../constants/data-test-ids';
 import { useApiClients } from '../../../hooks/useAppClients';
-import { getSelectors } from '../../../shared/store/getSelectors';
-import { useAppointmentStore } from '../../../telemed';
+import { useAppointmentData, useChartData } from '../../../telemed';
 import { useNavigationContext } from '../context/NavigationContext';
-import { useAppointment } from '../hooks/useAppointment';
 import { usePractitionerActions } from '../hooks/usePractitioner';
 import { ChangeStatusDropdown } from './ChangeStatusDropdown';
 import { InternalNotes } from './InternalNotes';
@@ -68,14 +66,16 @@ const format = (
 export const Header = (): JSX.Element => {
   const { id: appointmentID } = useParams();
   const navigate = useNavigate();
+
   const {
     resources: { appointment, patient },
     mappedData,
-    visitState: telemedData,
-    refetch,
-  } = useAppointment(appointmentID);
-  const { encounter } = telemedData;
-  const { chartData } = getSelectors(useAppointmentStore, ['chartData']);
+    visitState,
+    appointmentRefetch,
+  } = useAppointmentData();
+
+  const { chartData } = useChartData();
+  const { encounter } = visitState;
   const encounterId = encounter?.id;
   const assignedIntakePerformerId = encounter ? getAdmitterPractitionerId(encounter) : undefined;
   const assignedProviderId = encounter ? getAttendingPractitionerId(encounter) : undefined;
@@ -84,6 +84,7 @@ export const Header = (): JSX.Element => {
   const gender = format(mappedData?.gender, 'Gender');
   const language = format(mappedData?.preferredLanguage, 'Lang');
   const dob = format(mappedData?.DOB, 'DOB', true);
+
   const allergies = format(
     chartData?.allergies
       ?.filter((allergy) => allergy.current === true)
@@ -93,6 +94,32 @@ export const Header = (): JSX.Element => {
     true,
     'none'
   );
+
+  const [shouldRefetchPractitioners, setShouldRefetchPractitioners] = useState(false);
+
+  const { setPartialChartData, refetch } = useChartData({
+    requestedFields: {
+      practitioners: {},
+    },
+    enabled: false,
+    onSuccess: (data) => {
+      if (!data) {
+        return;
+      }
+      setPartialChartData({
+        practitioners: data.practitioners,
+      });
+    },
+  });
+
+  useEffect(() => {
+    if (shouldRefetchPractitioners) {
+      console.log('refetching practitioners');
+      void refetch();
+      setShouldRefetchPractitioners(false);
+    }
+  }, [shouldRefetchPractitioners, refetch]);
+
   const reasonForVisit = format(appointment?.description, 'Reason for Visit');
   const userId = format(patient?.id);
   const [_status, setStatus] = useState<VisitStatusLabel | undefined>(undefined);
@@ -154,7 +181,8 @@ export const Header = (): JSX.Element => {
     try {
       if (!appointmentID) return;
       await handleUpdatePractitionerForIntake(practitionerId);
-      await refetch();
+      await appointmentRefetch();
+      setShouldRefetchPractitioners(true);
     } catch (error: any) {
       console.log(error.message);
       enqueueSnackbar(`An error occurred trying to update the intake assignment. Please try again.`, {
@@ -167,7 +195,8 @@ export const Header = (): JSX.Element => {
     try {
       if (!appointmentID) return;
       await handleUpdatePractitionerForProvider(practitionerId);
-      await refetch();
+      await appointmentRefetch();
+      setShouldRefetchPractitioners(true);
     } catch (error: any) {
       console.log(error.message);
       enqueueSnackbar(`An error occurred trying to update the provider assignment. Please try again.`, {
@@ -318,7 +347,7 @@ export const Header = (): JSX.Element => {
                   handleSwitchMode={handleSwitchMode}
                   nextMode={nextMode}
                 />
-                {encounterId ? <InternalNotes encounterId={encounterId} /> : null}
+                {encounterId ? <InternalNotes /> : null}
               </Grid>
             </Grid>
           </Grid>
