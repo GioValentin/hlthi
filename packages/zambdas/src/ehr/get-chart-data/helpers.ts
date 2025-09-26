@@ -2,10 +2,10 @@ import { BatchInputGetRequest } from '@oystehr/sdk';
 import { Bundle, Encounter, FhirResource, Patient, Resource } from 'fhir/r4b';
 import {
   addSearchParams,
-  ChartDataFields,
   ChartDataRequestedFields,
   ChartDataWithResources,
   GetChartDataResponse,
+  SCHOOL_WORK_NOTE,
   SearchParams,
 } from 'utils';
 import { handleCustomDTOExtractions, mapResourceToChartDataResponse } from '../../shared/chart-data';
@@ -178,7 +178,7 @@ export async function convertSearchResultsToResponse(
   m2mToken: string,
   patientId: string,
   encounterId: string,
-  fields?: (keyof ChartDataFields)[]
+  fields?: (keyof ChartDataRequestedFields)[]
 ): Promise<ChartDataWithResources> {
   let getChartDataResponse: GetChartDataResponse = {
     patientId,
@@ -200,6 +200,10 @@ export async function convertSearchResultsToResponse(
           observations: [],
           practitioners: [],
           aiPotentialDiagnosis: [],
+          aiChat: {
+            documents: [],
+            providers: [],
+          },
         }),
   };
   const resources = parseBundleResources(bundle);
@@ -241,4 +245,5 @@ export const configProceduresRequestsForGetChartData = (encounterId: string): Ba
 export const defaultChartDataFieldsSearchParams: Partial<Record<keyof GetChartDataResponse, { _tag: string }>> = {
   medications: { _tag: 'current-medication' },
   inhouseMedications: { _tag: 'in-house-medication' },
+  schoolWorkNotes: { _tag: SCHOOL_WORK_NOTE },
 };

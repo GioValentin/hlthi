@@ -2,12 +2,17 @@ import { Alert, Box, CircularProgress, TextField, useTheme } from '@mui/material
 import { FC, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { AccordionCard } from '../../../components';
-import { useDebounceNotesField } from '../../../hooks';
-import { useChartData } from '../../../state';
+import { useDebounceNotesField, useGetAppointmentAccessibility } from '../../../hooks';
+import { useChartFields } from '../../../state';
 
 export const AddendumCard: FC = () => {
-  const { chartData } = useChartData();
-  const addendumNote = chartData?.addendumNote?.text;
+  const { data: chartFields } = useChartFields({
+    requestedFields: {
+      addendumNote: {},
+    },
+  });
+  const { isAppointmentReadOnly: isReadOnly } = useGetAppointmentAccessibility();
+  const addendumNote = chartFields?.addendumNote?.text;
 
   const theme = useTheme();
 
@@ -46,6 +51,7 @@ export const AddendumCard: FC = () => {
               }}
               size="small"
               label="Notes"
+              disabled={isReadOnly}
               fullWidth
               multiline
               InputProps={{
