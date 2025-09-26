@@ -9,16 +9,19 @@ import {
   extractExtensionValue,
   findExtensionIndex,
   getAddressStringForScheduleResource,
+  getAppointmentLockMetaTagOperations,
   getAppointmentMetaTagOpForStatusUpdate,
   getEncounterStatusHistoryUpdateOp,
   getPatchBinary,
   getPatientContactEmail,
-  getProgressNoteChartDataRequestedFields,
+  getTaskResource,
   getVisitStatus,
   InPersonCompletionTemplateData,
   OTTEHR_MODULE,
+  progressNoteChartDataRequestedFields,
   SignAppointmentInput,
   SignAppointmentResponse,
+  TaskIndicator,
   TelemedCompletionTemplateData,
   telemedProgressNoteChartDataRequestedFields,
   visitStatusToFhirAppointmentStatusMap,
@@ -26,7 +29,6 @@ import {
 } from 'utils';
 import { getPresignedURLs } from '../../patient/appointment/get-visit-details/helpers';
 import { checkOrCreateM2MClientToken, getEmailClient, makeAddressUrl, wrapHandler, ZambdaInput } from '../../shared';
-import { CANDID_ENCOUNTER_ID_IDENTIFIER_SYSTEM, createEncounterFromAppointment } from '../../shared/candid';
 import { createProvenanceForEncounter } from '../../shared/createProvenanceForEncounter';
 import { createPublishExcuseNotesOps } from '../../shared/createPublishExcuseNotesOps';
 import { createOystehrClient } from '../../shared/helpers';
@@ -96,33 +98,22 @@ export const performEffect = async (
     throw new Error(`No patient found for encounter ${encounter.id}`);
   }
 
-  let candidEncounterId: string | undefined;
-  try {
-    console.log('[CLAIM SUBMISSION] Attempting to create encounter in candid...');
-    candidEncounterId = await createEncounterFromAppointment(visitResources, secrets, oystehr);
-  } catch (error) {
-    console.error(`Error creating Candid encounter: ${error}, stringified error: ${JSON.stringify(error)}`);
-    captureException(error, {
-      tags: {
-        appointmentId,
-        encounterId: encounter.id,
-      },
-    });
-  }
-  console.log(`[CLAIM SUBMISSION] Candid encounter created with ID ${candidEncounterId}`);
-
   console.log(`appointment and encounter statuses: ${appointment.status}, ${encounter.status}`);
   const currentStatus = getVisitStatus(appointment, encounter);
   if (currentStatus) {
-    await changeStatusToCompleted(
-      oystehr,
-      oystehrCurrentUser,
-      visitResources,
-      candidEncounterId,
-      supervisorApprovalEnabled
-    );
+    await changeStatusToCompleted(oystehr, oystehrCurrentUser, visitResources, supervisorApprovalEnabled);
   }
   console.debug(`Status has been changed.`);
+
+  if (appointment.id === undefined) {
+    throw new Error('Appointment ID is not defined');
+  }
+
+  // Create Task that will kick off subscription to send the claim
+  console.time('create-send-claim-task');
+  const sendClaimTaskResource = getTaskResource(TaskIndicator.sendClaim, appointment.id);
+  await oystehr.fhir.create(sendClaimTaskResource);
+  console.timeEnd('create-send-claim-task');
 
   const isInPersonAppointment = !!visitResources.appointment.meta?.tag?.find((tag) => tag.code === OTTEHR_MODULE.IP);
 
@@ -131,7 +122,7 @@ export const performEffect = async (
     oystehr,
     m2mToken,
     visitResources.encounter.id!,
-    isInPersonAppointment ? getProgressNoteChartDataRequestedFields() : telemedProgressNoteChartDataRequestedFields
+    isInPersonAppointment ? progressNoteChartDataRequestedFields : telemedProgressNoteChartDataRequestedFields
   );
   const medicationOrdersPromise = getMedicationOrders(oystehr, {
     searchBy: {
@@ -245,7 +236,6 @@ const changeStatusToCompleted = async (
   oystehr: Oystehr,
   oystehrCurrentUser: Oystehr,
   resourcesToUpdate: FullAppointmentResourcePackage,
-  candidEncounterId: string | undefined,
   supervisorApprovalEnabled?: boolean
 ): Promise<void> => {
   if (!resourcesToUpdate.appointment || !resourcesToUpdate.appointment.id) {
@@ -270,6 +260,9 @@ const changeStatusToCompleted = async (
 
   patchOps.push(...getAppointmentMetaTagOpForStatusUpdate(resourcesToUpdate.appointment, 'completed', { user }));
 
+  // Add locked meta tag when appointment is signed/completed
+  patchOps.push(...getAppointmentLockMetaTagOperations(resourcesToUpdate.appointment, true));
+
   const encounterPatchOps: Operation[] = [
     {
       op: 'replace',
@@ -277,18 +270,6 @@ const changeStatusToCompleted = async (
       value: encounterStatus,
     },
   ];
-
-  if (candidEncounterId != null) {
-    const identifier = {
-      system: CANDID_ENCOUNTER_ID_IDENTIFIER_SYSTEM,
-      value: candidEncounterId,
-    };
-    encounterPatchOps.push({
-      op: 'add',
-      path: resourcesToUpdate.encounter.identifier != null ? '/identifier/-' : '/identifier',
-      value: resourcesToUpdate.encounter.identifier != null ? identifier : [identifier],
-    });
-  }
 
   const encounterStatusHistoryUpdate: Operation = getEncounterStatusHistoryUpdateOp(
     resourcesToUpdate.encounter,

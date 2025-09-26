@@ -17,7 +17,7 @@ import {
 import { getEmployees } from '../../../api/api';
 import { dataTestIds } from '../../../constants/data-test-ids';
 import { useApiClients } from '../../../hooks/useAppClients';
-import { useAppointmentData, useChartData } from '../../../telemed';
+import { useAppointmentData, useChartData, useChartFields } from '../../../telemed';
 import { useNavigationContext } from '../context/NavigationContext';
 import { usePractitionerActions } from '../hooks/usePractitioner';
 import { ChangeStatusDropdown } from './ChangeStatusDropdown';
@@ -97,7 +97,7 @@ export const Header = (): JSX.Element => {
 
   const [shouldRefetchPractitioners, setShouldRefetchPractitioners] = useState(false);
 
-  const { setPartialChartData, refetch } = useChartData({
+  const { setQueryCache, refetch } = useChartFields({
     requestedFields: {
       practitioners: {},
     },
@@ -106,7 +106,7 @@ export const Header = (): JSX.Element => {
       if (!data) {
         return;
       }
-      setPartialChartData({
+      setQueryCache({
         practitioners: data.practitioners,
       });
     },
@@ -307,29 +307,33 @@ export const Header = (): JSX.Element => {
           </Grid>
           <Grid item xs={12} sx={{ mt: -2 }}>
             <Grid container alignItems="center" spacing={2}>
-              <Grid item>
+              <Grid item alignSelf={'flex-start'} sx={{ mt: 0.5 }}>
                 <ProfileAvatar appointmentID={appointmentID} />
               </Grid>
               <Grid item xs>
                 <PatientInfoWrapper>
-                  <PatientName
-                    data-testid={dataTestIds.cssHeader.patientName}
-                    onClick={() => navigate(`/patient/${userId}`)}
-                  >
-                    {patientName}
-                  </PatientName>
-                  <PrintVisitLabelButton encounterId={encounterId} />
-                  <PatientMetadata sx={{ fontWeight: 500 }}>{dob}</PatientMetadata> |
+                  <Grid>
+                    <PatientInfoWrapper>
+                      <PatientName
+                        data-testid={dataTestIds.cssHeader.patientName}
+                        onClick={() => navigate(`/patient/${userId}`)}
+                      >
+                        {patientName}
+                      </PatientName>
+                      <PrintVisitLabelButton encounterId={encounterId} />
+                      <PatientMetadata sx={{ fontWeight: 500 }}>{dob}</PatientMetadata> |
+                    </PatientInfoWrapper>
+                    <PatientInfoWrapper>
+                      <PatientMetadata>{pronouns}</PatientMetadata> | <PatientMetadata>{gender}</PatientMetadata> |
+                      <PatientMetadata>{language}</PatientMetadata> |<PatientMetadata>{reasonForVisit}</PatientMetadata>
+                    </PatientInfoWrapper>
+                  </Grid>
                   <PatientMetadata
-                    noWrap
-                    sx={{ fontWeight: chartData?.allergies?.length ? 700 : 400, maxWidth: '250px' }}
+                    data-testid={dataTestIds.cssHeader.allergies}
+                    sx={{ fontWeight: chartData?.allergies?.length ? 700 : 400, maxWidth: '60%' }}
                   >
                     {allergies}
                   </PatientMetadata>
-                </PatientInfoWrapper>
-                <PatientInfoWrapper>
-                  <PatientMetadata>{pronouns}</PatientMetadata> | <PatientMetadata>{gender}</PatientMetadata> |
-                  <PatientMetadata>{language}</PatientMetadata> |<PatientMetadata>{reasonForVisit}</PatientMetadata>
                 </PatientInfoWrapper>
               </Grid>
               <Grid
@@ -340,6 +344,8 @@ export const Header = (): JSX.Element => {
                     flexDirection: 'column',
                     gap: 0.5,
                   },
+                  alignSelf: 'flex-start',
+                  mt: 0.5,
                 }}
               >
                 <SwitchIntakeModeButton

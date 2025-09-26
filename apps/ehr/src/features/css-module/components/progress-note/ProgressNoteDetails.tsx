@@ -3,30 +3,34 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { Box, Divider, Stack, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { FC } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ApptTab } from 'src/components/AppointmentTabs';
 import { RoundedButton } from 'src/components/RoundedButton';
 import { FEATURE_FLAGS } from 'src/constants/feature-flags';
+import { isEligibleSupervisor } from 'src/helpers';
+import useEvolveUser from 'src/hooks/useEvolveUser';
 import { ImmunizationContainer } from 'src/telemed/features/appointment/ReviewTab/components/ImmunizationContainer';
 import { ProceduresContainer } from 'src/telemed/features/appointment/ReviewTab/components/ProceduresContainer';
 import { useOystehrAPIClient } from 'src/telemed/hooks/useOystehrAPIClient';
 import {
   examConfig,
-  getProgressNoteChartDataRequestedFields,
   getVisitStatus,
   LabType,
   NOTE_TYPE,
+  progressNoteChartDataRequestedFields,
   TelemedAppointmentStatusEnum,
 } from 'utils';
 import { dataTestIds } from '../../../../constants/data-test-ids';
 import {
   AccordionCard,
-  ConfirmationDialog,
   SectionList,
   useAppointmentData,
   useChangeTelemedAppointmentStatusMutation,
+  useChartData,
+  useChartFields,
   usePatientInstructionsVisibility,
   useSignAppointmentMutation,
 } from '../../../../telemed';
-import { useChartData } from '../../../../telemed';
 import {
   AdditionalQuestionsContainer,
   AllergiesContainer,
@@ -53,59 +57,51 @@ import { InHouseMedicationsContainer } from './InHouseMedicationsContainer';
 import { PatientVitalsContainer } from './PatientVitalsContainer';
 
 export const ProgressNoteDetails: FC = () => {
-  const { appointment, encounter, appointmentRefetch, appointmentSetState } = useAppointmentData();
+  const { appointment, encounter, appointmentSetState, location } = useAppointmentData();
   const apiClient = useOystehrAPIClient();
   const { css } = useFeatureFlags();
   const { mutateAsync: signAppointment, isPending: isSignLoading } = useSignAppointmentMutation();
+
   const { mutateAsync: changeTelemedAppointmentStatus, isPending: isChangeLoading } =
     useChangeTelemedAppointmentStatusMutation();
+
   const isLoading = isChangeLoading || isSignLoading;
+  const user = useEvolveUser();
+  const navigate = useNavigate();
 
+  const { data: chartFields } = useChartFields({ requestedFields: progressNoteChartDataRequestedFields });
   const { chartData } = useChartData();
-
-  const { setPartialChartData } = useChartData({
-    requestedFields: getProgressNoteChartDataRequestedFields(),
-    onSuccess: (data) => {
-      setPartialChartData({
-        episodeOfCare: data?.episodeOfCare,
-        vitalsObservations: data?.vitalsObservations,
-        prescribedMedications: data?.prescribedMedications,
-        externalLabResults: data?.externalLabResults,
-        inHouseLabResults: data?.inHouseLabResults,
-        disposition: data?.disposition,
-        medicalDecision: data?.medicalDecision,
-      });
-    },
-  });
-
   const { medications: inHouseMedicationsWithCanceled } = useMedicationAPI();
   const inHouseMedications = inHouseMedicationsWithCanceled.filter((medication) => medication.status !== 'cancelled');
+
   const { data: immunizationOrdersResponse } = useGetImmunizationOrders({
     encounterId: encounter.id,
   });
+
   const immunizationOrders = (immunizationOrdersResponse?.orders ?? []).filter((order) =>
     ['administered', 'administered-partly'].includes(order.status)
   );
-  const screeningNotes = chartData?.notes?.filter((note) => note.type === NOTE_TYPE.SCREENING);
-  const vitalsNotes = chartData?.notes?.filter((note) => note.type === NOTE_TYPE.VITALS);
-  const allergyNotes = chartData?.notes?.filter((note) => note.type === NOTE_TYPE.ALLERGY);
-  const intakeMedicationNotes = chartData?.notes?.filter((note) => note.type === NOTE_TYPE.INTAKE_MEDICATION);
-  const hospitalizationNotes = chartData?.notes?.filter((note) => note.type === NOTE_TYPE.HOSPITALIZATION);
-  const medicalConditionNotes = chartData?.notes?.filter((note) => note.type === NOTE_TYPE.MEDICAL_CONDITION);
-  const surgicalHistoryNotes = chartData?.notes?.filter((note) => note.type === NOTE_TYPE.SURGICAL_HISTORY);
-  const inHouseMedicationNotes = chartData?.notes?.filter((note) => note.type === NOTE_TYPE.MEDICATION);
 
-  const chiefComplaint = chartData?.chiefComplaint?.text;
-  const ros = chartData?.ros?.text;
-  const diagnoses = chartData?.diagnosis;
-  const medicalDecision = chartData?.medicalDecision?.text;
+  const screeningNotes = chartFields?.notes?.filter((note) => note.type === NOTE_TYPE.SCREENING);
+  const vitalsNotes = chartFields?.notes?.filter((note) => note.type === NOTE_TYPE.VITALS);
+  const allergyNotes = chartFields?.notes?.filter((note) => note.type === NOTE_TYPE.ALLERGY);
+  const intakeMedicationNotes = chartFields?.notes?.filter((note) => note.type === NOTE_TYPE.INTAKE_MEDICATION);
+  const hospitalizationNotes = chartFields?.notes?.filter((note) => note.type === NOTE_TYPE.HOSPITALIZATION);
+  const medicalConditionNotes = chartFields?.notes?.filter((note) => note.type === NOTE_TYPE.MEDICAL_CONDITION);
+  const surgicalHistoryNotes = chartFields?.notes?.filter((note) => note.type === NOTE_TYPE.SURGICAL_HISTORY);
+  const inHouseMedicationNotes = chartFields?.notes?.filter((note) => note.type === NOTE_TYPE.MEDICATION);
+  const medicalDecision = chartFields?.medicalDecision?.text;
+  const prescriptions = chartFields?.prescribedMedications;
+  const vitalsObservations = chartFields?.vitalsObservations;
+  const externalLabResults = chartFields?.externalLabResults;
+  const inHouseLabResults = chartFields?.inHouseLabResults;
+  const chiefComplaint = chartFields?.chiefComplaint?.text;
+  const ros = chartFields?.ros?.text;
+
   const emCode = chartData?.emCode;
   const cptCodes = chartData?.cptCodes;
-  const prescriptions = chartData?.prescribedMedications;
+  const diagnoses = chartData?.diagnosis;
   const observations = chartData?.observations;
-  const vitalsObservations = chartData?.vitalsObservations;
-  const externalLabResults = chartData?.externalLabResults;
-  const inHouseLabResults = chartData?.inHouseLabResults;
 
   const showChiefComplaint = !!(chiefComplaint && chiefComplaint.length > 0);
   const showReviewOfSystems = !!(ros && ros.length > 0);
@@ -164,15 +160,6 @@ export const ProgressNoteDetails: FC = () => {
       </Typography>
       <ExaminationContainer examConfig={examConfig.inPerson.default.components} />
     </Stack>,
-    <AllergiesContainer notes={allergyNotes} />,
-    <MedicationsContainer notes={intakeMedicationNotes} />,
-    <MedicalConditionsContainer notes={medicalConditionNotes} />,
-    <SurgicalHistoryContainer notes={surgicalHistoryNotes} />,
-    <HospitalizationContainer notes={hospitalizationNotes} />,
-    showInHouseMedications && (
-      <InHouseMedicationsContainer medications={inHouseMedications} notes={inHouseMedicationNotes} />
-    ),
-    showImmunization && <ImmunizationContainer orders={immunizationOrders} />,
     ...(!isAwaitingSupervisorApproval ? medicalHistorySections : []),
     showAssessment && <AssessmentContainer />,
     showMedicalDecisionMaking && <MedicalDecisionMakingContainer />,
@@ -205,11 +192,11 @@ export const ProgressNoteDetails: FC = () => {
       const tz = DateTime.now().zoneName;
       await signAppointment({
         apiClient,
-        appointmentId: appointment.id + 'a',
+        appointmentId: appointment.id,
         timezone: tz,
         supervisorApprovalEnabled: FEATURE_FLAGS.SUPERVISOR_APPROVAL_ENABLED,
       });
-      await appointmentRefetch();
+      navigate('/visits', { state: { tab: ApptTab.completed } });
     } else {
       await changeTelemedAppointmentStatus({
         apiClient,
@@ -225,62 +212,52 @@ export const ProgressNoteDetails: FC = () => {
 
   return (
     <AccordionCard label="Visit Note" dataTestId={dataTestIds.progressNotePage.visitNoteCard}>
-      {FEATURE_FLAGS.SUPERVISOR_APPROVAL_ENABLED && isAwaitingSupervisorApproval && (
-        <>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 1,
-              mt: 1.5,
-              mx: 2,
-              mb: 1,
-              p: 2,
-              border: 1,
-              borderColor: otherColors.warningBorder,
-              borderRadius: 2,
-            }}
-          >
+      {FEATURE_FLAGS.SUPERVISOR_APPROVAL_ENABLED &&
+        isAwaitingSupervisorApproval &&
+        user &&
+        isEligibleSupervisor(user.profileResource!, location!) && (
+          <>
             <Box
               sx={{
                 display: 'flex',
-                width: 'fit-content',
-                marginTop: 1,
-                px: 2,
-                py: 1,
-                borderRadius: 0.5,
-                gap: 1.5,
-                alignItems: 'center',
-                bgcolor: otherColors.lightErrorBg,
+                flexDirection: 'column',
+                gap: 1,
+                mt: 1.5,
+                mx: 2,
+                mb: 1,
+                p: 2,
+                border: 1,
+                borderColor: otherColors.warningBorder,
+                borderRadius: 2,
               }}
             >
-              <ErrorOutlineIcon sx={{ color: otherColors.warningIcon }} />
-              <Typography color={otherColors.warningText} fontWeight={600}>
-                Medical History should be confirmed by the provider
-              </Typography>
-              <ConfirmationDialog
-                title="Supervisor Approval"
-                description={'Are you sure you want to approve this visit? Claim will be sent to RCM.'}
-                response={handleApprove}
-                actionButtons={{
-                  back: { text: 'Cancel' },
-                  proceed: { text: 'Approve', loading: isLoading },
-                  reverse: true,
+              <Box
+                sx={{
+                  display: 'flex',
+                  width: 'fit-content',
+                  marginTop: 1,
+                  px: 2,
+                  py: 1,
+                  borderRadius: 0.5,
+                  gap: 1.5,
+                  alignItems: 'center',
+                  bgcolor: otherColors.lightErrorBg,
                 }}
               >
-                {(showDialog) => (
-                  <RoundedButton variant="contained" size="small" onClick={showDialog}>
-                    Confirm
-                  </RoundedButton>
-                )}
-              </ConfirmationDialog>
-            </Box>
+                <ErrorOutlineIcon sx={{ color: otherColors.warningIcon }} />
+                <Typography color={otherColors.warningText} fontWeight={600}>
+                  Medical History should be confirmed by the provider
+                </Typography>
+                <RoundedButton variant="contained" size="small" onClick={handleApprove} loading={isLoading}>
+                  Approve
+                </RoundedButton>
+              </Box>
 
-            <SectionList sections={medicalHistorySections} />
-          </Box>
-          <Divider />
-        </>
-      )}
+              <SectionList sections={medicalHistorySections} />
+            </Box>
+            <Divider />
+          </>
+        )}
       <SectionList sections={sections} sx={{ p: 2 }} />
     </AccordionCard>
   );

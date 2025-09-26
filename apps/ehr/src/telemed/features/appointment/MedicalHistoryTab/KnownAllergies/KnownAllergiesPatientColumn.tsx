@@ -18,9 +18,9 @@ export const KnownAllergiesPatientColumn: FC = () => {
     (answer) => answer['allergies-form-agent-substance-medications'] || answer['allergies-form-agent-substance-other']
   );
 
-  const aiAllergies = chartData?.observations?.find(
+  const aiAllergies = chartData?.observations?.filter(
     (observation) => observation.field === AiObservationField.Allergies
-  ) as ObservationTextFieldDTO;
+  ) as ObservationTextFieldDTO[];
 
   const isInPersonPaperwork = questionnaireResponse?.questionnaire?.startsWith(
     'https://ottehr.com/FHIR/Questionnaire/intake-paperwork-inperson'
@@ -54,15 +54,16 @@ export const KnownAllergiesPatientColumn: FC = () => {
         flexDirection: 'column',
         gap: 1,
       }}
-      data-testid={dataTestIds.telemedEhrFlow.hpiKnownAllergiesPatientProvidedList}
+      data-testid={dataTestIds.allergies.knownAllergiesPatientProvidedList}
     >
       {renderAllergies()}
-      {aiAllergies ? (
+
+      {aiAllergies?.length > 0 && (
         <>
           <hr style={{ border: '0.5px solid #DFE5E9', margin: '0 -16px 0 -16px' }} />
-          <AiSuggestion title={'Allergies'} content={aiAllergies.value} />
+          <AiSuggestion title={'Allergies'} chartData={chartData} content={aiAllergies} />
         </>
-      ) : undefined}
+      )}
     </Box>
   );
 };
