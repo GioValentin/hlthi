@@ -31,12 +31,12 @@ let phone = localStorage.getItem('HLTHiPhone');
 
 
 root.render(
-  <React.StrictMode>
+  //<React.StrictMode>
     <Auth0Provider
       domain={VITE_APP_AUTH_URL}
       clientId={VITE_APP_CLIENT_ID}
       authorizationParams={{
-        //connection: 'email',
+        //connection: 'sms',
         redirectUri: `${window.location.origin}/redirect`,
         audience: VITE_APP_AUTH0_AUDIENCE,
         scope: 'openid profile sms offline_access',
@@ -59,5 +59,5 @@ root.render(
      
         <App />
     </Auth0Provider>
-  </React.StrictMode>
+  //</React.StrictMode>
 );

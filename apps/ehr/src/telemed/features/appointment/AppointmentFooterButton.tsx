@@ -152,7 +152,7 @@ export const AppointmentFooterButton: FC = () => {
       { apiClient, appointmentId: appointment.id, newStatus: TelemedAppointmentStatusEnum['unsigned'] },
       {}
     ).then(() => {
-      useAppointmentStore.setState({
+      appointmentSetState({
         encounter: {
           ...encounter,
           status: 'finished',

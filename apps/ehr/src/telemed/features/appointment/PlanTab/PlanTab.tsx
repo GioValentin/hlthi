@@ -6,7 +6,7 @@ import { ERxCard } from './ERxCard';
 import { HealthwiseDocumentsCard } from './HealthwiseDocumentsCard';
 import { PatientInstructionsCard } from './PatientInstructionsCard';
 import { SchoolWorkExcuseCard } from './SchoolWorkExcuseCard';
-import { CompoundOrderCard } from './CompoundOrderCard';
+// import { CompoundOrderCard } from './CompoundOrderCard';
 
 export const PlanTab: FC = () => {
   const { isChartDataLoading } = useChartData();
@@ -31,7 +31,7 @@ export const PlanTab: FC = () => {
       }}
     >
       <ERxCard />
-      <CompoundOrderCard/>
+      {/* <CompoundOrderCard/> */}
       <PatientInstructionsCard />
       {tmpHideHealthwiseDocuments ? <></> : <HealthwiseDocumentsCard />}
       <DispositionCard />

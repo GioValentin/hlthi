@@ -16,6 +16,7 @@ type ExamFormProps = {
 };
 
 export const ExamForm: FC<ExamFormProps> = ({ form, abnormal = false }) => {
+  
   const fieldNames = Object.keys(form.fields);
   const observationNames = Object.keys(form.components);
 
@@ -35,7 +36,10 @@ export const ExamForm: FC<ExamFormProps> = ({ form, abnormal = false }) => {
     return formConfig;
   }, [form.fields, fieldNames]);
 
+
+  console.log(observationNames);
   const { value: fields, update, isLoading } = useExamObservations(observationNames);
+
   const abnormalFields = fields.filter((field) => field.value);
 
   const [value, setValue] = useState(abnormalFields.length > 0);

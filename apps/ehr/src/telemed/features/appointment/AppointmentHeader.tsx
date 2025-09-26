@@ -5,19 +5,10 @@ import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adjustTopForBannerHeight } from '../../../helpers/misc.helper';
 import { AppointmentTabsHeader } from './AppointmentTabsHeader';
-import {
-  useAppointmentStore,
-} from '../../state'
-import { getSelectors } from '../../../shared/store/getSelectors';
 
 export const AppointmentHeader: FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { appointment, patient } = getSelectors(useAppointmentStore, ['appointment','patient']);
-
-  if(appointment == undefined || patient == undefined) {
-    return (<></>)
-  }
 
   return (
     <AppBar
@@ -31,7 +22,7 @@ export const AppointmentHeader: FC = () => {
     >
       <Box sx={{ display: 'flex', mt: 1, mx: 3, justifyContent: 'space-between', alignItems: 'start' }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <IconButton onClick={() => navigate('/visit/' + appointment?.id)} sx={{ width: 40, height: 40, mr: 1 }}>
+          <IconButton onClick={() => navigate('/telemed/appointments')} sx={{ width: 40, height: 40, mr: 1 }}>
             <ArrowBackIcon />
           </IconButton>
           <AppointmentTabsHeader />
