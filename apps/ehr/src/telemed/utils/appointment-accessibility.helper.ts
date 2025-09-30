@@ -2,6 +2,7 @@ import { Appointment, Encounter, Location } from 'fhir/r4b';
 import {
   allLicensesForPractitioner,
   checkEncounterHasPractitioner,
+  isAppointmentLocked,
   mapStatusToTelemed,
   PractitionerLicense,
   StateType,
@@ -29,6 +30,7 @@ export type GetAppointmentAccessibilityDataResult = {
   isStatusEditable: boolean;
   isAppointmentReadOnly: boolean;
   isCurrentUserHasAccessToAppointment: boolean;
+  isAppointmentLocked: boolean;
 };
 
 export const getAppointmentAccessibilityData = ({
@@ -54,11 +56,13 @@ export const getAppointmentAccessibilityData = ({
     isPractitionerLicensedInState &&
     (status === TelemedAppointmentStatusEnum.ready || isEncounterAssignedToCurrentPractitioner);
 
+  // Check if appointment is locked via meta tag
+  const isAppointmentLockedByMetaTag = appointment ? isAppointmentLocked(appointment) : false;
+
   const isAppointmentReadOnly = (() => {
 
     if (featureFlags.css) {
-      // TODO actualize this logic
-      return false;
+      return isAppointmentLockedByMetaTag;
     }
 
     return (
@@ -66,7 +70,8 @@ export const getAppointmentAccessibilityData = ({
       !isPractitionerLicensedInState ||
       !status ||
       !isStatusEditable ||
-      !isEncounterAssignedToCurrentPractitioner
+      !isEncounterAssignedToCurrentPractitioner ||
+      isAppointmentLockedByMetaTag
     );
   })();
 
@@ -80,5 +85,6 @@ export const getAppointmentAccessibilityData = ({
     isStatusEditable,
     isAppointmentReadOnly,
     isCurrentUserHasAccessToAppointment,
+    isAppointmentLocked: isAppointmentLockedByMetaTag,
   };
 };

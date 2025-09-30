@@ -24,7 +24,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { Operation } from 'fast-json-patch';
-import { Appointment, Location, Practitioner } from 'fhir/r4b';
+import { Appointment } from 'fhir/r4b';
 import { DateTime } from 'luxon';
 import { enqueueSnackbar } from 'notistack';
 import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
@@ -36,14 +36,10 @@ import {
   formatMinutes,
   getDurationOfStatus,
   getPatchBinary,
-  getPractitionerNPIIdentifier,
-  getPractitionerQualificationByLocation,
   getVisitTotalTime,
   InPersonAppointmentInformation,
-  isPhysicianQualification,
   mdyStringFromISOString,
   OrdersForTrackingBoardRow,
-  PractitionerQualificationCode,
   PROJECT_NAME,
   ROOM_EXTENSION_URL,
   VisitStatusLabel,
@@ -51,7 +47,7 @@ import {
 import { LANGUAGES } from '../constants';
 import { dataTestIds } from '../constants/data-test-ids';
 import ChatModal from '../features/chat/ChatModal';
-import { checkInPatient, displayOrdersToolTip, hasAtLeastOneOrder } from '../helpers';
+import { checkInPatient, displayOrdersToolTip, hasAtLeastOneOrder, isEligibleSupervisor } from '../helpers';
 import { getTimezone } from '../helpers/formatDateTime';
 import { formatPatientName } from '../helpers/formatPatientName';
 import { getOfficePhoneNumber } from '../helpers/getOfficePhoneNumber';
@@ -250,21 +246,6 @@ const longWaitTimeFlag = (appointment: InPersonAppointmentInformation, statusTim
   return false;
 };
 
-function canApprove(
-  practitioner: Practitioner,
-  location: Location,
-  attenderQualification?: PractitionerQualificationCode
-): boolean {
-  if (!practitioner) return false;
-
-  const isAttenderPhysician = isPhysicianQualification(attenderQualification);
-  const qualification = getPractitionerQualificationByLocation(practitioner, location);
-  const isPractitionerPhysician = isPhysicianQualification(qualification);
-  const npiIdentifier = getPractitionerNPIIdentifier(practitioner);
-
-  return !isAttenderPhysician && isPractitionerPhysician && Boolean(npiIdentifier?.value);
-}
-
 export default function AppointmentTableRow({
   appointment,
   location,
@@ -275,7 +256,7 @@ export default function AppointmentTableRow({
   updateAppointments,
   setEditingComment,
   orders,
-}: AppointmentTableRowProps): ReactElement {
+}: AppointmentTableRowProps): ReactElement | null {
   const { oystehr, oystehrZambda } = useApiClients();
   const theme = useTheme();
   const navigate = useNavigate();
@@ -287,16 +268,6 @@ export default function AppointmentTableRow({
   const [chatModalOpen, setChatModalOpen] = useState<boolean>(false);
   const [hasUnread, setHasUnread] = useState<boolean>(appointment.smsModel?.hasUnreadMessages || false);
   const user = useEvolveUser();
-
-  if (!user) {
-    throw new Error('User is not defined');
-  }
-
-  if (!encounter || !encounter.id) {
-    throw new Error('Encounter is not defined');
-  }
-
-  const encounterId: string = encounter.id;
 
   const [startIntakeButtonLoading, setStartIntakeButtonLoading] = useState(false);
   const [progressNoteButtonLoading, setProgressNoteButtonLoading] = useState(false);
@@ -632,8 +603,18 @@ export default function AppointmentTableRow({
     );
   }
 
+  if (!encounter?.id) {
+    enqueueSnackbar('Encounter is missing.', { variant: 'error' });
+    return null;
+  }
+  const encounterId: string = encounter.id;
+
   const handleStartIntakeButton = async (): Promise<void> => {
     setStartIntakeButtonLoading(true);
+    if (!user) {
+      enqueueSnackbar('User is not available. Cannot start intake.', { variant: 'error' });
+      return;
+    }
     try {
       await handleChangeInPersonVisitStatus(
         {
@@ -703,7 +684,9 @@ export default function AppointmentTableRow({
   const renderSupervisorApproval = (): ReactElement | undefined => {
     if (
       appointment.status === 'awaiting supervisor approval' &&
-      canApprove(user.profileResource!, location!, appointment.attenderQualification)
+      user?.profileResource &&
+      location &&
+      isEligibleSupervisor(user.profileResource!, location!, appointment.attenderQualification)
     ) {
       return (
         <GoToButton
@@ -735,6 +718,10 @@ export default function AppointmentTableRow({
 
   const handleDischargeButton = async (): Promise<void> => {
     setDischargeButtonLoading(true);
+    if (!user) {
+      enqueueSnackbar('User is not available. Cannot discharge patient.', { variant: 'error' });
+      return;
+    }
     try {
       await handleChangeInPersonVisitStatus(
         {

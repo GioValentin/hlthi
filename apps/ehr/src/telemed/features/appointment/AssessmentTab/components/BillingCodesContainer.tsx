@@ -14,7 +14,7 @@ export const BillingCodesContainer: FC = () => {
   const { chartData, setPartialChartData } = useChartData();
   const { isAppointmentReadOnly: isReadOnly } = useGetAppointmentAccessibility();
   const cptCodes = chartData?.cptCodes || [];
-  const emCode = chartData?.emCode;
+  const emCode = Array.isArray(chartData?.emCode) ? null : chartData?.emCode;
 
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const { isFetching: isSearching, data } = useGetIcd10Search({ search: debouncedSearchTerm, sabs: 'CPT' });
@@ -25,8 +25,8 @@ export const BillingCodesContainer: FC = () => {
   const { mutate: deleteEMChartData, isPending: isDeleteEMLoading } = useDeleteChartData();
   const { mutate: deleteCPTChartData, isPending: isDeleteCPTLoading } = useDeleteChartData();
 
-  const disabledEM = isSaveEMLoading || isDeleteEMLoading || (emCode && !emCode.resourceId);
-  const disabledCPT = isSaveCPTLoading || isDeleteCPTLoading;
+  const disabledEM = Boolean(isSaveEMLoading || isDeleteEMLoading || (emCode && !emCode.resourceId));
+  const disabledCPT = Boolean(isSaveCPTLoading || isDeleteCPTLoading);
 
   const { debounce } = useDebounce(800);
 
@@ -89,7 +89,7 @@ export const BillingCodesContainer: FC = () => {
 
   const onEMCodeChange = (value: CPTCodeOption | null): void => {
     if (value) {
-      const prevValue = emCode;
+      const prevValue = emCode ? { ...emCode } : undefined;
 
       saveEMChartData(
         { emCode: { ...emCode, ...value } },
@@ -104,12 +104,12 @@ export const BillingCodesContainer: FC = () => {
           },
           onError: () => {
             enqueueSnackbar('An error has occurred while saving E&M code. Please try again.', { variant: 'error' });
-            setPartialChartData({ emCode: prevValue });
+            setPartialChartData({ emCode: prevValue || undefined });
           },
         }
       );
       setPartialChartData({ emCode: value });
-    } else {
+    } else if (emCode) {
       deleteEMChartData({ emCode });
       setPartialChartData({ emCode: undefined });
     }
@@ -123,53 +123,57 @@ export const BillingCodesContainer: FC = () => {
             <AssessmentTitle>Billing</AssessmentTitle>
           </TooltipWrapper>
         </Box>
-        <Autocomplete
-          options={emCodeOptions}
-          disabled={disabledEM}
-          isOptionEqualToValue={(option, value) => option.code === value.code}
-          value={emCode ? { display: emCode.display, code: emCode.code } : null}
-          getOptionLabel={(option) => option.display}
-          onChange={(_e, value) => onEMCodeChange(value)}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              size="small"
-              label="E&M code"
-              placeholder="Search E&M code"
-              data-testid={dataTestIds.assessmentCard.emCodeDropdown}
+        {!isReadOnly && (
+          <>
+            <Autocomplete
+              options={emCodeOptions}
+              disabled={disabledEM}
+              isOptionEqualToValue={(option, value) => option.code === value.code}
+              value={emCode ? { display: emCode.display, code: emCode.code } : null}
+              getOptionLabel={(option) => option.display}
+              onChange={(_e, value) => onEMCodeChange(value)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  size="small"
+                  label="E&M code"
+                  placeholder="Search E&M code"
+                  data-testid={dataTestIds.assessmentCard.emCodeDropdown}
+                />
+              )}
             />
-          )}
-        />
-        <Autocomplete
-          fullWidth
-          blurOnSelect
-          disabled={disabledCPT}
-          options={cptSearchOptions}
-          noOptionsText={
-            debouncedSearchTerm && cptSearchOptions.length === 0
-              ? 'Nothing found for this search criteria'
-              : 'Start typing to load results'
-          }
-          autoComplete
-          includeInputInList
-          disableClearable
-          filterOptions={(x) => x}
-          value={null as unknown as undefined}
-          isOptionEqualToValue={(option, value) => value.code === option.code}
-          loading={isSearching}
-          onChange={onInternalChange}
-          getOptionLabel={(option) => (typeof option === 'string' ? option : `${option.code} ${option.display}`)}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              size="small"
-              label="Additional CPT codes"
-              placeholder="Search CPT code"
-              onChange={(e) => debouncedHandleInputChange(e.target.value)}
-              data-testid={dataTestIds.assessmentCard.cptCodeField}
+            <Autocomplete
+              fullWidth
+              blurOnSelect
+              disabled={disabledCPT}
+              options={cptSearchOptions}
+              noOptionsText={
+                debouncedSearchTerm && cptSearchOptions.length === 0
+                  ? 'Nothing found for this search criteria'
+                  : 'Start typing to load results'
+              }
+              autoComplete
+              includeInputInList
+              disableClearable
+              filterOptions={(x) => x}
+              value={null as unknown as undefined}
+              isOptionEqualToValue={(option, value) => value.code === option.code}
+              loading={isSearching}
+              onChange={onInternalChange}
+              getOptionLabel={(option) => (typeof option === 'string' ? option : `${option.code} ${option.display}`)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  size="small"
+                  label="Additional CPT codes"
+                  placeholder="Search CPT code"
+                  onChange={(e) => debouncedHandleInputChange(e.target.value)}
+                  data-testid={dataTestIds.assessmentCard.cptCodeField}
+                />
+              )}
             />
-          )}
-        />
+          </>
+        )}
       </Box>
 
       {emCode && (

@@ -37,10 +37,9 @@ export const ExamForm: FC<ExamFormProps> = ({ form, abnormal = false }) => {
   }, [form.fields, fieldNames]);
 
 
-  console.log(observationNames);
   const { value: fields, update, isLoading } = useExamObservations(observationNames);
 
-  const abnormalFields = fields.filter((field) => field.value);
+  const abnormalFields = fields.filter((field) => field?.value || false);
 
   const [value, setValue] = useState(abnormalFields.length > 0);
   const [savedFields, setSavedFields] = useState<ExamObservationDTO[]>([]);
@@ -56,18 +55,18 @@ export const ExamForm: FC<ExamFormProps> = ({ form, abnormal = false }) => {
         (fieldName) => !form.fields[fieldName].enabledWhen || isFieldEnabled(form.fields[fieldName].enabledWhen!, watch)
       )
       .reduce(
-        (prev, curr) => {
+        (acc, curr) => {
           const value = data[curr];
           if (!value) {
-            return prev;
+            return acc;
           }
 
           if (form.fields[curr].type === 'text') {
-            prev.notes.push(value);
+            acc.notes.push(value);
           } else {
-            prev.fieldNamesModified.push(value);
+            acc.fieldNamesModified.push(value);
           }
-          return prev;
+          return acc;
         },
         { fieldNamesModified: [], notes: [] } as { fieldNamesModified: string[]; notes: string[] }
       );

@@ -1,7 +1,7 @@
 import Oystehr, { BatchInputGetRequest, Bundle } from '@oystehr/sdk';
 import { APIGatewayProxyResult } from 'aws-lambda';
-import { FhirResource, Resource } from 'fhir/r4b';
-import { ChartDataFields, ChartDataRequestedFields, GetChartDataResponse } from 'utils';
+import { FhirResource, Practitioner, Resource } from 'fhir/r4b';
+import { ChartDataRequestedFields, GetChartDataResponse, PUBLIC_EXTENSION_BASE_URL } from 'utils';
 import { checkOrCreateM2MClientToken, getPatientEncounter, wrapHandler, ZambdaInput } from '../../shared';
 import { createOystehrClient } from '../../shared/helpers';
 import { configLabRequestsForGetChartData } from '../shared/labs';
@@ -78,7 +78,7 @@ export async function getChartData(
     resourceType: SupportedResourceType;
     defaultSearchBy?: 'encounter' | 'patient';
   }): void {
-    const fieldOptions = requestedFields?.[field];
+    const fieldOptions = requestedFields?.[field as keyof ChartDataRequestedFields];
     const defaultSearchParams = defaultChartDataFieldsSearchParams[field];
 
     if (!requestedFields || fieldOptions) {
@@ -115,25 +115,31 @@ export async function getChartData(
   // search by patient by default
   addRequestIfNeeded({ field: 'surgicalHistory', resourceType: 'Procedure', defaultSearchBy: 'patient' });
 
+  // TODO: I commented out this code during the chart-data store refactoring,
+  // because cptCodes were being requested with just an empty object,
+  // without specifying _searchBy and with default search by encounter,
+  // and this variant seems to match what is returned in cptCodes by default without requiredParameters.
+  // If this code is no longer needed, it can be removed.
+  // ---------------------------------------------------------
   // edge case for Procedures just for getting cpt codes..
   // todo: delete this and just use procedures with special tag in frontend (todo: need to pass tag here through search params most likely)
-  if (requestedFields?.cptCodes) {
-    /**
-     * TODO: Research if we can modify addRequestIfNeeded to include the requested field
-     *  in the default query when fields are not defined, instead of adding this condition.
-     *
-     * Without requestedFields addRequestIfNeeded generates URL like /Procedure?encounter=Encounter/:id,
-     * while the code above addRequestIfNeeded({
-     *   field: 'procedures',
-     *   resourceType: 'Procedure',
-     *   defaultSearchBy: 'patient'
-     * }) without requestedFields produces URL like /Procedure?subject=Patient/:id.
-     * Current solution: To avoid duplicates, run this request only with requestedFields.
-     */
+  // if (requestedFields?.cptCodes) {
+  /**
+   * TODO: Research if we can modify addRequestIfNeeded to include the requested field
+   *  in the default query when fields are not defined, instead of adding this condition.
+   *
+   * Without requestedFields addRequestIfNeeded generates URL like /Procedure?encounter=Encounter/:id,
+   * while the code above addRequestIfNeeded({
+   *   field: 'procedures',
+   *   resourceType: 'Procedure',
+   *   defaultSearchBy: 'patient'
+   * }) without requestedFields produces URL like /Procedure?subject=Patient/:id.
+   * Current solution: To avoid duplicates, run this request only with requestedFields.
+   */
 
-    // Comment: theoretically can be solved by using defaultSearchParams added to addRequestIfNeeded logic
-    addRequestIfNeeded({ field: 'cptCodes', resourceType: 'Procedure', defaultSearchBy: 'encounter' });
-  }
+  // Comment: theoretically can be solved by using defaultSearchParams added to addRequestIfNeeded logic
+  //   addRequestIfNeeded({ field: 'cptCodes', resourceType: 'Procedure', defaultSearchBy: 'encounter' });
+  // }
 
   // search by encounter by default
   addRequestIfNeeded({ field: 'observations', resourceType: 'Observation', defaultSearchBy: 'encounter' });
@@ -203,13 +209,14 @@ export async function getChartData(
       createFindResourceRequest(
         patient,
         encounter,
-        'QuestionnaireResponse',
-        {
-          questionnaire: {
-            type: 'string',
-            value: '#aiInterviewQuestionnaire',
-          },
-        },
+        'DocumentReference',
+        // {
+        //   type: {
+        //     type: 'string',
+        //     value: '#aiInterviewQuestionnaire',
+        //   },
+        // },
+        {},
         'encounter'
       )
     );
@@ -230,7 +237,9 @@ export async function getChartData(
     chartDataRequests.push(...labRequests);
   }
 
-  if ((!requestedFields || requestedFields.procedures) && encounter.id) {
+  // old code (but we don't have 'procedures' in requestedFields fields currently):
+  // if ((!requestedFields || requestedFields.procedures) && encounter.id) {
+  if (!requestedFields && encounter.id) {
     chartDataRequests.push(configProceduresRequestsForGetChartData(encounter.id));
   }
 
@@ -254,9 +263,35 @@ export async function getChartData(
     m2mToken,
     patient.id!,
     encounterId,
-    requestedFields ? (Object.keys(requestedFields) as (keyof ChartDataFields)[]) : undefined
+    requestedFields ? (Object.keys(requestedFields) as (keyof ChartDataRequestedFields)[]) : undefined
   );
   console.timeLog('check', 'after converting to response');
+  if (chartDataResult.chartData.aiChat) {
+    const practitionerIDs = chartDataResult.chartData.aiChat.documents
+      .filter((document) => document.resourceType === 'DocumentReference')
+      .map(
+        (document) =>
+          document.extension
+            ?.find((extension) => extension.url === `${PUBLIC_EXTENSION_BASE_URL}/provider`)
+            ?.valueReference?.reference?.split('/')[1]
+      )
+      .filter((practitionerID) => practitionerID != null);
+    if (practitionerIDs.length > 0) {
+      console.log('Getting Practitioners');
+      const practitioners = (
+        await oystehr.fhir.search<Practitioner>({
+          resourceType: 'Practitioner',
+          params: [
+            {
+              name: '_id',
+              value: practitionerIDs.join(','),
+            },
+          ],
+        })
+      ).unbundle();
+      chartDataResult.chartData.aiChat.providers = practitioners;
+    }
+  }
   console.timeEnd('check');
 
   return {

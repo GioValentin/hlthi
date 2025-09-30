@@ -1,19 +1,19 @@
 import { Patient } from 'fhir/r4b';
 import fs from 'fs';
-import { PageSizes } from 'pdf-lib';
+import { PageSizes, PDFImage } from 'pdf-lib';
 import {
-  AdditionalBooleanQuestionsFieldsNames,
   BUCKET_NAMES,
   followUpInOptions,
   NOTHING_TO_EAT_OR_DRINK_FIELD,
   NOTHING_TO_EAT_OR_DRINK_LABEL,
+  renderScreeningQuestionsForPDF,
   Secrets,
   SEEN_IN_LAST_THREE_YEARS_LABEL,
   VitalFieldNames,
 } from 'utils';
 import { makeZ3Url } from '../presigned-file-urls';
 import { createPresignedUrl, uploadObjectToZ3 } from '../z3Utils';
-import { createPdfClient, PdfInfo, rgbNormalized } from './pdf-utils';
+import { createPdfClient, getPdfLogo, PdfInfo, rgbNormalized } from './pdf-utils';
 import { ImageStyle, LineStyle, PageStyles, PdfClientStyles, TextStyle, VisitNoteData } from './types';
 
 async function createVisitNotePdfBytes(data: VisitNoteData, isInPersonAppointment: boolean): Promise<Uint8Array> {
@@ -36,7 +36,9 @@ async function createVisitNotePdfBytes(data: VisitNoteData, isInPersonAppointmen
 
   const RubikFont = await pdfClient.embedFont(fs.readFileSync('./assets/Rubik-Regular.otf'));
   const RubikFontBold = await pdfClient.embedFont(fs.readFileSync('./assets/Rubik-Bold.otf'));
-  const ottehrLogo = await pdfClient.embedImage(fs.readFileSync('./assets/ottehrLogo.png'));
+  const logoBuffer = await getPdfLogo();
+  let logo: PDFImage | undefined;
+  if (logoBuffer) logo = await pdfClient.embedImage(logoBuffer);
   const redDot = await pdfClient.embedImage(fs.readFileSync('./assets/red-dot.png'));
   const greenDot = await pdfClient.embedImage(fs.readFileSync('./assets/green-dot.png'));
 
@@ -238,7 +240,7 @@ async function createVisitNotePdfBytes(data: VisitNoteData, isInPersonAppointmen
       width: 110,
       height: 28,
     };
-    pdfClient.drawImage(ottehrLogo, imgStyles);
+    if (logo) pdfClient.drawImage(logo, imgStyles);
     pdfClient.drawText('Visit Note', textStyles.header);
   };
   // We can't set this headline in initial styles, so we gonna draw it and add
@@ -445,27 +447,10 @@ async function createVisitNotePdfBytes(data: VisitNoteData, isInPersonAppointmen
     (data.screening?.notes && data.screening.notes.length > 0)
   ) {
     drawBlockHeader('Additional questions');
-    if (data.additionalQuestions[AdditionalBooleanQuestionsFieldsNames.CovidSymptoms]) {
-      regularText(
-        `Do you have any COVID symptoms? - ${
-          data.additionalQuestions[AdditionalBooleanQuestionsFieldsNames.CovidSymptoms]
-        }`
-      );
-    }
-    if (data.additionalQuestions[AdditionalBooleanQuestionsFieldsNames.TestedPositiveCovid]) {
-      regularText(
-        `Have you tested positive for COVID? - ${
-          data.additionalQuestions[AdditionalBooleanQuestionsFieldsNames.TestedPositiveCovid]
-        }`
-      );
-    }
-    if (data.additionalQuestions[AdditionalBooleanQuestionsFieldsNames.TravelUsa]) {
-      regularText(
-        `Have you traveled out of the USA in the last 2 weeks? - ${
-          data.additionalQuestions[AdditionalBooleanQuestionsFieldsNames.TravelUsa]
-        }`
-      );
-    }
+
+    renderScreeningQuestionsForPDF(data.additionalQuestions, (question, formattedValue) => {
+      regularText(`${question} - ${formattedValue}`);
+    });
 
     if (data.screening?.seenInLastThreeYears) {
       regularText(`${SEEN_IN_LAST_THREE_YEARS_LABEL} - ${data.screening.seenInLastThreeYears}`);
