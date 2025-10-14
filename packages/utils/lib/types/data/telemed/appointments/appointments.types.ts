@@ -92,6 +92,7 @@ export enum TelemedAppointmentStatusEnum {
 export type TelemedAppointmentStatus = `${TelemedAppointmentStatusEnum}`;
 
 export type TelemedCallStatuses = `${TelemedAppointmentStatus}`;
+
 export const TelemedCallStatusesArr: TelemedAppointmentStatus[] = [
   'ready',
   'pre-video',

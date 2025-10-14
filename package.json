@@ -1,6 +1,6 @@
 {
   "name": "ottehr",
-  "version": "1.19.0",
+  "version": "1.19.8",
   "private": true,
   "engines": {
     "node": ">=20.0.0",
@@ -56,6 +56,7 @@
     "zambdas:start": "turbo start --filter=zambdas",
     "apps:start": "turbo start --filter=intake-ui --filter=ehr-ui --filter=zambdas",
     "apps:start:iac": "npm run apply-local --workspace deploy && turbo start:iac --filter=intake-ui --filter=ehr-ui --filter=zambdas",
+    "apps:start:labcorp": "ENV=labcorp-local turbo start --filter=intake-ui --filter=ehr-ui --filter=zambdas",
     "integration:zambdas": "npm run build && ENV=local && cd packages/zambdas && DEBUG=start-server-and-test && npm run test:integration:ci",
     "test": "turbo test",
     "prepare": "husky",
@@ -87,7 +88,7 @@
     "@mui/material": "^5.14.18",
     "@mui/system": "^5.10.16",
     "@mui/x-date-pickers": "^6.18.6",
-    "@oystehr/sdk": "4.1.3",
+    "@oystehr/sdk": "4.1.8",
     "@pdf-lib/fontkit": "^1.1.1",
     "@segment/analytics-next": "^1.81.1",
     "@segment/analytics-react": "^1.0.0-rc1",
@@ -117,7 +118,7 @@
     "axios": "1.6.4",
     "browser-image-compression": "^2.0.2",
     "browserslist-to-esbuild": "^1.2.0",
-    "candidhealth": "1.3.0",
+    "candidhealth": "1.7.0",
     "fast-json-patch": "^3.1.1",
     "file-saver": "2.0.5",
     "firebase": "9.15.0",
@@ -142,7 +143,7 @@
     "react-dropzone": "^14.2.3",
     "react-gtm-module": "^2.0.11",
     "react-helmet-async": "^2.0.5",
-    "react-hook-form": "^7.40.0",
+    "react-hook-form": "7.64.0",
     "react-i18next": "^12.2.0",
     "react-imask": "^7.6.1",
     "react-infinite-scroll-component": "6.1.0",
@@ -201,6 +202,7 @@
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
+    "execa": "^9.6.0",
     "happy-dom": "^16.8.1",
     "husky": "^9.0.11",
     "lint-staged": "^15.0.2",
@@ -222,6 +224,7 @@
     "web-vitals": "^2.1.4"
   },
   "optionalDependencies": {
+    "@esbuild/linux-x64": "^0.25.10",
     "@rollup/rollup-linux-x64-gnu": "4.24.0"
   }
 }

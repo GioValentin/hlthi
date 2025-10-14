@@ -36,11 +36,14 @@ import {
   CreateUploadAudioRecordingOutput,
   CreateUserOutput,
   CreateUserParams,
+  DailyPaymentsReportZambdaInput,
+  DailyPaymentsReportZambdaOutput,
   DeleteInHouseLabOrderParameters,
   DeleteInHouseLabOrderZambdaOutput,
   DeleteLabOrderZambdaInput,
   DeleteLabOrderZambdaOutput,
   DownloadPatientProfilePhotoInput,
+  EHRVisitDetails,
   GetAppointmentsZambdaInput,
   GetAppointmentsZambdaOutput,
   GetConversationInput,
@@ -65,6 +68,8 @@ import {
   HandleInHouseLabResultsZambdaOutput,
   Icd10SearchRequestParams,
   Icd10SearchResponse,
+  IncompleteEncountersReportZambdaInput,
+  IncompleteEncountersReportZambdaOutput,
   InHouseGetOrdersResponseDTO,
   InviteParticipantRequestParameters,
   LabelPdf,
@@ -80,6 +85,8 @@ import {
   SaveFollowupEncounterZambdaInput,
   SaveFollowupEncounterZambdaOutput,
   ScheduleDTO,
+  SendReceiptByEmailZambdaInput,
+  SendReceiptByEmailZambdaOutput,
   SubmitLabOrderInput,
   SubmitLabOrderOutput,
   UnassignPractitionerZambdaInput,
@@ -89,9 +96,13 @@ import {
   UpdateScheduleParams,
   UpdateUserParams,
   UpdateUserZambdaOutput,
+  UpdateVisitDetailsInput,
   UploadPatientProfilePhotoInput,
   UserActivationZambdaInput,
   UserActivationZambdaOutput,
+  VisitDocuments,
+  VisitsOverviewReportZambdaInput,
+  VisitsOverviewReportZambdaOutput,
 } from 'utils';
 
 export interface PatchOperation {
@@ -104,6 +115,9 @@ export interface PatchOperation {
 const VITE_APP_IS_LOCAL = import.meta.env.VITE_APP_IS_LOCAL;
 const SUBMIT_LAB_ORDER_ZAMBDA_ID = 'submit-lab-order';
 const GET_APPOINTMENTS_ZAMBDA_ID = 'get-appointments';
+const INCOMPLETE_ENCOUNTERS_REPORT_ZAMBDA_ID = 'incomplete-encounters-report';
+const DAILY_PAYMENTS_REPORT_ZAMBDA_ID = 'daily-payments-report';
+const VISITS_OVERVIEW_REPORT_ZAMBDA_ID = 'visits-overview-report';
 const CREATE_APPOINTMENT_ZAMBDA_ID = 'create-appointment';
 const CANCEL_TELEMED_APPOINTMENT_ZAMBDA_ID = 'telemed-cancel-appointment';
 const INVITE_PARTICIPANT_ZAMBDA_ID = 'video-chat-invites-create';
@@ -149,6 +163,7 @@ const CREATE_COMPOUND_ORDER = 'compound-order'
 
 const GET_PRACTICITIONER_ACCOUNTING = import.meta.env.VITE_APP_GET_CUSTOM_ACCOUTING_STRIPE;
 const PENDING_SUPERVISOR_APPROVAL_ZAMBDA_ID = 'pending-supervisor-approval';
+const SEND_RECEIPT_BY_EMAIL_ZAMBDA_ID = 'send-receipt-by-email';
 
 export const getUser = async (token: string): Promise<User> => {
   const oystehr = new Oystehr({
@@ -267,6 +282,66 @@ export const getAppointments = async (
 
     const response = await oystehr.zambda.execute({
       id: GET_APPOINTMENTS_ZAMBDA_ID,
+      ...parameters,
+    });
+    return chooseJson(response);
+  } catch (error: unknown) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getIncompleteEncountersReport = async (
+  oystehr: Oystehr,
+  parameters: IncompleteEncountersReportZambdaInput
+): Promise<IncompleteEncountersReportZambdaOutput> => {
+  try {
+    if (INCOMPLETE_ENCOUNTERS_REPORT_ZAMBDA_ID == null) {
+      throw new Error('incomplete encounters report environment variable could not be loaded');
+    }
+
+    const response = await oystehr.zambda.execute({
+      id: INCOMPLETE_ENCOUNTERS_REPORT_ZAMBDA_ID,
+      ...parameters,
+    });
+    return chooseJson(response);
+  } catch (error: unknown) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getDailyPaymentsReport = async (
+  oystehr: Oystehr,
+  parameters: DailyPaymentsReportZambdaInput
+): Promise<DailyPaymentsReportZambdaOutput> => {
+  try {
+    if (DAILY_PAYMENTS_REPORT_ZAMBDA_ID == null) {
+      throw new Error('daily payments report environment variable could not be loaded');
+    }
+
+    const response = await oystehr.zambda.execute({
+      id: DAILY_PAYMENTS_REPORT_ZAMBDA_ID,
+      ...parameters,
+    });
+    return chooseJson(response);
+  } catch (error: unknown) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getVisitsOverviewReport = async (
+  oystehr: Oystehr,
+  parameters: VisitsOverviewReportZambdaInput
+): Promise<VisitsOverviewReportZambdaOutput> => {
+  try {
+    if (VISITS_OVERVIEW_REPORT_ZAMBDA_ID == null) {
+      throw new Error('visits overview report environment variable could not be loaded');
+    }
+
+    const response = await oystehr.zambda.execute({
+      id: VISITS_OVERVIEW_REPORT_ZAMBDA_ID,
       ...parameters,
     });
     return chooseJson(response);
@@ -1155,6 +1230,72 @@ export const unlockAppointment = async (
       ...parameters,
     });
     return chooseJson(response);
+  } catch (error: unknown) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const sendReceiptByEmail = async (
+  oystehr: Oystehr,
+  parameters: SendReceiptByEmailZambdaInput
+): Promise<SendReceiptByEmailZambdaOutput> => {
+  try {
+    if (SEND_RECEIPT_BY_EMAIL_ZAMBDA_ID == null) {
+      throw new Error('send receipt by email zambda environment variable could not be loaded');
+    }
+    const response = await oystehr.zambda.execute({
+      id: SEND_RECEIPT_BY_EMAIL_ZAMBDA_ID,
+      ...parameters,
+    });
+    return chooseJson(response);
+  } catch (error: unknown) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getPatientVisitFiles = async (
+  oystehr: Oystehr,
+  parameters: { appointmentId: string }
+): Promise<VisitDocuments> => {
+  try {
+    const response = await oystehr.zambda.execute({
+      id: 'get-visit-files',
+      ...parameters,
+    });
+    return chooseJson(response);
+  } catch (error: unknown) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getPatientVisitDetails = async (
+  oystehr: Oystehr,
+  parameters: { appointmentId: string }
+): Promise<EHRVisitDetails> => {
+  try {
+    const response = await oystehr.zambda.execute({
+      id: 'ehr-get-visit-details',
+      ...parameters,
+    });
+    return chooseJson(response);
+  } catch (error: unknown) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const updatePatientVisitDetails = async (
+  oystehr: Oystehr,
+  parameters: UpdateVisitDetailsInput
+): Promise<void> => {
+  try {
+    await oystehr.zambda.execute({
+      id: 'ehr-update-visit-details',
+      ...parameters,
+    });
   } catch (error: unknown) {
     console.log(error);
     throw error;
