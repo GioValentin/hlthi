@@ -5,4 +5,4 @@ export * from './PatientInstructionsCard';
 export * from './PlanTab';
 export * from './SchoolWorkExcuseCard';
 export * from './components';
-export * from './CompoundOrderCard'
+//export * from './CompoundOrderCard'

@@ -360,7 +360,7 @@ export const AppointmentSidePanel: FC = () => {
                 Invite participant
               </Button>
             )}
-          {isPractitionerAllowedToCancelThisVisit && (
+          {/* {isPractitionerAllowedToCancelThisVisit && (
             <Button
               size="small"
               color="error"
@@ -376,7 +376,7 @@ export const AppointmentSidePanel: FC = () => {
             >
               Cancel this visit
             </Button>
-          )}
+          )} */}
         </Box>
 
         {isCancelDialogOpen && <CancelVisitDialog onClose={() => setIsCancelDialogOpen(false)} />}

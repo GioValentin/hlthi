@@ -76,6 +76,7 @@ export const index = wrapHandler(ZAMBDA_NAME, async (input: ZambdaInput): Promis
 
         const questionnaireResponse = questionnaireResponsesMap[encounter.id!];
 
+        console.log(fhirAppointment.id);
         if(!questionnaireResponse) {
           console.log("No questionnaire response for encounter");
           return;

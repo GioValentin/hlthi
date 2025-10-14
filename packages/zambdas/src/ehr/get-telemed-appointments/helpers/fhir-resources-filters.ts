@@ -117,6 +117,10 @@ export const filterAppointmentsAndCreatePackages = ({
           return;
         }
 
+        if(paperwork.status == 'in-progress') {
+          return;
+        }
+
         resultAppointments.push({
           appointment,
           paperwork,
