@@ -301,13 +301,6 @@ export function TrackingBoardTableRow({ appointment, showProvider, next }: Appoi
           </IconButton>
         )}
       </TableCell>
-<<<<<<< HEAD:apps/ehr/src/telemed/features/tracking-board/TrackingBoardTableRow.tsx
-      <TableCell sx={{ verticalAlign: 'middle', cursor: 'pointer' }} onClick={goToVisit}>
-        <Typography sx={{ fontSize: '16px' }}>See Uploads</Typography>
-      </TableCell>
-=======
-
->>>>>>> develop:apps/ehr/src/features/visits/telemed/components/tracking-board/TrackingBoardTableRow.tsx
       <TableCell sx={{ verticalAlign: 'middle' }}>
         <Stack direction="row" spacing={1} alignItems="center">
           <GoToButton

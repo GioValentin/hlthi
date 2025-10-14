@@ -24,32 +24,13 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import CancelVisitDialog from 'src/components/CancelVisitDialog';
 import { EditPatientDialog } from 'src/components/dialogs';
 import { RoundedButton } from 'src/components/RoundedButton';
-<<<<<<< HEAD:apps/ehr/src/telemed/features/appointment/AppointmentSidePanel.tsx
-import { useGetErxConfigQuery } from 'src/telemed/hooks/useGetErxConfig';
-import {
-  calculatePatientAge,
-  getQuestionnaireResponseByLinkId,
-  INTERPRETER_PHONE_NUMBER,
-  mapStatusToTelemed,
-  TelemedAppointmentStatusEnum,
-  TelemedAppointmentVisitTabs,
-} from 'utils';
-import { EditPatientDialog } from '../../../components/dialogs';
-import { dataTestIds } from '../../../constants/data-test-ids';
-import ChatModal from '@features/chat/ChatModal';
-import { addSpacesAfterCommas } from '../../../helpers/formatString';
-import { adjustTopForBannerHeight } from '../../../helpers/misc.helper';
-import CancelVisitDialog from '../../components/CancelVisitDialog';
-import InviteParticipant from '../../components/InviteParticipant';
-import { useGetAppointmentAccessibility } from '../../hooks';
-=======
 import { TelemedAppointmentStatusChip } from 'src/components/TelemedAppointmentStatusChip';
 import { dataTestIds } from 'src/constants/data-test-ids';
-import ChatModal from 'src/features/chat/ChatModal';
+// import ChatModal from 'src/features/chat/ChatModal';
+import ChatModal from '@features/chat/ChatModal';
 import { getInPersonVisitDetailsUrl } from 'src/features/visits/in-person/routing/helpers';
 import { useGetAppointmentAccessibility } from 'src/features/visits/shared/hooks/useGetAppointmentAccessibility';
 import { useGetTelemedAppointmentWithSMSModel } from 'src/features/visits/shared/stores/appointment/appointment.queries';
->>>>>>> develop:apps/ehr/src/features/visits/telemed/components/appointment/AppointmentSidePanel.tsx
 import {
   useAppointmentData,
   useAppTelemedLocalStore,

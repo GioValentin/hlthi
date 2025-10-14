@@ -6,11 +6,6 @@ import { SchoolWorkExcuseCard } from '../SchoolWorkExcuseCard';
 import { ERxCard } from './ERxCard';
 import { HealthwiseDocumentsCard } from './HealthwiseDocumentsCard';
 import { PatientInstructionsCard } from './PatientInstructionsCard';
-<<<<<<< HEAD:apps/ehr/src/telemed/features/appointment/PlanTab/PlanTab.tsx
-import { SchoolWorkExcuseCard } from './SchoolWorkExcuseCard';
-// import { CompoundOrderCard } from './CompoundOrderCard';
-=======
->>>>>>> develop:apps/ehr/src/features/visits/shared/components/plan-tab/PlanTab.tsx
 
 export const PlanTab: FC = () => {
   const { isChartDataLoading } = useChartData();
