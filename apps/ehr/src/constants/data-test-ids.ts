@@ -9,6 +9,7 @@ import {
 export const dataTestIds = {
   closeIcon: 'CloseIcon',
   loadingSpinner: 'loading-spinner',
+  loadingScreen: 'loading-screen',
   deleteOutlinedIcon: 'DeleteOutlinedIcon',
   header: {
     userName: 'header-user-name',
@@ -176,6 +177,7 @@ export const dataTestIds = {
     cancelButton: 'dialog-cancel-button',
     proceedButton: 'dialog-proceed-button',
     title: 'dialog-title',
+    message: 'dialog-message',
   },
   virtualLocationsPage: {
     locationsSearch: 'locations-search',
@@ -281,10 +283,7 @@ export const dataTestIds = {
     hpiCurrentMedicationsListItem: (listDataTestId: string) => `${listDataTestId}-item`,
     hpiCurrentMedicationsColumn: 'telemed-hpi-current-medications-column',
     hpiSurgicalHistoryColumn: 'telemed-hpi-surgical-history-column',
-    hpiSurgicalHistoryList: 'telemed-hpi-surgical-history-list',
     hpiSurgicalHistoryPatientProvidedList: 'telemed-hpi-surgical-history-patient-provided-list',
-    hpiSurgicalHistoryInput: 'telemed-hpi-surgical-history-input',
-    hpiSurgicalHistoryListItem: 'telemed-hpi-surgical-history-list-item',
     hpiAdditionalQuestions: (questionSymptom: string) => `telemed-additional-questions-${questionSymptom}`,
     hpiAdditionalQuestionsPatientProvided: (questionSymptom: string) =>
       `telemed-additional-questions-patient-provided-${questionSymptom}`,
@@ -306,7 +305,6 @@ export const dataTestIds = {
     planTabDispositionNote: 'telemed-plan-tab-disposition-note',
     planTabDispositionReasonForTransferDropdown: 'telemed-plan-tab-disposition-reason-for-transfer-dropdown',
     reviewTabMedicationsContainer: 'telemed-review-tab-medications-container',
-    reviewTabSurgicalHistoryContainer: 'telemed-review-tab-surgical-history-container',
     reviewTabAdditionalQuestion: (questionSymptom: string) =>
       `telemed-review-tab-additional-question-${questionSymptom}`,
     reviewTabChiefComplaintContainer: 'telemed-review-tab-chief-complaint-container',
@@ -344,11 +342,14 @@ export const dataTestIds = {
     secondaryDiagnosisLink: 'secondary-diagnosis-link',
     medicalDecisionLink: 'medical-decision-link',
     emCodeLink: 'em-code-link',
+    hpiLink: 'hpi-link',
     visitNoteCard: 'visit-note-card',
     procedureItem: 'procedure-item',
+    vaccineItem: 'vaccine-item',
     labsTitle: (labType: string) => `title-${labType.toLowerCase().replace(/\s+/g, '-')}`,
     knownAllergiesContainer: 'known-allergies-container',
     medicalConditionsContainer: 'medical-conditions-container',
+    surgicalHistoryContainer: 'surgical-history-container',
   },
   assessmentCard: {
     emCodeDropdown: 'em-code-dropdown',
@@ -400,7 +401,6 @@ export const dataTestIds = {
   patientRecordPage: {
     seeAllPatientInfoButton: 'see-all-patient-info-button',
   },
-
   addInsuranceDialog: {
     id: 'add-insurance-dialog',
     type: 'add-insurance-dialog-type',
@@ -509,5 +509,70 @@ export const dataTestIds = {
     medicalConditionPatientProvidedList: 'medical-condition-patient-provided-list',
     medicalConditionsInput: 'medical-condition-input',
     medicalConditionListItem: 'medical-condition-list-item',
+  },
+  surgicalHistory: {
+    surgicalHistoryTitle: 'surgical-history-title',
+    surgicalHistoryOption: 'surgical-history-option',
+    surgicalHistoryColumn: 'surgical-history-column',
+    surgicalHistoryList: 'surgical-history-list',
+    surgicalHistoryPatientProvidedList: 'surgical-history-patient-provided-list',
+    surgicalHistoryInput: 'surgical-history-input',
+    surgicalHistoryListItem: 'surgical-history-list-item',
+  },
+  orderVaccinePage: {
+    title: 'order-vaccine-title',
+    vaccine: 'order-vaccine-vaccine',
+    dose: 'order-vaccine-dose',
+    units: 'order-vaccine-units',
+    route: 'order-vaccine-route',
+    location: 'order-vaccine-location',
+    instructions: 'order-vaccine-instructions',
+    orderedBy: 'order-vaccine-ordered-by',
+    orderVaccineButton: 'order-vaccine-button',
+  },
+
+  immunizationPage: {
+    title: 'immunization-title',
+    newOrderButton: 'new-order-button',
+    marTableRow: 'mar-table-row',
+    marTableVaccineCell: 'mar-table-vaccine-cell',
+    marTableStatusCell: 'mar-table-status-cell',
+    marTableDoseRouteCell: 'mar-table-dose-route-cell',
+    marTableInstructionsCell: 'mar-table-instructions-cell',
+    marTableOrderedDateCell: 'mar-table-ordered-date-cell',
+    marTableOrderedPersonCell: 'mar-table-ordered-person-cell',
+    marTableGivenDateCell: 'mar-table-given-date-cell',
+    marTableGivenPersonCell: 'mar-table-given-person-cell',
+    marTableReasonCell: 'mar-table-reason-cell',
+    vaccineDetailsTab: 'vaccine-details-tab',
+    marTab: 'immunization-mar-tab',
+    pencilIconButton: 'EditOutlinedIcon',
+    deleteButton: 'DeleteOutlinedIcon',
+  },
+
+  vaccineDetailsPage: {
+    lotNumber: 'lot-number',
+    expiredDate: 'expired-date',
+    mvxCode: 'mvx-code',
+    cvxCode: 'cvx-code',
+    cptCode: 'cpt-code',
+    ndcCode: 'ndc-code',
+    administeredDate: 'administered-date',
+    administeredTime: 'administered-time',
+    visCheckbox: 'vis-checkbox',
+    visGivenDate: 'vis-given-date',
+    relationship: 'relationship',
+    fullName: 'fullName',
+    mobile: 'mobile',
+    administeredButton: 'administered-button',
+    partlyAdministeredButton: 'partly-administered-button',
+    notAdministeredButton: 'not-administered-button',
+  },
+
+  administrationConfirmationDialog: {
+    patient: 'administration-dialog-patient',
+    vaccine: 'administration-dialog-vaccine',
+    message: 'administration-dialog-message',
+    reasonField: 'administration-dialog-reason-field',
   },
 };

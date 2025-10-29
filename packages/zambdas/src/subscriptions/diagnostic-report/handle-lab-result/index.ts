@@ -1,15 +1,24 @@
 import { BatchInputRequest } from '@oystehr/sdk';
 import { APIGatewayProxyResult } from 'aws-lambda';
-import { DiagnosticReport, Task } from 'fhir/r4b';
-import { DateTime } from 'luxon';
-import { getSecret, LAB_DR_TYPE_TAG, LAB_ORDER_TASK, LabType, Secrets, SecretsKeys } from 'utils';
+import { DiagnosticReport, Task, TaskInput } from 'fhir/r4b';
+import {
+  getCoding,
+  getFullestAvailableName,
+  getSecret,
+  getTestNameOrCodeFromDr,
+  LAB_ORDER_TASK,
+  LabType,
+  Secrets,
+  SecretsKeys,
+} from 'utils';
 import { diagnosticReportSpecificResultType } from '../../../ehr/shared/labs';
 import { createOystehrClient, getAuth0Token, topLevelCatch, wrapHandler, ZambdaInput } from '../../../shared';
 import {
   createExternalLabResultPDF,
   createExternalLabResultPDFBasedOnDr,
 } from '../../../shared/pdf/labs-results-form-pdf';
-import { getCodeForNewTask, getStatusForNewTask } from './helpers';
+import { createTask, getTaskLocationId } from '../../../shared/tasks';
+import { fetchRelatedResources, getCodeForNewTask, isUnsolicitedResult } from './helpers';
 import { validateRequestParameters } from './validateRequestParameters';
 
 const ZAMBDA_NAME = 'handle-lab-result';
@@ -36,40 +45,35 @@ export const index = wrapHandler(ZAMBDA_NAME, async (input: ZambdaInput): Promis
     }
 
     const specificDrTypeFromTag = diagnosticReportSpecificResultType(diagnosticReport);
-    const isUnsolicited = specificDrTypeFromTag === LAB_DR_TYPE_TAG.code.unsolicited;
+    const isUnsolicited = isUnsolicitedResult(specificDrTypeFromTag, diagnosticReport);
     const isUnsolicitedAndMatched = isUnsolicited && !!diagnosticReport.subject?.reference?.startsWith('Patient/');
 
-    const serviceRequestID = diagnosticReport?.basedOn
+    const serviceRequestId = diagnosticReport?.basedOn
       ?.find((temp) => temp.reference?.startsWith('ServiceRequest/'))
       ?.reference?.split('/')[1];
 
     console.log('specificDrTypeFromTag', specificDrTypeFromTag);
     console.log('isUnsolicitedAndMatched:', isUnsolicitedAndMatched);
+    console.log('isUnsolicited', isUnsolicited);
     console.log('diagnosticReport: ', diagnosticReport.id);
-    console.log('serviceRequestID:', serviceRequestID);
+    console.log('serviceRequestId:', serviceRequestId);
 
-    if (!serviceRequestID && specificDrTypeFromTag === undefined) {
+    if (!serviceRequestId && specificDrTypeFromTag === undefined) {
       throw new Error('ServiceRequest id is not found');
     }
 
     const oystehr = createOystehrClient(oystehrToken, secrets);
+    const { tasks, patient, labOrg } = await fetchRelatedResources(diagnosticReport, oystehr);
+
     const requests: BatchInputRequest<Task>[] = [];
 
     // See if the diagnosticReport has any existing tasks associated in the
     // if there were existing in-progress or ready tasks, then those should be set to 'cancelled' (two l's)
-    const existingTasks = (
-      await oystehr.fhir.search<Task>({
-        resourceType: 'Task',
-        params: [
-          { name: 'based-on', value: `DiagnosticReport/${diagnosticReport.id}` },
-          { name: 'code:not', value: LAB_ORDER_TASK.code.preSubmission },
-          { name: 'status', value: 'ready,in-progress' },
-        ],
-      })
-    ).unbundle();
-
-    existingTasks.forEach((task) => {
-      if (task.id)
+    tasks.forEach((task) => {
+      if (
+        ['ready', 'in-progress'].includes(task.status) &&
+        getCoding(task.code, LAB_ORDER_TASK.system)?.code != LAB_ORDER_TASK.code.preSubmission
+      ) {
         requests.push({
           url: `/Task/${task.id}`,
           method: 'PATCH',
@@ -81,30 +85,75 @@ export const index = wrapHandler(ZAMBDA_NAME, async (input: ZambdaInput): Promis
             },
           ],
         });
+      }
     });
 
-    // make the new task
-    const newTask: Task = {
-      resourceType: 'Task',
-      authoredOn: diagnosticReport.effectiveDateTime ?? DateTime.now().toUTC().toISO(), // the effective date is also UTC
-      intent: 'order',
+    const preSubmissionTask = tasks.find(
+      (task) => getCoding(task.code, LAB_ORDER_TASK.system)?.code == LAB_ORDER_TASK.code.preSubmission
+    );
+
+    const taskInput: { type: string; value?: string }[] | TaskInput[] | undefined = preSubmissionTask
+      ? preSubmissionTask.input
+      : [
+          {
+            type: LAB_ORDER_TASK.input.testName,
+            value: getTestNameOrCodeFromDr(diagnosticReport),
+          },
+          {
+            type: LAB_ORDER_TASK.input.labName,
+            value: labOrg?.name,
+          },
+          {
+            type: LAB_ORDER_TASK.input.receivedDate,
+            value: diagnosticReport.effectiveDateTime,
+          },
+          {
+            type: LAB_ORDER_TASK.input.patientName,
+            value: patient ? getFullestAvailableName(patient) : undefined,
+          },
+        ];
+
+    if (specificDrTypeFromTag && taskInput) {
+      taskInput.push({
+        type: LAB_ORDER_TASK.input.drTag,
+        value: specificDrTypeFromTag,
+      });
+    }
+
+    const newTask = createTask({
+      category: LAB_ORDER_TASK.category,
+      code: {
+        system: LAB_ORDER_TASK.system,
+        code: getCodeForNewTask(diagnosticReport, isUnsolicited, isUnsolicitedAndMatched),
+      },
+      encounterId: preSubmissionTask?.encounter?.reference?.split('/')[1] ?? '',
       basedOn: [
-        {
-          type: 'DiagnosticReport',
-          reference: `DiagnosticReport/${diagnosticReport.id}`,
-        },
+        `DiagnosticReport/${diagnosticReport.id}`,
+        ...(serviceRequestId ? [`ServiceRequest/${serviceRequestId}`] : []),
       ],
-      status: getStatusForNewTask(diagnosticReport.status),
-      code: getCodeForNewTask(diagnosticReport, isUnsolicited, isUnsolicitedAndMatched),
-    };
-
-    console.log('creating a new task with code: ', JSON.stringify(newTask.code));
-
-    requests.push({
-      method: 'POST',
-      url: '/Task',
-      resource: newTask,
+      locationId: preSubmissionTask ? getTaskLocationId(preSubmissionTask) : undefined,
+      input: taskInput,
     });
+    if (diagnosticReport.status === 'cancelled') {
+      newTask.status = 'completed';
+    }
+
+    // no task will be created for an unsolicited result pdf attachment
+    // no result pdf can be created until it is matched and it should come in with at least one other DR that will trigger the task
+    // after the matching is complete we can create the review task / generate the pdf
+    const skipTaskCreation =
+      specificDrTypeFromTag === LabType.pdfAttachment && isUnsolicited && !isUnsolicitedAndMatched;
+
+    if (!skipTaskCreation) {
+      requests.push({
+        method: 'POST',
+        url: '/Task',
+        resource: newTask,
+      });
+      console.log('creating a new task with code: ', JSON.stringify(newTask.code));
+    } else {
+      console.log('skipTaskCreation', skipTaskCreation);
+    }
 
     const oystehrResponse = await oystehr.fhir.transaction<Task>({ requests });
 
@@ -120,11 +169,14 @@ export const index = wrapHandler(ZAMBDA_NAME, async (input: ZambdaInput): Promis
       else if (ent.response?.outcome?.id === 'created' && ent.resource) response.createdTasks.push(ent.resource);
     });
 
-    if (serviceRequestID) {
-      await createExternalLabResultPDF(oystehr, serviceRequestID, diagnosticReport, false, secrets, oystehrToken);
+    if (serviceRequestId) {
+      await createExternalLabResultPDF(oystehr, serviceRequestId, diagnosticReport, false, secrets, oystehrToken);
     } else if (specificDrTypeFromTag !== undefined) {
       // unsolicited result pdfs will be created after matching to a patient
-      if (isUnsolicitedAndMatched || [LabType.reflex, LabType.pdfAttachment].includes(specificDrTypeFromTag)) {
+      if (
+        (isUnsolicitedAndMatched || [LabType.reflex, LabType.pdfAttachment].includes(specificDrTypeFromTag)) &&
+        !skipTaskCreation
+      ) {
         if (!diagnosticReport.id) throw Error('unable to parse id from diagnostic report');
         console.log(`creating pdf for ${specificDrTypeFromTag} result`);
         await createExternalLabResultPDFBasedOnDr(
@@ -140,7 +192,8 @@ export const index = wrapHandler(ZAMBDA_NAME, async (input: ZambdaInput): Promis
           'skipping pdf creating for unsolicited result since it is not matched',
           diagnosticReport.id,
           isUnsolicited,
-          isUnsolicitedAndMatched
+          isUnsolicitedAndMatched,
+          specificDrTypeFromTag
         );
       }
     } else {
@@ -153,10 +206,6 @@ export const index = wrapHandler(ZAMBDA_NAME, async (input: ZambdaInput): Promis
     };
   } catch (error: any) {
     const ENVIRONMENT = getSecret(SecretsKeys.ENVIRONMENT, input.secrets);
-    await topLevelCatch('handle-lab-result', error, ENVIRONMENT);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
-    };
+    return topLevelCatch('handle-lab-result', error, ENVIRONMENT);
   }
 });

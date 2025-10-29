@@ -19,12 +19,12 @@ import {
   getProviderNameWithProfession,
   getQuestionnaireResponseByLinkId,
   getSpentTime,
+  getTelemedEncounterStatusHistory,
   ImmunizationOrder,
   isDropdownComponent,
   isInPersonAppointment,
   isMultiSelectComponent,
   mapDispositionTypeToLabel,
-  mapEncounterStatusHistory,
   mapVitalsToDisplay,
   NOTE_TYPE,
   NOTHING_TO_EAT_OR_DRINK_FIELD,
@@ -382,7 +382,7 @@ function getStatusRelatedDates(
 ): { dateOfService?: string; signedOnDate?: string } {
   const statuses =
     encounter.statusHistory && appointment?.status
-      ? mapEncounterStatusHistory(encounter.statusHistory, appointment.status)
+      ? getTelemedEncounterStatusHistory(encounter.statusHistory, appointment.status)
       : undefined;
   const dateOfService = formatDateTimeToZone(statuses?.find((item) => item.status === 'on-video')?.start, timezone);
   const currentTimeISO = DateTime.now().toISO();
@@ -505,16 +505,26 @@ function parseExamFieldsFromExamObservations(
 
         case 'multi-select': {
           if (isMultiSelectComponent(component)) {
+            const selectedOptions: { field: string; label: string; abnormal: boolean }[] = [];
             Object.entries(component.options).forEach(([optionName, option]) => {
               const observation = examObservations[optionName];
               if (observation && typeof observation.value === 'boolean' && observation.value === true) {
-                items.push({
+                selectedOptions.push({
                   field: optionName,
                   label: `${component.label}: ${option.label}`,
                   abnormal: section === 'abnormal',
                 });
               }
             });
+            const observation = examObservations[fieldName];
+            if (observation && observation.value === true && selectedOptions.length === 0) {
+              items.push({
+                field: fieldName,
+                label: component.label,
+                abnormal: section === 'abnormal',
+              });
+            }
+            items.push(...selectedOptions);
           }
           break;
         }

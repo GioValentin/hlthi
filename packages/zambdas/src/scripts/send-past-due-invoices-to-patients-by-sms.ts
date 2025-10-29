@@ -20,7 +20,10 @@ async function sendSMSMessage(oystehr: Oystehr, patientId: string, message: stri
       resource: resource,
       message: message,
     });
-    console.log(`✅ SMS details are in `, response);
+    console.log(
+      `✅ SMS details are in sent to ${patientId} (RelatedPerson/${relatedPerson.id}), response in `,
+      response
+    );
   } catch (error) {
     console.error(`❌ Failed to send SMS to ${patientId}:`, error);
     throw error;
@@ -40,6 +43,18 @@ async function sendPastDueInvoiceBySMS(
 
   const invoiceMessage = `Thank you for visiting UrgiKids. You have a past due balance of $${balanceInDollars}.
 💳 We were unable to process your card on file.  Please, pay your invoice:\n
+${shortInvoiceLink}`;
+  await sendSMSMessage(oystehr, resourceId, invoiceMessage);
+  // console.log('💬 SMS Message:\n', invoiceMessage);
+}
+
+async function sendDelinquentPastDueInvoiceBySMS(
+  oystehr: Oystehr,
+  resourceId: string,
+  invoiceLink: string
+): Promise<void> {
+  const shortInvoiceLink = invoiceLink; //await shortenURL(invoiceLink);
+  const invoiceMessage = `Friendly reminder: your UrgiKids balance is still outstanding. Please submit payment using the link below to keep your account in good standing:\n
 ${shortInvoiceLink}`;
   await sendSMSMessage(oystehr, resourceId, invoiceMessage);
   // console.log('💬 SMS Message:\n', invoiceMessage);
@@ -486,6 +501,14 @@ async function main(): Promise<void> {
       // Send SMS with the invoice information
       await sendPastDueInvoiceBySMS(oystehr, patientId, invoiceInfo.amountDue, invoiceInfo.invoiceLink);
 
+      // Re-send invoice by email via Stripe to ensure they have the latest link
+      await stripe.invoices.sendInvoice(invoiceInfo.invoiceId);
+      console.log(
+        `📧 Re-sent invoice with id ${invoiceInfo.invoiceId} email via Stripe to ${
+          invoiceInfo.customerEmail || 'unknown email'
+        }`
+      );
+
       successCount++;
       totalAmountProcessed += invoiceInfo.amountDue;
 
@@ -528,7 +551,7 @@ async function main(): Promise<void> {
     }
   }
 
-  // Process Collections invoices (no SMS, just report)
+  // Process Collections invoices (send delinquent SMS and report)
   console.log(`\n🏢 Processing ${collectionsPatientIds.length} patients for collections referral...`);
 
   for (let i = 0; i < collectionsPatientIds.length; i++) {
@@ -581,6 +604,17 @@ async function main(): Promise<void> {
         cardOnFile = `${pm.brand?.toUpperCase()} ****${pm.last4}`;
       }
 
+      // Send delinquent SMS reminder
+      await sendDelinquentPastDueInvoiceBySMS(oystehr, patientId, invoiceInfo.invoiceLink);
+
+      // Re-send invoice by email via Stripe to ensure they have the latest link
+      await stripe.invoices.sendInvoice(invoiceInfo.invoiceId);
+      console.log(
+        `📧 Re-sent very late invoice with id ${invoiceInfo.invoiceId} email via Stripe to ${
+          invoiceInfo.customerEmail || 'unknown email'
+        }`
+      );
+
       // Add data to CSV report
       csvReportData.push({
         firstName: firstName,
@@ -593,8 +627,14 @@ async function main(): Promise<void> {
           : 'No appointments',
         cardOnFile: cardOnFile,
         invoiceLink: invoiceInfo.invoiceLink,
-        collectionsStatus: 'Refer to Collections', // Mark for collections
+        collectionsStatus: 'Delinquent SMS Sent', // Mark as delinquent SMS sent
       });
+
+      // Add delay between SMS sends to avoid rate limiting
+      if (i < collectionsPatientIds.length - 1) {
+        console.log('⏳ Waiting 2 seconds before next SMS...');
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      }
     } catch (error) {
       console.error(`❌ Failed to process collections patient ${patientId}:`, error);
 
@@ -608,7 +648,7 @@ async function main(): Promise<void> {
         appointmentDate: 'Error',
         cardOnFile: 'Error',
         invoiceLink: invoiceInfo.invoiceLink,
-        collectionsStatus: 'Collections Error', // Mark as error
+        collectionsStatus: 'Delinquent SMS Failed', // Mark as SMS failed
       });
     }
   }

@@ -14,13 +14,13 @@ import {
   ServiceMode,
   VisitType,
 } from 'utils';
+import { safelyCaptureException } from 'utils/lib/frontend/sentry';
 import { ottehrApi } from '../api';
 import { intakeFlowPageRoute } from '../App';
 import { CardWithDescriptionAndLink, PageContainer } from '../components';
 import { CustomLoadingButton } from '../components/CustomLoadingButton';
 import { ErrorDialog, ErrorDialogConfig } from '../components/ErrorDialog';
 import PatientList from '../features/patients/components/selectable-list';
-import { safelyCaptureException } from '../helpers/sentry';
 import { useNavigateInFlow } from '../hooks/useNavigateInFlow';
 import { useUCZambdaClient, ZambdaClient } from '../hooks/useUCZambdaClient';
 import { otherColors } from '../IntakeThemeProvider';
@@ -142,6 +142,7 @@ const ChoosePatient = (): JSX.Element => {
             sex: data.sex || currentPatient.sex,
             reasonForVisit: data.reasonForVisit || patientInfo?.reasonForVisit,
             email: data.email || currentPatient.email,
+            authorizedNonLegalGuardians: data.authorizedNonLegalGuardians ?? currentPatient.authorizedNonLegalGuardians,
           });
         }
       });
