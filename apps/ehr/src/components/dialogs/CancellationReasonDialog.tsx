@@ -153,7 +153,7 @@ export default function CancellationReasonDialog({
           </div>
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'flex-start', marginLeft: 1 }}>
-          <LoadingButton
+          {/* <LoadingButton
             data-testid={dataTestIds.visitDetailsPage.cancelVisitDialogue}
             loading={cancelLoading}
             type="submit"
@@ -163,7 +163,7 @@ export default function CancellationReasonDialog({
             sx={buttonSx}
           >
             Cancel visit
-          </LoadingButton>
+          </LoadingButton> */}
           <Button variant="text" onClick={handleDialogClose} size="medium" sx={buttonSx}>
             Keep
           </Button>

@@ -148,6 +148,10 @@
       "name": "HLTHI_ONE_TIME_VISIT_PRICE_ID",
       "value": "#{var/HLTHI_ONE_TIME_VISIT_PRICE_ID}"
     },
+    "HLTHI_MED_VISIT_PRICE_ID": {
+      "name": "HLTHI_MED_VISIT_PRICE_ID",
+      "value": "#{var/HLTHI_MED_VISIT_PRICE_ID}"
+    },
     "HLTHI_ENCOUNTER_PROMO": {
       "name": "HLTHI_ENCOUNTER_PROMO",
       "value": "#{var/HLTHI_ENCOUNTER_PROMO}"
@@ -226,6 +230,10 @@
     },
     "AWS_DISPATCHER_URL": {
       "name": "AWS_DISPATCHER_URL",
+      "value": "#{var/AWS_DISPATCHER_URL}"
+    },
+    "HLTHI_STANDARD_V2_VISIT_FEE": {
+      "name": "HLTHI_STANDARD_V2_VISIT_FEE",
       "value": "#{var/AWS_DISPATCHER_URL}"
     },
     "HLTHI_STANDARD_PRICE_ID": {

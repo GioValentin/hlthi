@@ -1188,7 +1188,7 @@ export default function AppointmentPage(): ReactElement {
                   >
                     Go To Telemed Visit
                   </Button>
-                  <Button
+                  {/* <Button
                     data-testid={dataTestIds.visitDetailsPage.cancelVisitButton}
                     variant="outlined"
                     sx={{
@@ -1202,7 +1202,7 @@ export default function AppointmentPage(): ReactElement {
                     onClick={handleCancelDialogOpen}
                   >
                     Cancel visit
-                  </Button>
+                  </Button> */}
                   <CancellationReasonDialog
                     handleClose={handleCancelDialogClose}
                     getResourceBundle={getResourceBundle}

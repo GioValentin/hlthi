@@ -1,7 +1,7 @@
 import Oystehr, { BatchInputRequest } from '@oystehr/sdk';
 import { randomUUID } from 'crypto';
 import { Operation } from 'fast-json-patch';
-import { Account, Appointment, ChargeItem, DocumentReference, Encounter, EncounterStatusHistory, List } from 'fhir/r4b';
+import { Account, Appointment, ChargeItem, DocumentReference, Encounter, EncounterStatusHistory, List, Practitioner } from 'fhir/r4b';
 import { DateTime } from 'luxon';
 import { createFilesDocumentReferences, getPatchBinary, OTTEHR_MODULE, RECEIPT_CODE, TelemedCallStatuses } from 'utils';
 import { telemedStatusToEncounter } from '../../../shared/appointment/helpers';
@@ -17,6 +17,83 @@ import {
   deleteStatusHistoryRecordOp,
   handleEmptyEncounterStatusHistoryOp,
 } from './fhir-res-patch-operations';
+
+import crypto from "crypto";
+
+export function pinFromUuid(uuid: string): string {
+  const hash = crypto.createHash("sha256").update(uuid).digest();
+  const n = hash.readUInt32BE(0) % 100000; // 0..99999
+  return n.toString().padStart(5, "0");
+}
+
+const API_KEY = 'buZ0GIbyrAjub4GBhnjzs56TCaTSBFwv'; // must match your API_KEY env var in Express
+const API_URL = 'https://hlthi-forward-api-2cc4u.ondigitalocean.app/forwarding'; // or http://localhost:8080/forwarding
+
+async function addForwarding(ext: string, phone:string | null) {
+  if(phone == null) {
+    return;
+  }
+    const expiresAt = new Date(Date.now() + 24*60*60*1000)
+        .toISOString()           // 2025-10-30T18:11:15.264Z
+        .slice(0,19)             // 2025-10-30T18:11:15
+        .replace('T',' ');       // 2025-10-30 18:11:15
+
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': API_KEY
+    },
+    body: JSON.stringify({
+      ext,
+      e164_number: phone,
+      expires_at: expiresAt // 24 hr expiry
+    })
+  });
+
+  const data = await res.json();
+  console.log('Response:', data);
+}
+
+function toUSE164(raw:string|null) {
+  if (!raw || typeof raw !== 'string') return null;
+
+  // Already E.164 and looks like +1XXXXXXXXXX
+  if (/^\+1\d{10}$/.test(raw.trim())) return raw.trim();
+
+  // Strip all non-digits
+  const digits = raw.replace(/\D+/g, '');
+
+  // 11 digits starting with 1 -> +1 + 10 digits
+  if (/^1\d{10}$/.test(digits)) return `+${digits}`;
+
+  // 10 digits -> assume US, prepend +1
+  if (/^\d{10}$/.test(digits)) return `+1${digits}`;
+
+  return null; // not a US number we can safely normalize
+}
+
+function getTelecomValue(prac: Practitioner, system:string) {
+  const list = Array.isArray(prac?.telecom) ? prac.telecom : [];
+  const hit = list.find(t => (t?.system || '').toLowerCase() === system && t?.value);
+  return hit?.value || null;
+}
+
+// Main helper: returns +1XXXXXXXXXX or null
+function getPractitionerSmsE164(practitioner: Practitioner) {
+  // 1) prefer telecom.system === 'sms'
+  const smsRaw = getTelecomValue(practitioner, 'sms');
+  const sms = toUSE164(smsRaw);
+  if (sms) return sms;
+
+  // 2) fallback to telecom.system === 'phone'
+  const phoneRaw = getTelecomValue(practitioner, 'phone');
+  const phone = toUSE164(phoneRaw);
+  if (phone) return phone;
+
+  // 4) nothing usable
+  return null;
+}
 
 export const changeStatusIfPossible = async (
   oystehr: Oystehr,
@@ -37,8 +114,27 @@ export const changeStatusIfPossible = async (
     const addPractitionerOp = await getAddPractitionerToEncounterOperation(resourcesToUpdate.encounter, practitionerId);
     if (addPractitionerOp) {
       encounterPatchOp.push(addPractitionerOp);
+
+      if(appointment.id) {
+        const pin = pinFromUuid(appointment.id);
+        const prac = <Practitioner>await oystehr.fhir.get({
+          resourceType: 'Practitioner',
+          id: practitionerId
+        });
+
+        try {
+          await addForwarding(pin, getPractitionerSmsE164(prac));
+
+          smsToSend = `Your visit has started. If you have any issues with your prescription or access, call +1 (855) 604-6784 ext ${pin}. Support is available for 24 hours after your appointment.`;
+        } catch(e) {
+
+        }
+      }
+
+    } else {
+      smsToSend = 'Thank you for waiting. The clinician will see you within around 5 minutes.';
     }
-    smsToSend = 'Thank you for waiting. The clinician will see you within around 5 minutes.';
+    
   } 
   else if(currentStatus === 'pre-video' && newStatus === 'unsigned') {
     encounterPatchOp = defaultEncounterOperations(newStatus, resourcesToUpdate);
@@ -83,8 +179,26 @@ export const changeStatusIfPossible = async (
     }
     appointmentPatchOp = [changeStatusOp('fulfilled')];
 
-    if (appointment.id)
-      smsToSend = `Thanks for visiting. Tap https://www.trustpilot.com/evaluate/hlthi.life to let us know how it went.`;
+    if (appointment.id) {
+
+      const pin = pinFromUuid(appointment.id);
+      const prac = <Practitioner>await oystehr.fhir.get({
+        resourceType: 'Practitioner',
+        id: practitionerId
+      });
+
+      if(prac != undefined) {
+        try {
+           await addForwarding(pin, getPractitionerSmsE164(prac));
+         // practitionerId
+          smsToSend = `Your visit is complete. If you have any issues with your prescription, call +1 (855) 604-6784 ext ${pin}. Support is available for 24 hours after your appointment.`;
+        } catch(e) {
+          console.log("Couldn't create PIN", e);
+        }
+        
+      }
+     
+    }
   } else if (currentStatus === 'complete' && newStatus === 'unsigned') {
     encounterPatchOp = encounterOperationsWrapper(
       newStatus,
